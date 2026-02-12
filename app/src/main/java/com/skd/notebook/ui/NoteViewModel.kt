@@ -24,7 +24,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
 
             val note = NoteEntity(
-                id = UUID.randomUUID().toString(),  // 🔥 Generate ID
+                id = UUID.randomUUID().toString(),
                 title = title,
                 description = desc,
                 timestamp = System.currentTimeMillis()
