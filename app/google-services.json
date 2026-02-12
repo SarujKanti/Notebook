@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "467966389635",
+    "project_id": "note-6dc0f",
+    "storage_bucket": "note-6dc0f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:467966389635:android:1fb8b3188dfb88d1db5ab6",
+        "android_client_info": {
+          "package_name": "com.skd.notebook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDB_p6OBKn1_FvOIttoMphaU4uqWB81U_s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
