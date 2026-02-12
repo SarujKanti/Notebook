@@ -10,7 +10,7 @@ class FirebaseService {
     private val notesRef = firestore.collection("notes")
 
     suspend fun saveNote(note: NoteEntity) {
-        val docRef = notesRef.document()   // auto generate id
+        val docRef = notesRef.document()
         note.id = docRef.id
         docRef.set(note).await()
     }
