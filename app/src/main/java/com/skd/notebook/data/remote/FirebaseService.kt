@@ -22,7 +22,6 @@ class FirebaseService {
     suspend fun getNotes(): List<NoteEntity> {
         val snapshot = notesRef.get().await()
         return snapshot.documents.mapNotNull {
-
             it.toObject(NoteEntity::class.java)
         }
     }
