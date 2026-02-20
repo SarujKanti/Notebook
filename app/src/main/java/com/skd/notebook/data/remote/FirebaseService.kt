@@ -15,6 +15,7 @@ class FirebaseService {
         docRef.set(note).await()
     }
 
+
     suspend fun deleteNote(id: String) {
         notesRef.document(id).delete().await()
     }
