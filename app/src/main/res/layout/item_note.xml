@@ -34,7 +34,5 @@
             android:layout_gravity="end"
             android:layout_marginTop="8dp"
             android:src="@drawable/ic_delete"/>
-
     </LinearLayout>
-
 </com.google.android.material.card.MaterialCardView>
