@@ -18,8 +18,6 @@ class FirebaseService {
     suspend fun deleteNote(id: String) {
         notesRef.document(id).delete().await()
     }
-
-
     
     suspend fun getNotes(): List<NoteEntity> {
         val snapshot = notesRef.get().await()
