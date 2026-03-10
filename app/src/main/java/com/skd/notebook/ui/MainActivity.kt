@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity() {
     private fun showAddDialog() {
         val dialog = BottomSheetDialog(this)
         val view = layoutInflater.inflate(R.layout.dialog_add_note, null)
-
         val etTitle = view.findViewById<EditText>(R.id.etTitle)
         val etDesc = view.findViewById<EditText>(R.id.etDesc)
         val btnSave = view.findViewById<Button>(R.id.btnSave)
