@@ -13,6 +13,5 @@ data class NoteEntity(
     var title: String = "",
 
     var description: String = "",
-
     var timestamp: Long = 0L
 )
