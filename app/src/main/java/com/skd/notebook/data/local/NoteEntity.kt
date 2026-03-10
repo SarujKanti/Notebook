@@ -6,7 +6,6 @@ import java.util.UUID
 
 @Entity(tableName = "notes")
 data class NoteEntity(
-
     @PrimaryKey
     var id: String = "",
     var title: String = "",
