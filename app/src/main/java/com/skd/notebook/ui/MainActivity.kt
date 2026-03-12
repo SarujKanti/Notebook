@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
         viewModel.syncFromCloud()
         fabAdd.setOnClickListener { showAddDialog() }
     }
-    
 
     private fun showAddDialog() {
         val dialog = BottomSheetDialog(this)
