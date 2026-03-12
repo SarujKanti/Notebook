@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
             viewModel.delete(note)
         }
 
-        
+
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.syncFromCloud()
         fabAdd.setOnClickListener { showAddDialog() }
     }
+    
 
     private fun showAddDialog() {
         val dialog = BottomSheetDialog(this)
