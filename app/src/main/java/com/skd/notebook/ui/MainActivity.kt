@@ -29,8 +29,7 @@ class MainActivity : AppCompatActivity() {
         adapter = NoteAdapter { note ->
             viewModel.delete(note)
         }
-
-
+        
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
