@@ -10,5 +10,6 @@ data class NoteEntity(
     var id: String = "",
     var title: String = "",
     var description: String = "",
-    var timestamp: Long = 0L
+    var timestamp: Long = 0L,
+    var color: String = ""          // hex color string e.g. "#FFCDD2", empty = default white
 )

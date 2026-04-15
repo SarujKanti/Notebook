@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">NoteBook</string>
+    <string name="search_notes">Search your notes</string>
+    <string name="hint_title">Title</string>
+    <string name="hint_note">Note</string>
+    <string name="note_deleted">Note deleted</string>
+    <string name="undo">UNDO</string>
+    <string name="no_notes">No notes yet\nTap \u002B to create one</string>
+    <string name="toggle_layout">Toggle layout</string>
+    <string name="close">Close</string>
+    <string name="save">Save</string>
 </resources>

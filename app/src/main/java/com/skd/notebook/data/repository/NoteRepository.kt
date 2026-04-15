@@ -20,6 +20,15 @@ class NoteRepository(
         }
     }
 
+    suspend fun update(note: NoteEntity) {
+        dao.update(note)
+        try {
+            firebase.saveNote(note)   // Firestore set() overwrites — works as upsert
+        } catch (_: Exception) {
+            // Cloud sync failed; update saved locally
+        }
+    }
+
     suspend fun delete(note: NoteEntity) {
         dao.delete(note)
         try {
