@@ -12,19 +12,29 @@ class NoteRepository(
     val notes = dao.getAllNotes()
 
     suspend fun addNote(note: NoteEntity) {
-        dao.insert(note)          // Local
-        firebase.saveNote(note)   // Cloud
+        dao.insert(note)
+        try {
+            firebase.saveNote(note)
+        } catch (_: Exception) {
+            // Cloud sync failed; note is safely stored locally
+        }
     }
 
     suspend fun delete(note: NoteEntity) {
         dao.delete(note)
-        firebase.deleteNote(note.id)
+        try {
+            firebase.deleteNote(note.id)
+        } catch (_: Exception) {
+            // Cloud delete failed; note removed locally
+        }
     }
 
     suspend fun fetchNotesFromCloud() {
-        val cloudNotes = firebase.getNotes()
-        cloudNotes.forEach {
-            dao.insert(it)   // Save cloud data into Room
+        try {
+            val cloudNotes = firebase.getNotes()
+            cloudNotes.forEach { dao.insert(it) }
+        } catch (_: Exception) {
+            // Cloud unavailable; local data is used as fallback
         }
     }
 }
