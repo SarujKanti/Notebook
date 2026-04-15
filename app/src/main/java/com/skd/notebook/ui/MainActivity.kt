@@ -152,7 +152,7 @@ class MainActivity : AppCompatActivity() {
     // ─── Add / Edit dialog ───────────────────────────────────────────────────
 
     private fun showNoteDialog(existingNote: NoteEntity?) {
-        val dialog = BottomSheetDialog(this, R.style.FullScreenBottomSheet)
+        val dialog = BottomSheetDialog(this)
         val view = layoutInflater.inflate(R.layout.dialog_add_note, null)
 
         val dialogRoot = view.findViewById<LinearLayout>(R.id.dialogRoot)
