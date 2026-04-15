@@ -19,7 +19,9 @@ abstract class NoteDatabase : RoomDatabase() {
                     context,
                     NoteDatabase::class.java,
                     "note_db"
-                ).build().also { INSTANCE = it }
+                )
+                .fallbackToDestructiveMigration()
+                .build().also { INSTANCE = it }
             }
         }
     }
