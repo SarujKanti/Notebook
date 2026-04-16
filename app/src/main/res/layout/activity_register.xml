@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="?attr/colorBackground">
+    android:background="@color/cardview_light_background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:layout_height="56dp"
             android:src="@drawable/ic_logo"
             android:layout_gravity="center_horizontal"
-            android:tint="@color/colorPrimary"
+            app:tint="@color/colorPrimary"
             android:contentDescription="@string/app_name"/>
 
         <TextView
