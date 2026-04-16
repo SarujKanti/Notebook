@@ -10,8 +10,10 @@ android {
     compileSdk = 36
 
     defaultConfig {
+
         applicationId = "skd.pocketNotebook"
         minSdk = 21
+
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
