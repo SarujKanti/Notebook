@@ -1,21 +1,60 @@
 {
   "project_info": {
-    "project_number": "467966389635",
-    "project_id": "note-6dc0f",
-    "storage_bucket": "note-6dc0f.firebasestorage.app"
+    "project_number": "715963773994",
+    "firebase_url": "https://locationtracker-92791-default-rtdb.firebaseio.com",
+    "project_id": "locationtracker-92791",
+    "storage_bucket": "locationtracker-92791.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:467966389635:android:1fb8b3188dfb88d1db5ab6",
+        "mobilesdk_app_id": "1:715963773994:android:9a6670e9c90fb55cf43f53",
         "android_client_info": {
-          "package_name": "com.skd.notebook"
+          "package_name": "skd.locationTracker"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDB_p6OBKn1_FvOIttoMphaU4uqWB81U_s"
+          "current_key": "AIzaSyCuU1MDfCuDPthG9OTjXqb2TNBR5Q8FZM4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715963773994:android:2e2e867d51587583f43f53",
+        "android_client_info": {
+          "package_name": "skd.pocketNotebook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuU1MDfCuDPthG9OTjXqb2TNBR5Q8FZM4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715963773994:android:488a9bf5fa132b6af43f53",
+        "android_client_info": {
+          "package_name": "skd.snake_ladder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuU1MDfCuDPthG9OTjXqb2TNBR5Q8FZM4"
         }
       ],
       "services": {
