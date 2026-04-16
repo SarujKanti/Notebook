@@ -22,4 +22,8 @@ interface NoteDao {
 
     @Query("SELECT * FROM notes ORDER BY timestamp DESC")
     fun getAllNotes(): Flow<List<NoteEntity>>
+
+    /** Wipes all local notes — called on sign-out so the next user starts clean. */
+    @Query("DELETE FROM notes")
+    suspend fun deleteAll()
 }

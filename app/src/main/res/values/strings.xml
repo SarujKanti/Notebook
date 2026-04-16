@@ -9,4 +9,36 @@
     <string name="toggle_layout">Toggle layout</string>
     <string name="close">Close</string>
     <string name="save">Save</string>
+
+    <!-- Auth screens -->
+    <string name="tagline">Your personal notebook</string>
+    <string name="welcome_back">Welcome back</string>
+    <string name="sign_in_subtitle">Sign in to continue</string>
+    <string name="email">Email</string>
+    <string name="phone">Phone</string>
+    <string name="password">Password</string>
+    <string name="phone_hint">Phone number (e.g. +91XXXXXXXXXX)</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="enter_otp">Enter 6-digit OTP</string>
+    <string name="verify_otp">Verify OTP</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="new_user">New user? </string>
+    <string name="create_account">Create account</string>
+    <string name="create_account_title">Create Account</string>
+    <string name="join_subtitle">Your personal notebook awaits</string>
+    <string name="full_name">Full name</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="already_have_account">Already have an account? </string>
+    <string name="otp_sent">OTP sent! Check your messages.</string>
+
+    <!-- Validation errors -->
+    <string name="error_name_empty">Please enter your name</string>
+    <string name="error_email_empty">Please enter your email</string>
+    <string name="error_password_short">Password must be at least 6 characters</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+    <string name="error_phone_invalid">Enter phone with country code (e.g. +91XXXXXXXXXX)</string>
+    <string name="error_otp_empty">Please enter the OTP</string>
+    <string name="error_request_otp">Please request an OTP first</string>
 </resources>

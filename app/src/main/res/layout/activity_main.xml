@@ -24,7 +24,7 @@
             android:paddingBottom="8dp"
             android:gravity="center_vertical">
 
-            <!-- Fake search bar pill -->
+            <!-- Fake search-bar pill -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="52dp"
@@ -40,7 +40,7 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:paddingStart="20dp"
-                    android:paddingEnd="8dp">
+                    android:paddingEnd="4dp">
 
                     <TextView
                         android:layout_width="0dp"
@@ -50,13 +50,23 @@
                         android:textSize="16sp"
                         android:textColor="?attr/colorOnSurfaceVariant"/>
 
+                    <!-- Grid/list toggle -->
                     <ImageButton
                         android:id="@+id/btnToggleLayout"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:src="@drawable/ic_view_module"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="@string/toggle_layout"
+                        android:contentDescription="@string/toggle_layout"/>
+
+                    <!-- Account / profile -->
+                    <ImageButton
+                        android:id="@+id/btnAccount"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_account"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Account"
                         android:layout_marginEnd="4dp"/>
 
                 </LinearLayout>
@@ -93,7 +103,7 @@
 
     </LinearLayout>
 
-    <!-- Notes grid -->
+    <!-- Notes staggered grid -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
@@ -105,7 +115,7 @@
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-    <!-- Extended FAB at bottom-center like Google Keep -->
+    <!-- Extended FAB at bottom-center -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabAdd"
         android:layout_width="wrap_content"

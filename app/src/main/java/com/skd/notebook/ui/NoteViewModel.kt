@@ -55,4 +55,11 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
             repo.fetchNotesFromCloud()
         }
     }
+
+    /** Called on sign-out — wipes local cache before navigating to Login. */
+    fun clearLocalNotes() {
+        viewModelScope.launch {
+            repo.clearLocalNotes()
+        }
+    }
 }
