@@ -136,7 +136,10 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onVerificationFailed(e: FirebaseException) {
                 setLoading(false)
-                tilPhone.error = e.localizedMessage
+                val msg = e.localizedMessage ?: e.javaClass.simpleName
+                tilPhone.error = msg
+                Toast.makeText(this@LoginActivity, "OTP failed: $msg", Toast.LENGTH_LONG).show()
+                android.util.Log.e("PhoneAuth", "onVerificationFailed", e)
                 showStep1()
             }
 
