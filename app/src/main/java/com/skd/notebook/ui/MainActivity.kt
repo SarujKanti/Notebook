@@ -1,5 +1,6 @@
 package com.skd.notebook.ui
 
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -20,8 +22,10 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
+import com.skd.notebook.ui.auth.LoginActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,36 +35,30 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fabAdd: ExtendedFloatingActionButton
     private lateinit var layoutEmpty: LinearLayout
     private lateinit var btnToggleLayout: ImageButton
+    private lateinit var btnAccount: ImageButton
 
     private var isGridLayout = true
     private var staggeredManager: StaggeredGridLayoutManager? = null
 
-    // Pastel palette — matches colors.xml. Empty string = default white.
     private val noteColors = listOf(
-        "",         // Default / white
-        "#FFCDD2",  // Red
-        "#F8BBD9",  // Pink
-        "#FFE0B2",  // Orange
-        "#FFF9C4",  // Yellow
-        "#DCEDC8",  // Green
-        "#B2EBF2",  // Teal
-        "#BBDEFB",  // Blue
-        "#E1BEE7",  // Purple
-        "#D7CCC8"   // Brown
+        "",        "#FFCDD2", "#F8BBD9", "#FFE0B2", "#FFF9C4",
+        "#DCEDC8", "#B2EBF2", "#BBDEFB", "#E1BEE7", "#D7CCC8"
     )
+
+    // ─── Lifecycle ───────────────────────────────────────────────────────────
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        recyclerView = findViewById(R.id.recyclerView)
-        fabAdd = findViewById(R.id.fabAdd)
-        layoutEmpty = findViewById(R.id.layoutEmpty)
+        recyclerView    = findViewById(R.id.recyclerView)
+        fabAdd          = findViewById(R.id.fabAdd)
+        layoutEmpty     = findViewById(R.id.layoutEmpty)
         btnToggleLayout = findViewById(R.id.btnToggleLayout)
+        btnAccount      = findViewById(R.id.btnAccount)
 
         viewModel = ViewModelProvider(this)[NoteViewModel::class.java]
-
-        adapter = NoteAdapter(onLongClick = { note -> showNoteDialog(note) })
+        adapter   = NoteAdapter(onLongClick = { note -> showNoteDialog(note) })
 
         setupRecyclerView()
         setupSwipeToDelete()
@@ -72,8 +70,17 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.syncFromCloud()
 
-        fabAdd.setOnClickListener { showNoteDialog(null) }
+        fabAdd.setOnClickListener          { showNoteDialog(null) }
         btnToggleLayout.setOnClickListener { toggleLayout() }
+        btnAccount.setOnClickListener      { showAccountMenu(it) }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Guard: redirect to Login if session expired or user signed out
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            goToLogin()
+        }
     }
 
     // ─── RecyclerView ────────────────────────────────────────────────────────
@@ -96,36 +103,29 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSwipeToDelete() {
         val deleteIcon = ContextCompat.getDrawable(this, R.drawable.ic_delete)
-        val swipeBg = ColorDrawable(ContextCompat.getColor(this, R.color.swipe_delete))
+        val swipeBg    = ColorDrawable(ContextCompat.getColor(this, R.color.swipe_delete))
 
         val callback = object : ItemTouchHelper.SimpleCallback(
             0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
-            override fun onMove(
-                rv: RecyclerView,
-                vh: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ) = false
+            override fun onMove(rv: RecyclerView, vh: RecyclerView.ViewHolder,
+                                target: RecyclerView.ViewHolder) = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
-                val note = adapter.currentList[position]
+                val note = adapter.currentList[viewHolder.adapterPosition]
                 viewModel.delete(note)
-
                 Snackbar.make(recyclerView, R.string.note_deleted, Snackbar.LENGTH_LONG)
                     .setAction(R.string.undo) { viewModel.restoreNote(note) }
                     .show()
             }
 
-            override fun onChildDraw(
-                c: Canvas, recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
-            ) {
-                val item = viewHolder.itemView
-                val iconSize = deleteIcon?.intrinsicHeight ?: 0
+            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView,
+                                     viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float,
+                                     actionState: Int, isCurrentlyActive: Boolean) {
+                val item      = viewHolder.itemView
+                val iconSize  = deleteIcon?.intrinsicHeight ?: 0
                 val iconMargin = (item.height - iconSize) / 2
-                val iconTop = item.top + iconMargin
+                val iconTop   = item.top + iconMargin
                 val iconBottom = iconTop + iconSize
 
                 if (dX > 0) {
@@ -137,34 +137,65 @@ class MainActivity : AppCompatActivity() {
                     val iconRight = item.right - iconMargin
                     deleteIcon?.setBounds(iconRight - iconSize, iconTop, iconRight, iconBottom)
                 }
-
                 swipeBg.draw(c)
                 deleteIcon?.setTint(Color.WHITE)
                 deleteIcon?.draw(c)
-
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
         }
-
         ItemTouchHelper(callback).attachToRecyclerView(recyclerView)
     }
 
-    // ─── Add / Edit dialog ───────────────────────────────────────────────────
+    // ─── Account menu ────────────────────────────────────────────────────────
+
+    private fun showAccountMenu(anchor: View) {
+        val user = FirebaseAuth.getInstance().currentUser
+        val popup = PopupMenu(this, anchor)
+
+        // Header: show who's signed in (disabled/non-clickable)
+        val label = user?.displayName?.takeIf { it.isNotEmpty() }
+            ?: user?.email
+            ?: user?.phoneNumber
+            ?: "Account"
+        popup.menu.add(0, 0, 0, "Signed in as  $label").isEnabled = false
+
+        popup.menu.add(0, 1, 1, getString(R.string.sign_out))
+
+        popup.setOnMenuItemClickListener { item ->
+            if (item.itemId == 1) signOut()
+            true
+        }
+        popup.show()
+    }
+
+    private fun signOut() {
+        viewModel.clearLocalNotes()          // wipe Room before next user logs in
+        FirebaseAuth.getInstance().signOut()
+        goToLogin()
+    }
+
+    private fun goToLogin() {
+        startActivity(Intent(this, LoginActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
+        finish()
+    }
+
+    // ─── Add / Edit note dialog ───────────────────────────────────────────────
 
     private fun showNoteDialog(existingNote: NoteEntity?) {
         val dialog = BottomSheetDialog(this)
-        val view = layoutInflater.inflate(R.layout.dialog_add_note, null)
+        val view   = layoutInflater.inflate(R.layout.dialog_add_note, null)
 
         val dialogRoot = view.findViewById<LinearLayout>(R.id.dialogRoot)
-        val etTitle = view.findViewById<EditText>(R.id.etTitle)
-        val etDesc = view.findViewById<EditText>(R.id.etDesc)
-        val btnClose = view.findViewById<ImageButton>(R.id.btnClose)
-        val btnDone = view.findViewById<ImageButton>(R.id.btnDone)
-        val colorRow = view.findViewById<LinearLayout>(R.id.colorPickerRow)
+        val etTitle    = view.findViewById<EditText>(R.id.etTitle)
+        val etDesc     = view.findViewById<EditText>(R.id.etDesc)
+        val btnClose   = view.findViewById<ImageButton>(R.id.btnClose)
+        val btnDone    = view.findViewById<ImageButton>(R.id.btnDone)
+        val colorRow   = view.findViewById<LinearLayout>(R.id.colorPickerRow)
 
         var selectedColor = existingNote?.color ?: ""
 
-        // Pre-fill when editing
         existingNote?.let {
             etTitle.setText(it.title)
             etDesc.setText(it.description)
@@ -177,25 +208,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnClose.setOnClickListener { dialog.dismiss() }
-
         btnDone.setOnClickListener {
             val title = etTitle.text.toString().trim()
-            val desc = etDesc.text.toString().trim()
+            val desc  = etDesc.text.toString().trim()
             if (title.isNotEmpty() || desc.isNotEmpty()) {
-                if (existingNote == null) {
-                    viewModel.addNote(title, desc, selectedColor)
-                } else {
-                    viewModel.updateNote(
-                        existingNote.copy(title = title, description = desc, color = selectedColor)
-                    )
-                }
+                if (existingNote == null) viewModel.addNote(title, desc, selectedColor)
+                else viewModel.updateNote(existingNote.copy(title = title, description = desc, color = selectedColor))
             }
             dialog.dismiss()
         }
 
         dialog.setContentView(view)
-
-        // Expand to full screen
         val sheet = dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
         sheet?.let {
             it.layoutParams?.height = ViewGroup.LayoutParams.MATCH_PARENT
@@ -203,7 +226,6 @@ class MainActivity : AppCompatActivity() {
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.skipCollapsed = true
         }
-
         dialog.show()
         etDesc.requestFocus()
     }
@@ -212,52 +234,40 @@ class MainActivity : AppCompatActivity() {
 
     private fun applyNoteColor(root: LinearLayout, hex: String) {
         val bg = if (hex.isEmpty()) Color.WHITE
-        else runCatching { Color.parseColor(hex) }.getOrDefault(Color.WHITE)
+                 else runCatching { Color.parseColor(hex) }.getOrDefault(Color.WHITE)
         root.setBackgroundColor(bg)
     }
 
-    private fun buildColorPicker(
-        container: LinearLayout,
-        currentColor: String,
-        onPick: (String) -> Unit
-    ) {
-        val sizePx = resources.getDimensionPixelSize(R.dimen.color_circle_size)
+    private fun buildColorPicker(container: LinearLayout, currentColor: String, onPick: (String) -> Unit) {
+        val sizePx   = resources.getDimensionPixelSize(R.dimen.color_circle_size)
         val marginPx = resources.getDimensionPixelSize(R.dimen.color_circle_margin)
 
-        fun makeCircle(hex: String, selected: Boolean): View {
+        noteColors.forEach { hex ->
             val v = View(this)
             v.layoutParams = LinearLayout.LayoutParams(sizePx, sizePx).also {
                 it.setMargins(marginPx, marginPx, marginPx, marginPx)
             }
-            val fillColor = if (hex.isEmpty()) Color.WHITE
-            else runCatching { Color.parseColor(hex) }.getOrDefault(Color.WHITE)
+            val fill = if (hex.isEmpty()) Color.WHITE
+                       else runCatching { Color.parseColor(hex) }.getOrDefault(Color.WHITE)
             val shape = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(fillColor)
-                val strokeW = if (selected) 4 else 2
-                val strokeC = if (selected) Color.DKGRAY else Color.LTGRAY
-                setStroke(strokeW, strokeC)
+                setColor(fill)
+                val sel = hex == currentColor
+                setStroke(if (sel) 4 else 2, if (sel) Color.DKGRAY else Color.LTGRAY)
             }
             v.background = shape
-            return v
-        }
-
-        noteColors.forEach { hex ->
-            val circle = makeCircle(hex, hex == currentColor)
-            circle.setOnClickListener {
+            v.setOnClickListener {
                 onPick(hex)
-                // Refresh all circles' stroke to reflect new selection
                 for (i in 0 until container.childCount) {
                     val child = container.getChildAt(i)
                     val childHex = noteColors.getOrNull(i) ?: ""
-                    val isNowSelected = childHex == hex
+                    val nowSel = childHex == hex
                     (child.background as? GradientDrawable)?.setStroke(
-                        if (isNowSelected) 4 else 2,
-                        if (isNowSelected) Color.DKGRAY else Color.LTGRAY
+                        if (nowSel) 4 else 2, if (nowSel) Color.DKGRAY else Color.LTGRAY
                     )
                 }
             }
-            container.addView(circle)
+            container.addView(v)
         }
     }
 }

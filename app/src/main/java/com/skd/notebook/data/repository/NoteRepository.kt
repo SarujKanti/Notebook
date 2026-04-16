@@ -46,4 +46,9 @@ class NoteRepository(
             // Cloud unavailable; local data is used as fallback
         }
     }
+
+    /** Clears the local Room cache on sign-out so the next user starts fresh. */
+    suspend fun clearLocalNotes() {
+        dao.deleteAll()
+    }
 }
