@@ -8,6 +8,13 @@
         <item name="android:windowBackground">@color/colorBackground</item>
         <item name="android:statusBarColor">@color/colorBackground</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
+        <!--
+            Android 15 (API 35+) forces edge-to-edge for apps targeting >= 35.
+            This opt-out restores the traditional behaviour where the system draws
+            the status bar and nav bar OUTSIDE the app's content area.
+            Without this, content overlaps the status bar on API 35+ devices.
+        -->
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
     </style>
 
     <style name="Theme.NoteBook" parent="Base.Theme.NoteBook" />
