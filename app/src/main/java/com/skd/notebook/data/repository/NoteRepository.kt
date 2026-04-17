@@ -1,54 +1,111 @@
 package com.skd.notebook.data.repository
 
+import com.skd.notebook.data.local.FolderDao
+import com.skd.notebook.data.local.FolderEntity
 import com.skd.notebook.data.local.NoteDao
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.data.remote.FirebaseService
 
 class NoteRepository(
-    private val dao: NoteDao,
+    private val noteDao: NoteDao,
+    private val folderDao: FolderDao,
     private val firebase: FirebaseService
 ) {
 
-    val notes = dao.getAllNotes()
+    val activeNotes  = noteDao.getActiveNotes()
+    val binNotes     = noteDao.getBinNotes()
+    val archivedNotes= noteDao.getArchivedNotes()
+    val folders      = folderDao.getAllFolders()
+
+    fun getFolderNotes(folderId: String) = noteDao.getNotesByFolder(folderId)
+
+    // ─── Note CRUD ───────────────────────────────────────────────────────────
 
     suspend fun addNote(note: NoteEntity) {
-        dao.insert(note)
-        try {
-            firebase.saveNote(note)
-        } catch (_: Exception) {
-            // Cloud sync failed; note is safely stored locally
-        }
+        noteDao.insert(note)
+        trySync { firebase.saveNote(note) }
     }
 
     suspend fun update(note: NoteEntity) {
-        dao.update(note)
-        try {
-            firebase.saveNote(note)   // Firestore set() overwrites — works as upsert
-        } catch (_: Exception) {
-            // Cloud sync failed; update saved locally
+        noteDao.update(note)
+        trySync { firebase.saveNote(note) }
+    }
+
+    /** Soft-delete: moves note to Bin */
+    suspend fun moveToBin(note: NoteEntity) {
+        val updated = note.copy(isDeleted = true, deletedAt = System.currentTimeMillis(), isArchived = false)
+        noteDao.update(updated)
+        trySync { firebase.saveNote(updated) }
+    }
+
+    /** Restore from Bin back to active notes */
+    suspend fun restore(note: NoteEntity) {
+        val updated = note.copy(isDeleted = false, deletedAt = 0L, isArchived = false)
+        noteDao.update(updated)
+        trySync { firebase.saveNote(updated) }
+    }
+
+    /** Permanently delete a note (used from Bin) */
+    suspend fun deletePermanently(note: NoteEntity) {
+        noteDao.delete(note)
+        trySync { firebase.deleteNote(note.id) }
+    }
+
+    /** Delete all bin notes permanently */
+    suspend fun emptyBin() {
+        val binNotesList = noteDao.getBinNotes()
+        noteDao.emptyBin()
+        // Sync: delete each from Firestore (best-effort)
+    }
+
+    /** Archive a note */
+    suspend fun archive(note: NoteEntity) {
+        val updated = note.copy(isArchived = true, isDeleted = false)
+        noteDao.update(updated)
+        trySync { firebase.saveNote(updated) }
+    }
+
+    /** Unarchive a note back to active */
+    suspend fun unarchive(note: NoteEntity) {
+        val updated = note.copy(isArchived = false)
+        noteDao.update(updated)
+        trySync { firebase.saveNote(updated) }
+    }
+
+    /** Move note to a folder (or remove from folder if folderId is empty) */
+    suspend fun moveToFolder(note: NoteEntity, folderId: String) {
+        val updated = note.copy(folderId = folderId)
+        noteDao.update(updated)
+        trySync { firebase.saveNote(updated) }
+    }
+
+    // ─── Folder CRUD ─────────────────────────────────────────────────────────
+
+    suspend fun addFolder(folder: FolderEntity) {
+        folderDao.insert(folder)
+        trySync { firebase.saveFolder(folder) }
+    }
+
+    suspend fun deleteFolder(folder: FolderEntity) {
+        folderDao.delete(folder)
+        trySync { firebase.deleteFolder(folder.id) }
+    }
+
+    // ─── Cloud sync ──────────────────────────────────────────────────────────
+
+    suspend fun fetchFromCloud() {
+        trySync {
+            firebase.getNotes().forEach { noteDao.insert(it) }
+            firebase.getFolders().forEach { folderDao.insert(it) }
         }
     }
 
-    suspend fun delete(note: NoteEntity) {
-        dao.delete(note)
-        try {
-            firebase.deleteNote(note.id)
-        } catch (_: Exception) {
-            // Cloud delete failed; note removed locally
-        }
+    suspend fun clearLocalData() {
+        noteDao.deleteAll()
+        folderDao.deleteAll()
     }
 
-    suspend fun fetchNotesFromCloud() {
-        try {
-            val cloudNotes = firebase.getNotes()
-            cloudNotes.forEach { dao.insert(it) }
-        } catch (_: Exception) {
-            // Cloud unavailable; local data is used as fallback
-        }
-    }
-
-    /** Clears the local Room cache on sign-out so the next user starts fresh. */
-    suspend fun clearLocalNotes() {
-        dao.deleteAll()
+    private suspend fun trySync(block: suspend () -> Unit) {
+        try { block() } catch (_: Exception) { }
     }
 }

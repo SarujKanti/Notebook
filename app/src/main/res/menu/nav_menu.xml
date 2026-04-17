@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navNotes"
+            android:icon="@drawable/ic_logo"
+            android:title="Notes"
+            android:checked="true"/>
+        <item
+            android:id="@+id/navFolders"
+            android:icon="@drawable/ic_folder"
+            android:title="Folders"/>
+        <item
+            android:id="@+id/navArchive"
+            android:icon="@drawable/ic_archive"
+            android:title="Archive"/>
+        <item
+            android:id="@+id/navBin"
+            android:icon="@drawable/ic_delete"
+            android:title="Bin"/>
+    </group>
+
+    <item
+        android:id="@+id/navSignOut"
+        android:icon="@drawable/ic_logout"
+        android:title="Sign Out"/>
+
+</menu>

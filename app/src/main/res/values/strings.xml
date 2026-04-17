@@ -5,27 +5,10 @@
     <string name="hint_note">Note</string>
     <string name="note_deleted">Note deleted</string>
     <string name="undo">UNDO</string>
-    <string name="no_notes">No notes yet\nTap \u002B to create one</string>
+    <string name="no_notes">No notes yet\nTap + to create one</string>
     <string name="toggle_layout">Toggle layout</string>
     <string name="close">Close</string>
     <string name="save">Save</string>
-
-    <!-- Auth screens -->
-    <string name="tagline">Your personal notebook</string>
-    <string name="phone_hint">Phone number (e.g. +91XXXXXXXXXX)</string>
-    <string name="phone_subtitle_step1">Enter your mobile number to continue</string>
-    <string name="phone_subtitle_step2">We sent a 6-digit code to your number</string>
-    <string name="send_otp">Send OTP</string>
-    <string name="resend_otp">Resend</string>
-    <string name="didnt_receive_otp">Didn\'t receive it? </string>
-    <string name="change_number">Change number</string>
-    <string name="enter_otp">Enter 6-digit OTP</string>
-    <string name="verify_continue">Verify &amp; Continue</string>
     <string name="sign_out">Sign Out</string>
-    <string name="otp_sent">OTP sent! Check your messages.</string>
-
-    <!-- Validation errors -->
-    <string name="error_phone_invalid">Enter phone with country code (e.g. +91XXXXXXXXXX)</string>
-    <string name="error_otp_empty">Please enter the 6-digit OTP</string>
-    <string name="error_request_otp">Please request an OTP first</string>
+    <string name="tagline">Your personal notebook</string>
 </resources>
