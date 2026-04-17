@@ -8,12 +8,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:715963773994:android:9a6670e9c90fb55cf43f53",
+        "mobilesdk_app_id": "1:715963773994:android:1170c270ea601e83f43f53",
         "android_client_info": {
-          "package_name": "skd.locationTracker"
+          "package_name": "com.skd.notebook"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "715963773994-2nj06lirfo8o4lhfq7dub37s4k5ca0th.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.skd.notebook",
+            "certificate_hash": "0eb8bd45db74292e02c47f41519e5f030653bfe1"
+          }
+        },
+        {
+          "client_id": "715963773994-9en2ialumkovk0eesqlg06rmh3qsng6d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCuU1MDfCuDPthG9OTjXqb2TNBR5Q8FZM4"
@@ -21,7 +34,41 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "715963773994-9en2ialumkovk0eesqlg06rmh3qsng6d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715963773994:android:9a6670e9c90fb55cf43f53",
+        "android_client_info": {
+          "package_name": "skd.locationTracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "715963773994-9en2ialumkovk0eesqlg06rmh3qsng6d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuU1MDfCuDPthG9OTjXqb2TNBR5Q8FZM4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "715963773994-9en2ialumkovk0eesqlg06rmh3qsng6d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
@@ -32,7 +79,20 @@
           "package_name": "skd.pocketNotebook"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "715963773994-q96d72ie2j86rvs7769608d1gri0b0kq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "skd.pocketNotebook",
+            "certificate_hash": "0eb8bd45db74292e02c47f41519e5f030653bfe1"
+          }
+        },
+        {
+          "client_id": "715963773994-9en2ialumkovk0eesqlg06rmh3qsng6d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCuU1MDfCuDPthG9OTjXqb2TNBR5Q8FZM4"
@@ -40,7 +100,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "715963773994-9en2ialumkovk0eesqlg06rmh3qsng6d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
@@ -51,7 +116,12 @@
           "package_name": "skd.snake_ladder"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "715963773994-9en2ialumkovk0eesqlg06rmh3qsng6d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCuU1MDfCuDPthG9OTjXqb2TNBR5Q8FZM4"
@@ -59,7 +129,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "715963773994-9en2ialumkovk0eesqlg06rmh3qsng6d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
