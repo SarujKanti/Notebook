@@ -26,6 +26,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -36,6 +37,7 @@ import com.skd.notebook.ui.auth.LoginActivity
 import com.skd.notebook.ui.screens.ArchiveActivity
 import com.skd.notebook.ui.screens.BinActivity
 import com.skd.notebook.ui.screens.FoldersActivity
+import com.skd.notebook.ui.screens.SearchActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -81,9 +83,20 @@ class MainActivity : AppCompatActivity() {
         setupSwipeToDelete()
         setupDrawer()
 
+        val progressSync = findViewById<android.widget.ProgressBar>(R.id.progressSync)
+
+        // Show spinner while waiting for first Firestore snapshot (important on fresh install)
+        viewModel.isSyncing.observe(this) { syncing ->
+            progressSync.visibility = if (syncing) View.VISIBLE else View.GONE
+            // Keep empty state hidden while loading so user doesn't see a false "No notes" flash
+            if (syncing) layoutEmpty.visibility = View.GONE
+        }
+
         viewModel.activeNotes.observe(this) { notes ->
             adapter.submitList(notes)
-            layoutEmpty.visibility = if (notes.isEmpty()) View.VISIBLE else View.GONE
+            // Only show empty state after sync is done
+            val syncing = viewModel.isSyncing.value ?: false
+            layoutEmpty.visibility = if (notes.isEmpty() && !syncing) View.VISIBLE else View.GONE
         }
 
         viewModel.startRealtimeSync()
@@ -91,6 +104,12 @@ class MainActivity : AppCompatActivity() {
         fabAdd.setOnClickListener          { showNoteDialog(null) }
         btnToggleLayout.setOnClickListener { toggleLayout() }
         btnMenu.setOnClickListener         { drawerLayout.openDrawer(GravityCompat.START) }
+
+        // Search pill → open SearchActivity
+        findViewById<MaterialCardView>(R.id.cardSearch).setOnClickListener {
+            startActivity(Intent(this, SearchActivity::class.java))
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        }
     }
 
     override fun onStart() {

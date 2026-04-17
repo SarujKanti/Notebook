@@ -64,6 +64,13 @@
             android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".ui.screens.FoldersActivity"/>
 
+        <!-- ⑧ Search -->
+        <activity
+            android:name=".ui.screens.SearchActivity"
+            android:exported="false"
+            android:windowSoftInputMode="stateVisible|adjustResize"
+            android:parentActivityName=".ui.MainActivity"/>
+
     </application>
 
 </manifest>
