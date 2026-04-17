@@ -85,18 +85,22 @@ class MainActivity : AppCompatActivity() {
 
         val progressSync = findViewById<android.widget.ProgressBar>(R.id.progressSync)
 
-        // Show spinner while waiting for first Firestore snapshot (important on fresh install)
-        viewModel.isSyncing.observe(this) { syncing ->
+        // Helper: always recalculate visibility from current state of both LiveDatas
+        fun refreshEmptyState() {
+            val syncing = viewModel.isSyncing.value ?: true
+            val empty   = viewModel.activeNotes.value.isNullOrEmpty()
             progressSync.visibility = if (syncing) View.VISIBLE else View.GONE
-            // Keep empty state hidden while loading so user doesn't see a false "No notes" flash
-            if (syncing) layoutEmpty.visibility = View.GONE
+            layoutEmpty.visibility  = if (empty && !syncing) View.VISIBLE else View.GONE
         }
+
+        // When sync state changes (spinner on/off), recheck empty state immediately.
+        // Without this, if notes list is already empty when isSyncing flips to false,
+        // activeNotes.observe never re-fires and "No notes" never appears.
+        viewModel.isSyncing.observe(this) { refreshEmptyState() }
 
         viewModel.activeNotes.observe(this) { notes ->
             adapter.submitList(notes)
-            // Only show empty state after sync is done
-            val syncing = viewModel.isSyncing.value ?: false
-            layoutEmpty.visibility = if (notes.isEmpty() && !syncing) View.VISIBLE else View.GONE
+            refreshEmptyState()
         }
 
         viewModel.startRealtimeSync()
