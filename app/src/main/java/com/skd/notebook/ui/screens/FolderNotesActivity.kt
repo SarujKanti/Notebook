@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import com.google.android.material.button.MaterialButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -60,6 +61,8 @@ class FolderNotesActivity : AppCompatActivity() {
         fabAdd       = findViewById(R.id.fabAdd)
 
         viewModel = ViewModelProvider(this)[NoteViewModel::class.java]
+        viewModel.startRealtimeSync()   // keep cloud ↔ Room in sync while inside folder
+
         adapter   = NoteAdapter(
             onClick     = { note -> showNoteDialog(note) },
             onLongClick = { note ->
@@ -76,7 +79,8 @@ class FolderNotesActivity : AppCompatActivity() {
             }
         )
 
-        recyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        val spanCount = resources.getInteger(R.integer.grid_span_count)
+        recyclerView.layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.adapter = adapter
 
         viewModel.getFolderNotes(folderId).observe(this) { notes ->
@@ -100,7 +104,7 @@ class FolderNotesActivity : AppCompatActivity() {
         val etTitle    = view.findViewById<EditText>(R.id.etTitle)
         val etDesc     = view.findViewById<EditText>(R.id.etDesc)
         val btnClose   = view.findViewById<ImageButton>(R.id.btnClose)
-        val btnDone    = view.findViewById<ImageButton>(R.id.btnDone)
+        val btnDone    = view.findViewById<MaterialButton>(R.id.btnDone)
         val colorRow   = view.findViewById<LinearLayout>(R.id.colorPickerRow)
 
         var selectedColor = existingNote?.color ?: ""

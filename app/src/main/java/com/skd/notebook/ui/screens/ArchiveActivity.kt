@@ -48,7 +48,8 @@ class ArchiveActivity : AppCompatActivity() {
             }
         )
 
-        recyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        val spanCount = resources.getInteger(R.integer.grid_span_count)
+        recyclerView.layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.adapter = adapter
 
         viewModel.archivedNotes.observe(this) { notes ->
