@@ -1,45 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dialogRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:minHeight="600dp">
 
-    <!-- Top bar: close + done -->
+    <!-- ── Top action bar ──────────────────────────────────────────────── -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="60dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:paddingStart="4dp"
-        android:paddingEnd="4dp">
+        android:paddingEnd="8dp"
+        android:elevation="2dp">
 
+        <!-- Close -->
         <ImageButton
             android:id="@+id/btnClose"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/ic_close"
+            android:src="@drawable/ic_arrow_back"
+            android:tint="?attr/colorOnSurface"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/close"/>
 
-        <View
+        <!-- Label -->
+        <TextView
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:text="Note"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"/>
 
-        <ImageButton
+        <!-- Save button (text style) -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDone"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_done"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Save"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            android:textColor="@color/colorOnPrimary"
+            app:backgroundTint="@color/colorPrimary"
+            app:cornerRadius="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:contentDescription="@string/save"/>
 
     </LinearLayout>
 
-    <!-- Title field (no underline, large) -->
+    <!-- Thin divider below toolbar -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/colorOutlineVariant"
+        android:alpha="0.4"/>
+
+    <!-- ── Title field ─────────────────────────────────────────────────── -->
     <EditText
         android:id="@+id/etTitle"
         android:layout_width="match_parent"
@@ -52,11 +77,12 @@
         android:background="@android:color/transparent"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:paddingTop="4dp"
+        android:paddingTop="16dp"
         android:paddingBottom="8dp"
-        android:inputType="textCapSentences"/>
+        android:inputType="textCapSentences"
+        android:imeOptions="actionNext"/>
 
-    <!-- Description field (fills remaining space) -->
+    <!-- ── Description field (fills remaining space) ──────────────────── -->
     <EditText
         android:id="@+id/etDesc"
         android:layout_width="match_parent"
@@ -64,41 +90,72 @@
         android:layout_weight="1"
         android:hint="@string/hint_note"
         android:textSize="16sp"
+        android:lineSpacingMultiplier="1.4"
         android:textColor="?attr/colorOnSurface"
         android:textColorHint="?attr/colorOnSurfaceVariant"
         android:background="@android:color/transparent"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:paddingTop="0dp"
-        android:paddingBottom="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="12dp"
         android:gravity="top|start"
         android:inputType="textCapSentences|textMultiLine"
-        android:minLines="4"/>
+        android:minLines="5"/>
 
-    <!-- Divider -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?attr/colorOutlineVariant"
-        android:alpha="0.5"/>
-
-    <!-- Color picker row -->
-    <HorizontalScrollView
+    <!-- ── Bottom toolbar: colors ──────────────────────────────────────── -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="none"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp">
+        android:orientation="vertical">
 
+        <!-- Divider above bottom bar -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorOutlineVariant"
+            android:alpha="0.4"/>
+
+        <!-- Color label + picker -->
         <LinearLayout
-            android:id="@+id/colorPickerRow"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"/>
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
-    </HorizontalScrollView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Color"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.06"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:alpha="0.7"
+                android:layout_marginEnd="8dp"/>
+
+            <HorizontalScrollView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/colorPickerRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"/>
+
+            </HorizontalScrollView>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

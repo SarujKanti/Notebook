@@ -1,41 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
     android:background="@drawable/bg_splash">
 
-    <ImageView
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:src="@drawable/ic_logo"
-        android:contentDescription="@string/app_name"/>
-
-    <TextView
+    <!-- Center content -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textColor="@color/white"
-        android:textSize="38sp"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif-medium"
-        android:layout_marginTop="20dp"
-        android:letterSpacing="0.04"/>
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:gravity="center">
 
-    <TextView
+        <!-- Logo with subtle background ring -->
+        <FrameLayout
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center_horizontal">
+
+            <View
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:background="@drawable/bg_logo_ring"/>
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_logo"
+                android:tint="#FFFFFF"
+                android:contentDescription="@string/app_name"/>
+        </FrameLayout>
+
+        <!-- App Name -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="#FFFFFF"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginTop="24dp"
+            android:letterSpacing="0.05"/>
+
+        <!-- Tagline -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tagline"
+            android:textColor="#B0A0FF"
+            android:textSize="15sp"
+            android:layout_marginTop="8dp"
+            android:letterSpacing="0.02"/>
+
+    </LinearLayout>
+
+    <!-- Loading indicator at bottom -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/tagline"
-        android:textColor="#90CAF9"
-        android:textSize="15sp"
-        android:layout_marginTop="8dp"/>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="64dp"
+        android:orientation="vertical"
+        android:gravity="center">
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
-        android:indeterminateTint="@color/white"/>
+        <ProgressBar
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:indeterminateTint="#FFFFFF"/>
 
-</LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

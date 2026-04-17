@@ -1,9 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.NoteBook" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="android:colorBackground">#202124</item>
-        <item name="colorSurface">#2D2E30</item>
-        <item name="android:windowBackground">#202124</item>
+        <item name="colorPrimary">#9D7EF5</item>
+        <item name="android:colorBackground">#1A1625</item>
+        <item name="colorSurface">#251E36</item>
+        <item name="android:windowBackground">#1A1625</item>
+        <item name="android:statusBarColor">#1A1625</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
     </style>
 </resources>

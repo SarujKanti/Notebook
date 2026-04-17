@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tablet overrides (600dp+ shortest width) -->
+<resources>
+    <!-- Larger color circles for tablet fingers -->
+    <dimen name="color_circle_size">44dp</dimen>
+    <dimen name="color_circle_margin">8dp</dimen>
+
+    <!-- Wider card corners feel more premium on large screens -->
+    <dimen name="card_corner_radius">20dp</dimen>
+    <dimen name="card_stroke_width">1dp</dimen>
+    <dimen name="grid_spacing">8dp</dimen>
+
+    <!-- Toolbar taller on tablets -->
+    <dimen name="toolbar_height">64dp</dimen>
+
+    <!-- FAB higher above nav bar -->
+    <dimen name="fab_margin_bottom">32dp</dimen>
+</resources>
