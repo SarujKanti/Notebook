@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:gravity="center"
     android:padding="32dp"
-    android:background="?attr/colorBackground">
+    android:background="@color/cardview_light_background">
 
     <!-- Logo -->
     <ImageView
