@@ -11,21 +11,30 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import android.widget.PopupMenu
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.ui.auth.LoginActivity
+import com.skd.notebook.ui.screens.ArchiveActivity
+import com.skd.notebook.ui.screens.BinActivity
+import com.skd.notebook.ui.screens.FoldersActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,7 +44,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fabAdd: ExtendedFloatingActionButton
     private lateinit var layoutEmpty: LinearLayout
     private lateinit var btnToggleLayout: ImageButton
-    private lateinit var btnAccount: ImageButton
+    private lateinit var btnMenu: ImageButton
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
 
     private var isGridLayout = true
     private var staggeredManager: StaggeredGridLayoutManager? = null
@@ -51,19 +62,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        drawerLayout    = findViewById(R.id.drawerLayout)
+        navigationView  = findViewById(R.id.navigationView)
         recyclerView    = findViewById(R.id.recyclerView)
         fabAdd          = findViewById(R.id.fabAdd)
         layoutEmpty     = findViewById(R.id.layoutEmpty)
         btnToggleLayout = findViewById(R.id.btnToggleLayout)
-        btnAccount      = findViewById(R.id.btnAccount)
+        btnMenu         = findViewById(R.id.btnMenu)
 
         viewModel = ViewModelProvider(this)[NoteViewModel::class.java]
-        adapter   = NoteAdapter(onLongClick = { note -> showNoteDialog(note) })
+        adapter   = NoteAdapter(
+            onClick     = { note -> showNoteDialog(note) },
+            onLongClick = { note -> showNoteActions(note) }
+        )
 
         setupRecyclerView()
         setupSwipeToDelete()
+        setupDrawer()
 
-        viewModel.notes.observe(this) { notes ->
+        viewModel.activeNotes.observe(this) { notes ->
             adapter.submitList(notes)
             layoutEmpty.visibility = if (notes.isEmpty()) View.VISIBLE else View.GONE
         }
@@ -72,14 +89,44 @@ class MainActivity : AppCompatActivity() {
 
         fabAdd.setOnClickListener          { showNoteDialog(null) }
         btnToggleLayout.setOnClickListener { toggleLayout() }
-        btnAccount.setOnClickListener      { showAccountMenu(it) }
+        btnMenu.setOnClickListener         { drawerLayout.openDrawer(GravityCompat.START) }
     }
 
     override fun onStart() {
         super.onStart()
-        // Guard: redirect to Login if session expired or user signed out
-        if (FirebaseAuth.getInstance().currentUser == null) {
-            goToLogin()
+        if (FirebaseAuth.getInstance().currentUser == null) goToLogin()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            @Suppress("DEPRECATION")
+            super.onBackPressed()
+        }
+    }
+
+    // ─── Drawer ──────────────────────────────────────────────────────────────
+
+    private fun setupDrawer() {
+        val header   = navigationView.getHeaderView(0)
+        val tvName   = header.findViewById<TextView>(R.id.tvNavName)
+        val tvEmail  = header.findViewById<TextView>(R.id.tvNavEmail)
+        val user     = FirebaseAuth.getInstance().currentUser
+        tvName.text  = user?.displayName?.takeIf { it.isNotEmpty() } ?: user?.email?.substringBefore('@') ?: "User"
+        tvEmail.text = user?.email ?: ""
+
+        navigationView.setNavigationItemSelectedListener { item ->
+            drawerLayout.closeDrawer(GravityCompat.START)
+            when (item.itemId) {
+                R.id.navNotes   -> { /* already here */ }
+                R.id.navFolders -> startActivity(Intent(this, FoldersActivity::class.java))
+                R.id.navArchive -> startActivity(Intent(this, ArchiveActivity::class.java))
+                R.id.navBin     -> startActivity(Intent(this, BinActivity::class.java))
+                R.id.navSignOut -> signOut()
+            }
+            true
         }
     }
 
@@ -99,7 +146,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    // ─── Swipe to delete ─────────────────────────────────────────────────────
+    // ─── Swipe → Bin ─────────────────────────────────────────────────────────
 
     private fun setupSwipeToDelete() {
         val deleteIcon = ContextCompat.getDrawable(this, R.drawable.ic_delete)
@@ -113,21 +160,19 @@ class MainActivity : AppCompatActivity() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val note = adapter.currentList[viewHolder.adapterPosition]
-                viewModel.delete(note)
-                Snackbar.make(recyclerView, R.string.note_deleted, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.undo) { viewModel.restoreNote(note) }
+                viewModel.moveToBin(note)
+                Snackbar.make(recyclerView, "Moved to Bin", Snackbar.LENGTH_LONG)
+                    .setAction("UNDO") { viewModel.restoreFromBin(note) }
                     .show()
             }
 
-            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView,
-                                     viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float,
-                                     actionState: Int, isCurrentlyActive: Boolean) {
-                val item      = viewHolder.itemView
-                val iconSize  = deleteIcon?.intrinsicHeight ?: 0
+            override fun onChildDraw(c: Canvas, rv: RecyclerView, vh: RecyclerView.ViewHolder,
+                                     dX: Float, dY: Float, actionState: Int, isActive: Boolean) {
+                val item       = vh.itemView
+                val iconSize   = deleteIcon?.intrinsicHeight ?: 0
                 val iconMargin = (item.height - iconSize) / 2
-                val iconTop   = item.top + iconMargin
+                val iconTop    = item.top + iconMargin
                 val iconBottom = iconTop + iconSize
-
                 if (dX > 0) {
                     swipeBg.setBounds(item.left, item.top, item.left + dX.toInt(), item.bottom)
                     val iconLeft = item.left + iconMargin
@@ -140,37 +185,63 @@ class MainActivity : AppCompatActivity() {
                 swipeBg.draw(c)
                 deleteIcon?.setTint(Color.WHITE)
                 deleteIcon?.draw(c)
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                super.onChildDraw(c, rv, vh, dX, dY, actionState, isActive)
             }
         }
         ItemTouchHelper(callback).attachToRecyclerView(recyclerView)
     }
 
-    // ─── Account menu ────────────────────────────────────────────────────────
+    // ─── Note action sheet ───────────────────────────────────────────────────
 
-    private fun showAccountMenu(anchor: View) {
-        val user = FirebaseAuth.getInstance().currentUser
-        val popup = PopupMenu(this, anchor)
-
-        // Header: show who's signed in (disabled/non-clickable)
-        val label = user?.displayName?.takeIf { it.isNotEmpty() }
-            ?: user?.email
-            ?: user?.phoneNumber
-            ?: "Account"
-        popup.menu.add(0, 0, 0, "Signed in as  $label").isEnabled = false
-
-        popup.menu.add(0, 1, 1, getString(R.string.sign_out))
-
-        popup.setOnMenuItemClickListener { item ->
-            if (item.itemId == 1) signOut()
-            true
-        }
-        popup.show()
+    private fun showNoteActions(note: NoteEntity) {
+        val items = arrayOf("Edit", "Archive", "Move to Folder", "Move to Bin")
+        AlertDialog.Builder(this)
+            .setItems(items) { _, which ->
+                when (which) {
+                    0 -> showNoteDialog(note)
+                    1 -> {
+                        viewModel.archive(note)
+                        Snackbar.make(recyclerView, "Note archived", Snackbar.LENGTH_SHORT)
+                            .setAction("UNDO") { viewModel.unarchive(note) }
+                            .show()
+                    }
+                    2 -> showMoveFolderDialog(note)
+                    3 -> {
+                        viewModel.moveToBin(note)
+                        Snackbar.make(recyclerView, "Moved to Bin", Snackbar.LENGTH_LONG)
+                            .setAction("UNDO") { viewModel.restoreFromBin(note) }
+                            .show()
+                    }
+                }
+            }
+            .show()
     }
 
+    private fun showMoveFolderDialog(note: NoteEntity) {
+        val folders = viewModel.folders.value.orEmpty()
+        if (folders.isEmpty()) {
+            AlertDialog.Builder(this)
+                .setTitle("No folders")
+                .setMessage("Create a folder first from Menu → Folders.")
+                .setPositiveButton("OK", null)
+                .show()
+            return
+        }
+        val names = folders.map { it.name }.toTypedArray()
+        AlertDialog.Builder(this)
+            .setTitle("Move to folder")
+            .setItems(names) { _, i -> viewModel.moveToFolder(note, folders[i].id) }
+            .show()
+    }
+
+    // ─── Auth ────────────────────────────────────────────────────────────────
+
     private fun signOut() {
-        viewModel.clearLocalNotes()          // wipe Room before next user logs in
+        viewModel.clearLocalData()
         FirebaseAuth.getInstance().signOut()
+        GoogleSignIn.getClient(this,
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
+        ).signOut()
         goToLogin()
     }
 
@@ -247,8 +318,8 @@ class MainActivity : AppCompatActivity() {
             v.layoutParams = LinearLayout.LayoutParams(sizePx, sizePx).also {
                 it.setMargins(marginPx, marginPx, marginPx, marginPx)
             }
-            val fill = if (hex.isEmpty()) Color.WHITE
-                       else runCatching { Color.parseColor(hex) }.getOrDefault(Color.WHITE)
+            val fill  = if (hex.isEmpty()) Color.WHITE
+                        else runCatching { Color.parseColor(hex) }.getOrDefault(Color.WHITE)
             val shape = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
                 setColor(fill)
@@ -259,9 +330,9 @@ class MainActivity : AppCompatActivity() {
             v.setOnClickListener {
                 onPick(hex)
                 for (i in 0 until container.childCount) {
-                    val child = container.getChildAt(i)
+                    val child    = container.getChildAt(i)
                     val childHex = noteColors.getOrNull(i) ?: ""
-                    val nowSel = childHex == hex
+                    val nowSel   = childHex == hex
                     (child.background as? GradientDrawable)?.setStroke(
                         if (nowSel) 4 else 2, if (nowSel) Color.DKGRAY else Color.LTGRAY
                     )

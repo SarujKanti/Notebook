@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.skd.notebook.data.local.FolderEntity
 import com.skd.notebook.data.local.NoteDatabase
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.data.remote.FirebaseService
@@ -13,21 +14,28 @@ import java.util.UUID
 
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val dao = NoteDatabase.getDatabase(application).noteDao()
-    private val repo = NoteRepository(dao, FirebaseService())
+    private val db    = NoteDatabase.getDatabase(application)
+    private val repo  = NoteRepository(db.noteDao(), db.folderDao(), FirebaseService())
 
-    val notes = repo.notes.asLiveData()
+    val activeNotes   = repo.activeNotes.asLiveData()
+    val binNotes      = repo.binNotes.asLiveData()
+    val archivedNotes = repo.archivedNotes.asLiveData()
+    val folders       = repo.folders.asLiveData()
 
-    fun addNote(title: String, desc: String, color: String = "") {
+    fun getFolderNotes(folderId: String) = repo.getFolderNotes(folderId).asLiveData()
+
+    // ─── Note operations ─────────────────────────────────────────────────────
+
+    fun addNote(title: String, desc: String, color: String = "", folderId: String = "") {
         viewModelScope.launch {
-            val note = NoteEntity(
+            repo.addNote(NoteEntity(
                 id = UUID.randomUUID().toString(),
                 title = title,
                 description = desc,
                 timestamp = System.currentTimeMillis(),
-                color = color
-            )
-            repo.addNote(note)
+                color = color,
+                folderId = folderId
+            ))
         }
     }
 
@@ -37,29 +45,57 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /** Restores a deleted note (used for swipe-undo). Preserves the original id/timestamp. */
-    fun restoreNote(note: NoteEntity) {
+    fun moveToBin(note: NoteEntity) {
+        viewModelScope.launch { repo.moveToBin(note) }
+    }
+
+    fun restoreFromBin(note: NoteEntity) {
+        viewModelScope.launch { repo.restore(note) }
+    }
+
+    fun deletePermanently(note: NoteEntity) {
+        viewModelScope.launch { repo.deletePermanently(note) }
+    }
+
+    fun emptyBin() {
+        viewModelScope.launch { repo.emptyBin() }
+    }
+
+    fun archive(note: NoteEntity) {
+        viewModelScope.launch { repo.archive(note) }
+    }
+
+    fun unarchive(note: NoteEntity) {
+        viewModelScope.launch { repo.unarchive(note) }
+    }
+
+    fun moveToFolder(note: NoteEntity, folderId: String) {
+        viewModelScope.launch { repo.moveToFolder(note, folderId) }
+    }
+
+    // ─── Folder operations ───────────────────────────────────────────────────
+
+    fun createFolder(name: String) {
         viewModelScope.launch {
-            repo.addNote(note)
+            repo.addFolder(FolderEntity(
+                id = UUID.randomUUID().toString(),
+                name = name,
+                timestamp = System.currentTimeMillis()
+            ))
         }
     }
 
-    fun delete(note: NoteEntity) {
-        viewModelScope.launch {
-            repo.delete(note)
-        }
+    fun deleteFolder(folder: FolderEntity) {
+        viewModelScope.launch { repo.deleteFolder(folder) }
     }
+
+    // ─── Sync / session ──────────────────────────────────────────────────────
 
     fun syncFromCloud() {
-        viewModelScope.launch {
-            repo.fetchNotesFromCloud()
-        }
+        viewModelScope.launch { repo.fetchFromCloud() }
     }
 
-    /** Called on sign-out — wipes local cache before navigating to Login. */
-    fun clearLocalNotes() {
-        viewModelScope.launch {
-            repo.clearLocalNotes()
-        }
+    fun clearLocalData() {
+        viewModelScope.launch { repo.clearLocalData() }
     }
 }

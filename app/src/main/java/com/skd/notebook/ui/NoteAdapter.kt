@@ -16,71 +16,46 @@ import java.util.Date
 import java.util.Locale
 
 class NoteAdapter(
-    private val onLongClick: (NoteEntity) -> Unit
+    private val onClick: (NoteEntity) -> Unit = {},
+    private val onLongClick: (NoteEntity) -> Unit = {}
 ) : ListAdapter<NoteEntity, NoteAdapter.NoteViewHolder>(DIFF_CALLBACK) {
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<NoteEntity>() {
-            override fun areItemsTheSame(oldItem: NoteEntity, newItem: NoteEntity) =
-                oldItem.id == newItem.id
-
-            override fun areContentsTheSame(oldItem: NoteEntity, newItem: NoteEntity) =
-                oldItem == newItem
+            override fun areItemsTheSame(a: NoteEntity, b: NoteEntity) = a.id == b.id
+            override fun areContentsTheSame(a: NoteEntity, b: NoteEntity) = a == b
         }
-
         private val DATE_FORMAT = SimpleDateFormat("MMM d", Locale.getDefault())
     }
 
     inner class NoteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val card: MaterialCardView = view.findViewById(R.id.cardNote)
-        val title: TextView = view.findViewById(R.id.txtTitle)
-        val desc: TextView = view.findViewById(R.id.txtDesc)
-        val timestamp: TextView = view.findViewById(R.id.txtTimestamp)
+        val title: TextView        = view.findViewById(R.id.txtTitle)
+        val desc: TextView         = view.findViewById(R.id.txtDesc)
+        val timestamp: TextView    = view.findViewById(R.id.txtTimestamp)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        NoteViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_note, parent, false)
-        )
+        NoteViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_note, parent, false))
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val note = getItem(position)
 
-        // Title
-        if (note.title.isBlank()) {
-            holder.title.visibility = View.GONE
-        } else {
-            holder.title.visibility = View.VISIBLE
-            holder.title.text = note.title
-        }
+        holder.title.text       = note.title
+        holder.title.visibility = if (note.title.isBlank()) View.GONE else View.VISIBLE
 
-        // Description
-        if (note.description.isBlank()) {
-            holder.desc.visibility = View.GONE
-        } else {
-            holder.desc.visibility = View.VISIBLE
-            holder.desc.text = note.description
-        }
+        holder.desc.text       = note.description
+        holder.desc.visibility = if (note.description.isBlank()) View.GONE else View.VISIBLE
 
-        // Timestamp
         holder.timestamp.text = DATE_FORMAT.format(Date(note.timestamp))
 
-        // Card color
-        val cardColor = if (note.color.isNotEmpty()) {
+        val cardColor = if (note.color.isNotEmpty())
             runCatching { Color.parseColor(note.color) }.getOrDefault(Color.WHITE)
-        } else {
-            Color.WHITE
-        }
+        else Color.WHITE
         holder.card.setCardBackgroundColor(cardColor)
-
-        // Adjust stroke: colored cards get no stroke; white cards get a subtle outline
         holder.card.strokeWidth = if (note.color.isEmpty()) 1 else 0
 
-        // Long press → edit
-        holder.itemView.setOnLongClickListener {
-            onLongClick(note)
-            true
-        }
+        holder.itemView.setOnClickListener     { onClick(note) }
+        holder.itemView.setOnLongClickListener { onLongClick(note); true }
     }
 }
