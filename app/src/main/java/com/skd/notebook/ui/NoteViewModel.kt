@@ -11,6 +11,7 @@ import com.skd.notebook.data.local.NoteDatabase
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.data.remote.FirebaseService
 import com.skd.notebook.data.repository.NoteRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -87,6 +88,15 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         foldersListener?.remove()
 
         isSyncing.postValue(true)
+
+        // Safety timeout: if Firestore never responds (no internet, rules blocked, etc.)
+        // clear the spinner after 10 seconds so the UI doesn't hang forever.
+        viewModelScope.launch {
+            delay(10_000)
+            if (isSyncing.value == true) {
+                isSyncing.postValue(false)
+            }
+        }
 
         notesListener = firebase.listenToNotes { notes ->
             viewModelScope.launch {
