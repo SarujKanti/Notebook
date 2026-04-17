@@ -18,6 +18,7 @@ class NoteRepository(
     val folders      = folderDao.getAllFolders()
 
     fun getFolderNotes(folderId: String) = noteDao.getNotesByFolder(folderId)
+    fun searchNotes(query: String)      = noteDao.searchNotes(query)
 
     // ─── Note CRUD ───────────────────────────────────────────────────────────
 

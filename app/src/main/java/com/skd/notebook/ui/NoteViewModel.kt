@@ -2,6 +2,7 @@ package com.skd.notebook.ui
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ListenerRegistration
@@ -28,7 +29,15 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     private var notesListener: ListenerRegistration?   = null
     private var foldersListener: ListenerRegistration? = null
 
+    /**
+     * True while we are waiting for the first Firestore snapshot.
+     * MainActivity observes this to show a loading spinner instead of
+     * the "No notes yet" empty state on a fresh install / first launch.
+     */
+    val isSyncing = MutableLiveData(true)
+
     fun getFolderNotes(folderId: String) = repo.getFolderNotes(folderId).asLiveData()
+    fun searchNotes(query: String)       = repo.searchNotes(query).asLiveData()
 
     // ─── Note operations ─────────────────────────────────────────────────────
 
@@ -77,9 +86,12 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         notesListener?.remove()
         foldersListener?.remove()
 
+        isSyncing.postValue(true)
+
         notesListener = firebase.listenToNotes { notes ->
             viewModelScope.launch {
                 notes.forEach { db.noteDao().insert(it) }
+                isSyncing.postValue(false)   // first snapshot received — stop spinner
             }
         }
 

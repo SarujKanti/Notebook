@@ -40,12 +40,15 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Open menu"/>
 
-                <!-- Search pill -->
+                <!-- Search pill — tap to open SearchActivity -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardSearch"
                     android:layout_width="0dp"
                     android:layout_height="52dp"
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
+                    android:clickable="true"
+                    android:focusable="true"
                     app:cardElevation="4dp"
                     app:cardCornerRadius="26dp"
                     app:strokeWidth="0dp"
@@ -108,6 +111,16 @@
                 android:paddingBottom="6dp"/>
 
         </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- Sync loading indicator (shown on fresh install until first cloud snapshot) -->
+        <ProgressBar
+            android:id="@+id/progressSync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/colorPrimary"
+            android:visibility="gone"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         <!-- Empty state -->
         <LinearLayout
