@@ -11,8 +11,8 @@ android {
 
     defaultConfig {
 
-        applicationId = "skd.pocketNotebook"
-        minSdk = 21
+        applicationId = "com.skd.notebook"
+        minSdk = 23
 
         targetSdk = 36
         versionCode = 1
