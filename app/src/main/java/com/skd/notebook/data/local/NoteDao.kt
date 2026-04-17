@@ -30,6 +30,10 @@ interface NoteDao {
     @Query("SELECT * FROM notes WHERE folderId = :folderId AND isDeleted = 0 AND isArchived = 0 ORDER BY timestamp DESC")
     fun getNotesByFolder(folderId: String): Flow<List<NoteEntity>>
 
+    /** One-shot list of bin notes (used before emptyBin to sync deletions) */
+    @Query("SELECT * FROM notes WHERE isDeleted = 1")
+    suspend fun getBinNotesList(): List<NoteEntity>
+
     @Query("DELETE FROM notes")
     suspend fun deleteAll()
 

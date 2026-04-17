@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
+import com.google.android.material.button.MaterialButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -85,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             layoutEmpty.visibility = if (notes.isEmpty()) View.VISIBLE else View.GONE
         }
 
-        viewModel.syncFromCloud()
+        viewModel.startRealtimeSync()
 
         fabAdd.setOnClickListener          { showNoteDialog(null) }
         btnToggleLayout.setOnClickListener { toggleLayout() }
@@ -110,12 +111,16 @@ class MainActivity : AppCompatActivity() {
     // ─── Drawer ──────────────────────────────────────────────────────────────
 
     private fun setupDrawer() {
-        val header   = navigationView.getHeaderView(0)
-        val tvName   = header.findViewById<TextView>(R.id.tvNavName)
-        val tvEmail  = header.findViewById<TextView>(R.id.tvNavEmail)
-        val user     = FirebaseAuth.getInstance().currentUser
-        tvName.text  = user?.displayName?.takeIf { it.isNotEmpty() } ?: user?.email?.substringBefore('@') ?: "User"
-        tvEmail.text = user?.email ?: ""
+        val header     = navigationView.getHeaderView(0)
+        val tvName     = header.findViewById<TextView>(R.id.tvNavName)
+        val tvEmail    = header.findViewById<TextView>(R.id.tvNavEmail)
+        val tvInitial  = header.findViewById<TextView>(R.id.tvNavInitial)
+        val user       = FirebaseAuth.getInstance().currentUser
+        val displayName = user?.displayName?.takeIf { it.isNotEmpty() }
+            ?: user?.email?.substringBefore('@') ?: "User"
+        tvName.text    = displayName
+        tvEmail.text   = user?.email ?: ""
+        tvInitial.text = displayName.first().uppercaseChar().toString()
 
         navigationView.setNavigationItemSelectedListener { item ->
             drawerLayout.closeDrawer(GravityCompat.START)
@@ -133,14 +138,16 @@ class MainActivity : AppCompatActivity() {
     // ─── RecyclerView ────────────────────────────────────────────────────────
 
     private fun setupRecyclerView() {
-        staggeredManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        val spanCount = resources.getInteger(R.integer.grid_span_count)
+        staggeredManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = staggeredManager
         recyclerView.adapter = adapter
     }
 
     private fun toggleLayout() {
+        val spanCount = resources.getInteger(R.integer.grid_span_count)
         isGridLayout = !isGridLayout
-        staggeredManager?.spanCount = if (isGridLayout) 2 else 1
+        staggeredManager?.spanCount = if (isGridLayout) spanCount else 1
         btnToggleLayout.setImageResource(
             if (isGridLayout) R.drawable.ic_view_module else R.drawable.ic_view_list
         )
@@ -262,7 +269,7 @@ class MainActivity : AppCompatActivity() {
         val etTitle    = view.findViewById<EditText>(R.id.etTitle)
         val etDesc     = view.findViewById<EditText>(R.id.etDesc)
         val btnClose   = view.findViewById<ImageButton>(R.id.btnClose)
-        val btnDone    = view.findViewById<ImageButton>(R.id.btnDone)
+        val btnDone    = view.findViewById<MaterialButton>(R.id.btnDone)
         val colorRow   = view.findViewById<LinearLayout>(R.id.colorPickerRow)
 
         var selectedColor = existingNote?.color ?: ""

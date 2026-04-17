@@ -2,36 +2,55 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="180dp"
     android:orientation="vertical"
+    android:gravity="bottom"
     android:padding="20dp"
-    android:paddingTop="40dp"
-    android:background="@color/colorPrimary">
+    android:paddingBottom="24dp"
+    android:background="@drawable/bg_nav_header">
 
-    <ImageView
+    <!-- Circular avatar with user initial -->
+    <FrameLayout
         android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:src="@drawable/ic_account"
-        android:tint="@android:color/white"
-        android:contentDescription="Account"/>
+        android:layout_height="56dp">
 
+        <View
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_avatar"/>
+
+        <TextView
+            android:id="@+id/tvNavInitial"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="U"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"/>
+    </FrameLayout>
+
+    <!-- User display name -->
     <TextView
         android:id="@+id/tvNavName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:textSize="16sp"
+        android:layout_marginTop="10dp"
+        android:textSize="17sp"
         android:textStyle="bold"
-        android:textColor="@android:color/white"
+        android:textColor="#FFFFFF"
+        android:letterSpacing="0.01"
         android:text="User"/>
 
+    <!-- Email -->
     <TextView
         android:id="@+id/tvNavEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:textSize="13sp"
-        android:textColor="#CCFFFFFF"
+        android:textColor="#C8C0FF"
         android:text=""/>
 
 </LinearLayout>

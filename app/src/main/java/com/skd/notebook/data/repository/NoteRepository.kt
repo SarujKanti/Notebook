@@ -53,9 +53,10 @@ class NoteRepository(
 
     /** Delete all bin notes permanently */
     suspend fun emptyBin() {
-        val binNotesList = noteDao.getBinNotes()
+        // Collect IDs before wiping locally so we can delete from Firestore too
+        val ids = noteDao.getBinNotesList().map { it.id }
         noteDao.emptyBin()
-        // Sync: delete each from Firestore (best-effort)
+        trySync { ids.forEach { firebase.deleteNote(it) } }
     }
 
     /** Archive a note */
