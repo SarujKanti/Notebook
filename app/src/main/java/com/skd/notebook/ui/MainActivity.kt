@@ -1,5 +1,6 @@
 package com.skd.notebook.ui
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
@@ -123,6 +124,13 @@ class MainActivity : AppCompatActivity() {
         if (FirebaseAuth.getInstance().currentUser == null) goToLogin()
     }
 
+    // Reset drawer highlight to "Notes" every time we return to MainActivity
+    // (e.g. after pressing back from Folders / Archive / Bin)
+    override fun onResume() {
+        super.onResume()
+        navigationView.setCheckedItem(R.id.navNotes)
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -135,17 +143,58 @@ class MainActivity : AppCompatActivity() {
 
     // ─── Drawer ──────────────────────────────────────────────────────────────
 
-    private fun setupDrawer() {
-        val header     = navigationView.getHeaderView(0)
-        val tvName     = header.findViewById<TextView>(R.id.tvNavName)
-        val tvEmail    = header.findViewById<TextView>(R.id.tvNavEmail)
-        val tvInitial  = header.findViewById<TextView>(R.id.tvNavInitial)
-        val user       = FirebaseAuth.getInstance().currentUser
-        val displayName = user?.displayName?.takeIf { it.isNotEmpty() }
+    // ─── SharedPreferences key for the user-edited display name ─────────────
+    private val PREFS_NAME     = "notebook_prefs"
+    private val KEY_CUSTOM_NAME = "custom_display_name"
+
+    /** Returns the name to show: custom override → Firebase displayName → email prefix */
+    private fun resolvedDisplayName(): String {
+        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val custom = prefs.getString(KEY_CUSTOM_NAME, null)
+        if (!custom.isNullOrEmpty()) return custom
+        val user = FirebaseAuth.getInstance().currentUser
+        return user?.displayName?.takeIf { it.isNotEmpty() }
             ?: user?.email?.substringBefore('@') ?: "User"
-        tvName.text    = displayName
-        tvEmail.text   = user?.email ?: ""
-        tvInitial.text = displayName.first().uppercaseChar().toString()
+    }
+
+    private fun setupDrawer() {
+        val header    = navigationView.getHeaderView(0)
+        val tvName    = header.findViewById<TextView>(R.id.tvNavName)
+        val tvEmail   = header.findViewById<TextView>(R.id.tvNavEmail)
+        val tvInitial = header.findViewById<TextView>(R.id.tvNavInitial)
+        val user      = FirebaseAuth.getInstance().currentUser
+
+        fun applyName(name: String) {
+            tvName.text    = name
+            tvInitial.text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "U"
+        }
+
+        applyName(resolvedDisplayName())
+        tvEmail.text = user?.email ?: ""
+
+        // ── Tap name or avatar to edit ───────────────────────────────────────
+        val clickToEdit = View.OnClickListener {
+            val input = EditText(this).apply {
+                setText(tvName.text)
+                selectAll()
+                hint = "Your name"
+                setSingleLine()
+            }
+            AlertDialog.Builder(this)
+                .setTitle("Edit name")
+                .setView(input)
+                .setPositiveButton("Save") { _, _ ->
+                    val newName = input.text.toString().trim().ifEmpty { resolvedDisplayName() }
+                    getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                        .edit().putString(KEY_CUSTOM_NAME, newName).apply()
+                    applyName(newName)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
+        tvName.setOnClickListener(clickToEdit)
+        header.findViewById<View>(R.id.tvNavInitial)
+            .setOnClickListener(clickToEdit)
 
         navigationView.setNavigationItemSelectedListener { item ->
             drawerLayout.closeDrawer(GravityCompat.START)

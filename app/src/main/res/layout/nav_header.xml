@@ -9,10 +9,12 @@
     android:paddingBottom="24dp"
     android:background="@drawable/bg_nav_header">
 
-    <!-- Circular avatar with user initial -->
+    <!-- Circular avatar with user initial (tap to edit name) -->
     <FrameLayout
         android:layout_width="56dp"
-        android:layout_height="56dp">
+        android:layout_height="56dp"
+        android:clickable="true"
+        android:focusable="true">
 
         <View
             android:layout_width="56dp"
@@ -31,17 +33,38 @@
             android:fontFamily="sans-serif-medium"/>
     </FrameLayout>
 
-    <!-- User display name -->
-    <TextView
-        android:id="@+id/tvNavName"
+    <!-- User display name (tap to edit) -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:letterSpacing="0.01"
-        android:text="User"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvNavName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:letterSpacing="0.01"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="User"/>
+
+        <!-- Small pencil hint -->
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="6dp"
+            android:src="@drawable/ic_edit"
+            android:alpha="0.6"
+            android:importantForAccessibility="no"
+            app:tint="#FFFFFF"
+            xmlns:app="http://schemas.android.com/apk/res-auto"/>
+
+    </LinearLayout>
 
     <!-- Email -->
     <TextView
