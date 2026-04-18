@@ -33,6 +33,7 @@ class FoldersActivity : AppCompatActivity() {
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+        supportActionBar?.title = "Folders"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         recyclerView  = findViewById(R.id.recyclerView)
