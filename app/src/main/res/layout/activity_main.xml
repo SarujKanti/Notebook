@@ -189,7 +189,7 @@
             android:textSize="15sp"
             app:icon="@drawable/ic_add"
             app:iconTint="@color/colorOnPrimary"
-            app:backgroundTint="@color/colorPrimary"
+            app:backgroundTint="@color/colorPrimaryLight2"
             app:elevation="6dp"
             app:cornerRadius="28dp"/>
 
@@ -204,7 +204,7 @@
         android:fitsSystemWindows="true"
         app:menu="@menu/nav_menu"
         app:headerLayout="@layout/nav_header"
-        app:itemIconTint="@color/colorPrimary"
+        app:itemIconTint="@color/colorPrimaryLight2"
         app:itemTextColor="?attr/colorOnSurface"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

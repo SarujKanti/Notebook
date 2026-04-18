@@ -21,7 +21,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:src="@drawable/ic_folder"
-            app:tint="@color/colorPrimary"
+            app:tint="@color/colorPrimaryLight2"
             android:contentDescription="Folder"/>
 
         <TextView
