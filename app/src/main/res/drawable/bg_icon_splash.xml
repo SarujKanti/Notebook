@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark-navy rounded-square tile shown behind the logo on the splash screen -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#0B1464"/>
+    <corners android:radius="28dp"/>
+</shape>

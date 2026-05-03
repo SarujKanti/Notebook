@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
@@ -40,7 +40,7 @@ class ArchiveActivity : AppCompatActivity() {
             onClick     = { /* tap to view */ },
             onLongClick = { note ->
                 val items = arrayOf("Unarchive", "Move to Bin")
-                AlertDialog.Builder(this)
+                MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
                     .setItems(items) { _, which ->
                         when (which) {
                             0 -> viewModel.unarchive(note)

@@ -69,10 +69,11 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     // ─── Folder operations ───────────────────────────────────────────────────
 
-    fun createFolder(name: String) = viewModelScope.launch {
-        repo.addFolder(FolderEntity(UUID.randomUUID().toString(), name, System.currentTimeMillis()))
+    fun createFolder(name: String, color: String = "") = viewModelScope.launch {
+        repo.addFolder(FolderEntity(UUID.randomUUID().toString(), name, System.currentTimeMillis(), color))
     }
 
+    fun updateFolder(folder: FolderEntity) = viewModelScope.launch { repo.updateFolder(folder) }
     fun deleteFolder(folder: FolderEntity) = viewModelScope.launch { repo.deleteFolder(folder) }
 
     // ─── Sync / session ──────────────────────────────────────────────────────

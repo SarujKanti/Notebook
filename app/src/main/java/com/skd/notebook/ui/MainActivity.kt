@@ -14,7 +14,7 @@ import android.widget.ImageButton
 import com.google.android.material.button.MaterialButton
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity() {
                 hint = "Your name"
                 setSingleLine()
             }
-            AlertDialog.Builder(this)
+            MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
                 .setTitle("Edit name")
                 .setView(input)
                 .setPositiveButton("Save") { _, _ ->
@@ -276,7 +276,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showNoteActions(note: NoteEntity) {
         val items = arrayOf("Edit", "Archive", "Move to Folder", "Move to Bin")
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
             .setItems(items) { _, which ->
                 when (which) {
                     0 -> showNoteDialog(note)
@@ -301,7 +301,7 @@ class MainActivity : AppCompatActivity() {
     private fun showMoveFolderDialog(note: NoteEntity) {
         val folders = viewModel.folders.value.orEmpty()
         if (folders.isEmpty()) {
-            AlertDialog.Builder(this)
+            MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
                 .setTitle("No folders")
                 .setMessage("Create a folder first from Menu → Folders.")
                 .setPositiveButton("OK", null)
@@ -309,7 +309,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         val names = folders.map { it.name }.toTypedArray()
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
             .setTitle("Move to folder")
             .setItems(names) { _, i -> viewModel.moveToFolder(note, folders[i].id) }
             .show()
