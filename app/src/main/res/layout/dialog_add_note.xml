@@ -49,7 +49,7 @@
             android:textSize="14sp"
             android:textAllCaps="false"
             android:textColor="@color/colorOnPrimary"
-            app:backgroundTint="@color/colorPrimary"
+            app:backgroundTint="@color/colorPrimaryLight2"
             app:cornerRadius="20dp"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"

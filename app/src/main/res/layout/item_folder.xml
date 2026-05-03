@@ -34,6 +34,7 @@
             android:layout_height="34dp"
             android:layout_marginStart="16dp"
             android:src="@drawable/ic_folder"
+            app:tint="@color/colorPrimaryLight2"
             android:contentDescription="Folder"/>
 
         <!-- Folder name -->

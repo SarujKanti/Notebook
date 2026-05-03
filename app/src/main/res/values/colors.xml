@@ -7,6 +7,7 @@
     <color name="colorPrimary">#5C35C9</color>
     <color name="colorPrimaryDark">#3D1A7E</color>
     <color name="colorPrimaryLight">#7B5CF0</color>
+    <color name="colorPrimaryLight2">#886DEF</color>
     <color name="colorOnPrimary">#FFFFFF</color>
 
     <!-- Surface & background -->
@@ -28,4 +29,65 @@
 
     <!-- Swipe-to-delete -->
     <color name="swipe_delete">#E53935</color>
+
+    <color name="color_black">#FF000000</color>
+    <color name="color_white">#FFFFFFFF</color>
+    <color name="color_transparent">#00FFFFFF</color>
+
+    <!-- Greys Shades-->
+    <color name="color_grey_50">#F4F5F7</color>
+    <color name="color_grey_100">#E0E0E0</color>
+    <color name="color_grey_150">#EDE8E0</color>
+    <color name="color_grey_200">#80878787</color>
+    <color name="color_grey_300">#80898989</color>
+    <color name="color_gray_550">#878787</color>
+    <color name="color_grey_400">#a9a9a9</color>
+    <color name="color_grey_shade_200">#DADADA</color>
+    <color name="color_grey_700">#4B4B4B</color>
+    <color name="color_light_gray">#F0F0F0</color>
+    <color name="color_light_gray_800">#FAFAFA</color>
+
+
+    <!-- Black Shades -->
+    <color name="color_black_900">#0F0F0F</color>
+
+    <!-- Red Shades-->
+    <color name="color_red_100">#FFE3E8</color>
+    <color name="color_red_700">#D32F2F</color>
+
+    <!--Green Shades-->
+    <color name="color_green_100">#E5FBEF</color>
+    <color name="color_green_700">#388E3C</color>
+    <color name="color_medium_green">#25AD62</color>
+
+    <!-- Orange Shades -->
+    <color name="color_orange_700">#F57C00</color>
+
+    <!-- Whites/Creams -->
+    <color name="color_cream">#F9F5F2</color>
+    <color name="color_white_input_bg">#F4F4F4</color>
+    <color name="color_neutral_200">#F5F3EF</color>
+    <color name="color_neutral_300">#E9E2D3</color>
+
+    <!-- Functional Colors -->
+    <color name="color_blue_600">#0894F9</color>
+
+    <!-- Background Colors -->
+    <color name="color_background">#F3F1EE</color>
+
+    <color name="color_indigo_600">#6C52FF</color>
+
+
+    <!--Light Pink Shade-->
+    <color name="color_pink_100">#FFD3D3</color>
+
+
+    <!--Light Lavender Shade-->
+    <color name="color_lavender_100">#EAE7FF</color>
+
+    <!-- Button Background Colors -->
+    <color name="color_background_white_button">#F1EDE5</color>
+
+    <!-- Route Colors -->
+    <color name="color_blue_route">#0057CC</color>
 </resources>
