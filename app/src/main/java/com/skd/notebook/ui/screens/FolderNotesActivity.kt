@@ -10,7 +10,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import com.google.android.material.button.MaterialButton
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
@@ -69,7 +69,7 @@ class FolderNotesActivity : AppCompatActivity() {
             onClick     = { note -> showNoteDialog(note) },
             onLongClick = { note ->
                 val items = arrayOf("Edit", "Remove from Folder", "Move to Bin")
-                AlertDialog.Builder(this)
+                MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
                     .setItems(items) { _, which ->
                         when (which) {
                             0 -> showNoteDialog(note)

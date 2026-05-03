@@ -5,7 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
@@ -41,12 +41,12 @@ class BinActivity : AppCompatActivity() {
             onClick     = { /* read-only in bin */ },
             onLongClick = { note ->
                 val items = arrayOf("Restore", "Delete Permanently")
-                AlertDialog.Builder(this)
+                MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
                     .setItems(items) { _, which ->
                         when (which) {
                             0 -> viewModel.restoreFromBin(note)
                             1 -> {
-                                AlertDialog.Builder(this)
+                                MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
                                     .setTitle("Delete permanently?")
                                     .setMessage("This note will be deleted forever.")
                                     .setPositiveButton("Delete") { _, _ -> viewModel.deletePermanently(note) }
@@ -78,7 +78,7 @@ class BinActivity : AppCompatActivity() {
         return when (item.itemId) {
             android.R.id.home -> { finish(); true }
             1 -> {
-                AlertDialog.Builder(this)
+                MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
                     .setTitle("Empty Bin?")
                     .setMessage("All notes in Bin will be permanently deleted.")
                     .setPositiveButton("Empty") { _, _ -> viewModel.emptyBin() }
