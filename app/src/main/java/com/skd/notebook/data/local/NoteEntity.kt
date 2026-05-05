@@ -12,6 +12,7 @@ import com.google.firebase.firestore.IgnoreExtraProperties
  * of throwing an exception when deserializing — prevents crashes if the cloud
  * document has fields that don't exist in the current app version.
  */
+
 @IgnoreExtraProperties
 @Entity(tableName = "notes")
 data class NoteEntity(
