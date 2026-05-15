@@ -26,4 +26,5 @@ data class NoteEntity(
     var isArchived: Boolean = false,
     var folderId: String = ""
 
+    
 )
