@@ -25,4 +25,5 @@ data class NoteEntity(
     var deletedAt: Long = 0L,
     var isArchived: Boolean = false,
     var folderId: String = ""
+
 )
