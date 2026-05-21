@@ -10,6 +10,7 @@ interface FolderDao {
 
     @Update
     suspend fun update(folder: FolderEntity)
+
     @Delete
     suspend fun delete(folder: FolderEntity)
 
