@@ -39,22 +39,6 @@
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"/>
 
-        <!-- Save button (text style) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDone"
-            style="@style/Widget.Material3.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:text="@string/save"
-            android:textSize="14sp"
-            android:textAllCaps="false"
-            android:textColor="@color/colorOnPrimary"
-            app:backgroundTint="@color/colorPrimaryLight2"
-            app:cornerRadius="20dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:contentDescription="@string/save"/>
-
     </LinearLayout>
 
     <!-- Thin divider below toolbar -->

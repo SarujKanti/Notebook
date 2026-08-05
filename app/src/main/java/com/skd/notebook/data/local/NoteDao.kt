@@ -30,6 +30,18 @@ interface NoteDao {
     @Query("SELECT * FROM notes WHERE folderId = :folderId AND isDeleted = 0 AND isArchived = 0 ORDER BY timestamp DESC")
     fun getNotesByFolder(folderId: String): Flow<List<NoteEntity>>
 
+    /** Pinned notes: not deleted, not archived */
+    @Query("SELECT * FROM notes WHERE isPinned = 1 AND isDeleted = 0 AND isArchived = 0 ORDER BY timestamp DESC")
+    fun getPinnedNotes(): Flow<List<NoteEntity>>
+
+    /** One-shot pinned list — used by the home screen widget's RemoteViewsFactory */
+    @Query("SELECT * FROM notes WHERE isPinned = 1 AND isDeleted = 0 AND isArchived = 0 ORDER BY timestamp DESC")
+    suspend fun getPinnedNotesList(): List<NoteEntity>
+
+    /** One-shot lookup — used when a widget click needs to open a specific note */
+    @Query("SELECT * FROM notes WHERE id = :id LIMIT 1")
+    suspend fun getNoteById(id: String): NoteEntity?
+
     /** Full-text search across title + description of active notes */
     @Query("""
         SELECT * FROM notes

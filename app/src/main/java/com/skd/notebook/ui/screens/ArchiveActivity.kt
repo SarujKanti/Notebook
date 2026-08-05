@@ -48,7 +48,8 @@ class ArchiveActivity : AppCompatActivity() {
                         }
                     }
                     .show()
-            }
+            },
+            showPin = false
         )
 
         val spanCount = resources.getInteger(R.integer.grid_span_count)

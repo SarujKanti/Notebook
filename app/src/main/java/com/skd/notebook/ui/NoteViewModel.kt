@@ -11,6 +11,7 @@ import com.skd.notebook.data.local.NoteDatabase
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.data.remote.FirebaseService
 import com.skd.notebook.data.repository.NoteRepository
+import com.skd.notebook.widget.WidgetUpdater
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -24,7 +25,13 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     val activeNotes   = repo.activeNotes.asLiveData()
     val binNotes      = repo.binNotes.asLiveData()
     val archivedNotes = repo.archivedNotes.asLiveData()
+    val pinnedNotes   = repo.pinnedNotes.asLiveData()
     val folders       = repo.folders.asLiveData()
+
+    /** Any mutation that could change what the "Pinned Notes" home screen widget shows. */
+    private fun refreshPinnedWidget() = WidgetUpdater.refreshPinnedWidget(getApplication())
+
+    suspend fun getNoteById(id: String) = repo.getNoteById(id)
 
     // Real-time Firestore listener registrations
     private var notesListener: ListenerRegistration?   = null
@@ -52,19 +59,26 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
                 color       = color,
                 folderId    = folderId
             ))
+            refreshPinnedWidget()
         }
     }
 
     fun updateNote(note: NoteEntity) = viewModelScope.launch {
         repo.update(note.copy(timestamp = System.currentTimeMillis()))
+        refreshPinnedWidget()
     }
 
-    fun moveToBin(note: NoteEntity)         = viewModelScope.launch { repo.moveToBin(note) }
-    fun restoreFromBin(note: NoteEntity)    = viewModelScope.launch { repo.restore(note) }
-    fun deletePermanently(note: NoteEntity) = viewModelScope.launch { repo.deletePermanently(note) }
+    fun togglePin(note: NoteEntity) = viewModelScope.launch {
+        repo.togglePin(note)
+        refreshPinnedWidget()
+    }
+
+    fun moveToBin(note: NoteEntity)         = viewModelScope.launch { repo.moveToBin(note); refreshPinnedWidget() }
+    fun restoreFromBin(note: NoteEntity)    = viewModelScope.launch { repo.restore(note); refreshPinnedWidget() }
+    fun deletePermanently(note: NoteEntity) = viewModelScope.launch { repo.deletePermanently(note); refreshPinnedWidget() }
     fun emptyBin()                          = viewModelScope.launch { repo.emptyBin() }
-    fun archive(note: NoteEntity)           = viewModelScope.launch { repo.archive(note) }
-    fun unarchive(note: NoteEntity)         = viewModelScope.launch { repo.unarchive(note) }
+    fun archive(note: NoteEntity)           = viewModelScope.launch { repo.archive(note); refreshPinnedWidget() }
+    fun unarchive(note: NoteEntity)         = viewModelScope.launch { repo.unarchive(note); refreshPinnedWidget() }
     fun moveToFolder(note: NoteEntity, folderId: String) = viewModelScope.launch { repo.moveToFolder(note, folderId) }
 
     // ─── Folder operations ───────────────────────────────────────────────────
@@ -103,6 +117,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
             viewModelScope.launch {
                 notes.forEach { db.noteDao().insert(it) }
                 isSyncing.postValue(false)   // first snapshot received — stop spinner
+                refreshPinnedWidget()
             }
         }
 

@@ -15,10 +15,12 @@ class NoteRepository(
     val activeNotes  = noteDao.getActiveNotes()
     val binNotes     = noteDao.getBinNotes()
     val archivedNotes= noteDao.getArchivedNotes()
+    val pinnedNotes  = noteDao.getPinnedNotes()
     val folders      = folderDao.getAllFolders()
 
     fun getFolderNotes(folderId: String) = noteDao.getNotesByFolder(folderId)
     fun searchNotes(query: String)      = noteDao.searchNotes(query)
+    suspend fun getNoteById(id: String) = noteDao.getNoteById(id)
 
     // ─── Note CRUD ───────────────────────────────────────────────────────────
 
@@ -58,6 +60,13 @@ class NoteRepository(
         val ids = noteDao.getBinNotesList().map { it.id }
         noteDao.emptyBin()
         trySync { ids.forEach { firebase.deleteNote(it) } }
+    }
+
+    /** Toggle a note's pinned state */
+    suspend fun togglePin(note: NoteEntity) {
+        val updated = note.copy(isPinned = !note.isPinned)
+        noteDao.update(updated)
+        trySync { firebase.saveNote(updated) }
     }
 
     /** Archive a note */

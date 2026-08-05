@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.button.MaterialButton
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.ui.NoteAdapter
@@ -57,7 +56,8 @@ class SearchActivity : AppCompatActivity() {
 
         adapter = NoteAdapter(
             onClick     = { note -> openNoteEditor(note) },
-            onLongClick = { /* no long-press actions in search */ }
+            onLongClick = { /* no long-press actions in search */ },
+            onPinClick  = { note -> viewModel.togglePin(note) }
         )
 
         val spanCount = resources.getInteger(R.integer.grid_span_count)
@@ -120,7 +120,6 @@ class SearchActivity : AppCompatActivity() {
         val etTitle    = view.findViewById<EditText>(R.id.etTitle)
         val etDesc     = view.findViewById<EditText>(R.id.etDesc)
         val btnClose   = view.findViewById<ImageButton>(R.id.btnClose)
-        val btnDone    = view.findViewById<MaterialButton>(R.id.btnDone)
         val colorRow   = view.findViewById<LinearLayout>(R.id.colorPickerRow)
 
         var selectedColor = note.color
@@ -134,13 +133,14 @@ class SearchActivity : AppCompatActivity() {
         }
 
         btnClose.setOnClickListener { dialog.dismiss() }
-        btnDone.setOnClickListener {
+
+        // Auto-save on dismiss (back press, swipe down, tap outside, or the close arrow)
+        dialog.setOnDismissListener {
             val title = etTitle.text.toString().trim()
             val desc  = etDesc.text.toString().trim()
             if (title.isNotEmpty() || desc.isNotEmpty()) {
                 viewModel.updateNote(note.copy(title = title, description = desc, color = selectedColor))
             }
-            dialog.dismiss()
         }
 
         dialog.setContentView(view)

@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.migration.Migration
 
-@Database(entities = [NoteEntity::class, FolderEntity::class], version = 4)
+@Database(entities = [NoteEntity::class, FolderEntity::class], version = 6)
 abstract class NoteDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
     abstract fun folderDao(): FolderDao
@@ -13,9 +15,25 @@ abstract class NoteDatabase : RoomDatabase() {
     companion object {
         @Volatile private var INSTANCE: NoteDatabase? = null
 
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE notes ADD COLUMN isPinned INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        /**
+         * No physical schema change — v5 already has the isPinned column with the
+         * right DEFAULT. This just re-syncs Room's identity hash after adding
+         * @ColumnInfo(defaultValue) to the entity, which v5 was built without.
+         */
+        private val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {}
+        }
+
         fun getDatabase(context: Context): NoteDatabase {
             return INSTANCE ?: synchronized(this) {
                 Room.databaseBuilder(context, NoteDatabase::class.java, "note_db")
+                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
                     .fallbackToDestructiveMigration()
                     .build().also { INSTANCE = it }
             }

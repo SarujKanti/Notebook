@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -18,7 +19,9 @@ import java.util.Locale
 
 class NoteAdapter(
     private val onClick: (NoteEntity) -> Unit = {},
-    private val onLongClick: (NoteEntity) -> Unit = {}
+    private val onLongClick: (NoteEntity) -> Unit = {},
+    private val onPinClick: (NoteEntity) -> Unit = {},
+    private val showPin: Boolean = true
 ) : ListAdapter<NoteEntity, NoteAdapter.NoteViewHolder>(DIFF_CALLBACK) {
 
     companion object {
@@ -35,6 +38,7 @@ class NoteAdapter(
         val title: TextView        = view.findViewById(R.id.txtTitle)
         val desc: TextView         = view.findViewById(R.id.txtDesc)
         val timestamp: TextView    = view.findViewById(R.id.txtTimestamp)
+        val btnPin: ImageButton    = view.findViewById(R.id.btnPin)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -71,6 +75,15 @@ class NoteAdapter(
                 ContextCompat.getColor(ctx, R.color.colorPrimaryLight)
             )
             holder.accent.visibility = View.VISIBLE
+        }
+
+        if (showPin) {
+            holder.btnPin.visibility = View.VISIBLE
+            holder.btnPin.setImageResource(if (note.isPinned) R.drawable.ic_pin_filled else R.drawable.ic_pin)
+            holder.btnPin.contentDescription = ctx.getString(R.string.pin_note)
+            holder.btnPin.setOnClickListener { onPinClick(note) }
+        } else {
+            holder.btnPin.visibility = View.GONE
         }
 
         holder.itemView.setOnClickListener     { onClick(note) }

@@ -1,5 +1,6 @@
 package com.skd.notebook.data.local
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.firestore.IgnoreExtraProperties
@@ -24,5 +25,7 @@ data class NoteEntity(
     var isDeleted: Boolean = false,
     var deletedAt: Long = 0L,
     var isArchived: Boolean = false,
-    var folderId: String = ""
+    var folderId: String = "",
+    @ColumnInfo(defaultValue = "0")
+    var isPinned: Boolean = false
 )
