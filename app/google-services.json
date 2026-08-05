@@ -8,6 +8,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:715963773994:android:2abb101ded2c9766f43f53",
+        "android_client_info": {
+          "package_name": "com.skd.mychess"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "715963773994-9en2ialumkovk0eesqlg06rmh3qsng6d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuU1MDfCuDPthG9OTjXqb2TNBR5Q8FZM4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "715963773994-9en2ialumkovk0eesqlg06rmh3qsng6d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:715963773994:android:1170c270ea601e83f43f53",
         "android_client_info": {
           "package_name": "com.skd.notebook"
@@ -20,6 +49,14 @@
           "android_info": {
             "package_name": "com.skd.notebook",
             "certificate_hash": "0eb8bd45db74292e02c47f41519e5f030653bfe1"
+          }
+        },
+        {
+          "client_id": "715963773994-7khs6f31f4kgnsq9qkocsidkvvkl592r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.skd.notebook",
+            "certificate_hash": "1f3b225ec7a6e6ff87b5d2305dd869bb3cee225e"
           }
         },
         {
@@ -48,6 +85,35 @@
         "mobilesdk_app_id": "1:715963773994:android:9a6670e9c90fb55cf43f53",
         "android_client_info": {
           "package_name": "skd.locationTracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "715963773994-9en2ialumkovk0eesqlg06rmh3qsng6d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuU1MDfCuDPthG9OTjXqb2TNBR5Q8FZM4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "715963773994-9en2ialumkovk0eesqlg06rmh3qsng6d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715963773994:android:943118239aaa84f1f43f53",
+        "android_client_info": {
+          "package_name": "skd.mychess"
         }
       },
       "oauth_client": [

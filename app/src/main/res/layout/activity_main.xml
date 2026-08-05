@@ -17,7 +17,7 @@
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
+            android:background="@color/colorPrimary"
             app:elevation="0dp">
 
             <!-- Top bar: hamburger + search pill + toggle -->
@@ -37,7 +37,7 @@
                     android:layout_width="44dp"
                     android:layout_height="44dp"
                     android:src="@drawable/ic_menu"
-                    android:tint="?attr/colorOnSurface"
+                    android:tint="@color/colorOnPrimary"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Open menu"/>
 
@@ -104,9 +104,9 @@
                 android:text="My Notes"
                 android:textSize="13sp"
                 android:textStyle="bold"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textColor="@color/colorOnPrimary"
                 android:letterSpacing="0.08"
-                android:alpha="0.6"
+                android:alpha="0.75"
                 android:paddingStart="20dp"
                 android:paddingEnd="16dp"
                 android:paddingBottom="6dp"/>
