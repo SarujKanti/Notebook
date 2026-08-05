@@ -22,7 +22,11 @@ class PinnedNotesRemoteViewsFactory(
 
     /** Called on a background thread by the widget host whenever the list needs a refresh. */
     override fun onDataSetChanged() {
-        notes = runBlocking { NoteDatabase.getDatabase(context).noteDao().getPinnedNotesList() }
+        notes = try {
+            runBlocking { NoteDatabase.getDatabase(context).noteDao().getPinnedNotesList() }
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     override fun onDestroy() {
@@ -32,7 +36,8 @@ class PinnedNotesRemoteViewsFactory(
     override fun getCount() = notes.size
 
     override fun getViewAt(position: Int): RemoteViews {
-        val note = notes[position]
+        val note = notes.getOrNull(position)
+            ?: return RemoteViews(context.packageName, R.layout.widget_pinned_note_item)
         val views = RemoteViews(context.packageName, R.layout.widget_pinned_note_item)
 
         views.setTextViewText(R.id.itemTitle, note.title)
@@ -54,7 +59,7 @@ class PinnedNotesRemoteViewsFactory(
 
     override fun getLoadingView(): RemoteViews? = null
     override fun getViewTypeCount() = 1
-    override fun getItemId(position: Int) = notes[position].id.hashCode().toLong()
+    override fun getItemId(position: Int) = notes.getOrNull(position)?.id?.hashCode()?.toLong() ?: position.toLong()
     override fun hasStableIds() = true
 
     companion object {
