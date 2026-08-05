@@ -9,7 +9,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/cardview_light_background"
+        android:background="@color/colorPrimary"
         app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
@@ -17,9 +17,9 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:title="Bin"
-            android:background="@color/cardview_light_background"
-            app:navigationIcon="@drawable/ic_arrow_back"
-            app:titleTextColor="?attr/colorOnSurface"/>
+            android:background="@color/colorPrimary"
+            app:navigationIcon="@drawable/ic_arrow_back_white"
+            app:titleTextColor="@color/colorOnPrimary"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

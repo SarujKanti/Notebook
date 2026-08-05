@@ -4,7 +4,7 @@
         <item name="android:colorBackground">#1A1625</item>
         <item name="colorSurface">#251E36</item>
         <item name="android:windowBackground">#1A1625</item>
-        <item name="android:statusBarColor">#1A1625</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
     </style>
