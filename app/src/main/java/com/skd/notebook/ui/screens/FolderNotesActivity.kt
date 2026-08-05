@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -107,7 +106,6 @@ class FolderNotesActivity : AppCompatActivity() {
         val etTitle    = view.findViewById<EditText>(R.id.etTitle)
         val etDesc     = view.findViewById<EditText>(R.id.etDesc)
         val btnClose   = view.findViewById<ImageButton>(R.id.btnClose)
-        val btnDone    = view.findViewById<MaterialButton>(R.id.btnDone)
         val colorRow   = view.findViewById<LinearLayout>(R.id.colorPickerRow)
 
         var selectedColor = existingNote?.color ?: ""
@@ -124,7 +122,9 @@ class FolderNotesActivity : AppCompatActivity() {
         }
 
         btnClose.setOnClickListener { dialog.dismiss() }
-        btnDone.setOnClickListener {
+
+        // Auto-save on dismiss (back press, swipe down, tap outside, or the close arrow)
+        dialog.setOnDismissListener {
             val title = etTitle.text.toString().trim()
             val desc  = etDesc.text.toString().trim()
             if (title.isNotEmpty() || desc.isNotEmpty()) {
@@ -134,7 +134,6 @@ class FolderNotesActivity : AppCompatActivity() {
                     viewModel.updateNote(existingNote.copy(title = title, description = desc, color = selectedColor))
                 }
             }
-            dialog.dismiss()
         }
 
         dialog.setContentView(view)
