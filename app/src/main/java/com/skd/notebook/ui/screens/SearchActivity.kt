@@ -57,7 +57,8 @@ class SearchActivity : AppCompatActivity() {
 
         adapter = NoteAdapter(
             onClick     = { note -> openNoteEditor(note) },
-            onLongClick = { /* no long-press actions in search */ }
+            onLongClick = { /* no long-press actions in search */ },
+            onPinClick  = { note -> viewModel.togglePin(note) }
         )
 
         val spanCount = resources.getInteger(R.integer.grid_span_count)

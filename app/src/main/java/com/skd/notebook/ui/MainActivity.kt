@@ -21,6 +21,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.WindowCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -40,8 +41,16 @@ import com.skd.notebook.ui.screens.ArchiveActivity
 import com.skd.notebook.ui.screens.BinActivity
 import com.skd.notebook.ui.screens.FoldersActivity
 import com.skd.notebook.ui.screens.SearchActivity
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        /** Set on the launch intent by the "New Note" widget. */
+        const val ACTION_NEW_NOTE = "com.skd.notebook.ACTION_NEW_NOTE"
+        /** Note id extra set by the "Pinned Notes" widget when a list item is tapped. */
+        const val EXTRA_NOTE_ID = "extra_note_id"
+    }
 
     private lateinit var viewModel: NoteViewModel
     private lateinit var adapter: NoteAdapter
@@ -79,7 +88,8 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[NoteViewModel::class.java]
         adapter   = NoteAdapter(
             onClick     = { note -> showNoteDialog(note) },
-            onLongClick = { note -> showNoteActions(note) }
+            onLongClick = { note -> showNoteActions(note) },
+            onPinClick  = { note -> viewModel.togglePin(note) }
         )
 
         setupRecyclerView()
@@ -117,11 +127,39 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, SearchActivity::class.java))
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
+
+        handleWidgetIntent(intent)
     }
 
     override fun onStart() {
         super.onStart()
         if (FirebaseAuth.getInstance().currentUser == null) goToLogin()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleWidgetIntent(intent)
+    }
+
+    // ─── Home screen widget launches ────────────────────────────────────────
+
+    /**
+     * Reached either from the "New Note" widget (opens the new-note sheet) or
+     * from tapping a note inside the "Pinned Notes" widget (opens that note).
+     */
+    private fun handleWidgetIntent(intent: Intent) {
+        if (intent.action == ACTION_NEW_NOTE) {
+            showNoteDialog(null)
+            intent.action = null
+        }
+        val noteId = intent.getStringExtra(EXTRA_NOTE_ID)
+        if (noteId != null) {
+            intent.removeExtra(EXTRA_NOTE_ID)
+            lifecycleScope.launch {
+                viewModel.getNoteById(noteId)?.let { showNoteDialog(it) }
+            }
+        }
     }
 
     // Reset drawer highlight to "Notes" every time we return to MainActivity

@@ -78,7 +78,8 @@ class FolderNotesActivity : AppCompatActivity() {
                         }
                     }
                     .show()
-            }
+            },
+            onPinClick = { note -> viewModel.togglePin(note) }
         )
 
         val spanCount = resources.getInteger(R.integer.grid_span_count)
