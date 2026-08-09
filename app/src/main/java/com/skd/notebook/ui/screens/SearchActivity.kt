@@ -23,6 +23,7 @@ import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteViewModel
+import com.skd.notebook.util.fitTopInsetAsPadding
 
 class SearchActivity : AppCompatActivity() {
 
@@ -50,6 +51,7 @@ class SearchActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_search)
 
+        findViewById<View>(R.id.searchBarRow).fitTopInsetAsPadding()
         etSearch       = findViewById(R.id.etSearch)
         btnBack        = findViewById(R.id.btnBack)
         btnClear       = findViewById(R.id.btnClear)
