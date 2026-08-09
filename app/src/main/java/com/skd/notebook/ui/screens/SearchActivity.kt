@@ -23,6 +23,7 @@ import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteViewModel
+import com.skd.notebook.util.fitTopInsetAsPadding
 
 class SearchActivity : AppCompatActivity() {
 
@@ -35,6 +36,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var layoutHint: LinearLayout
     private lateinit var tvHintMessage: TextView
 
+    // Currently open note editor sheet (if any) — used to force a save if the
+    // activity is paused/finished while it's still showing.
+    private var activeNoteDialog: BottomSheetDialog? = null
+    private var pendingNoteSave: (() -> Unit)? = null
+
     private val noteColors = listOf(
         "",        "#FFCDD2", "#F8BBD9", "#FFE0B2", "#FFF9C4",
         "#DCEDC8", "#B2EBF2", "#BBDEFB", "#E1BEE7", "#D7CCC8"
@@ -45,6 +51,7 @@ class SearchActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_search)
 
+        findViewById<View>(R.id.searchBarRow).fitTopInsetAsPadding()
         etSearch       = findViewById(R.id.etSearch)
         btnBack        = findViewById(R.id.btnBack)
         btnClear       = findViewById(R.id.btnClear)
@@ -90,6 +97,13 @@ class SearchActivity : AppCompatActivity() {
         }, 150)
     }
 
+    // Force-save the note editor if it's still open when the app is backgrounded,
+    // the activity finishes, or the process is about to be killed.
+    override fun onPause() {
+        super.onPause()
+        if (activeNoteDialog?.isShowing == true) pendingNoteSave?.invoke()
+    }
+
     private fun performSearch(query: String) {
         if (query.isEmpty()) {
             recyclerSearch.visibility = View.GONE
@@ -132,15 +146,23 @@ class SearchActivity : AppCompatActivity() {
             applyNoteColor(dialogRoot, chosen)
         }
 
-        btnClose.setOnClickListener { dialog.dismiss() }
-
-        // Auto-save on dismiss (back press, swipe down, tap outside, or the close arrow)
-        dialog.setOnDismissListener {
+        val save: () -> Unit = {
             val title = etTitle.text.toString().trim()
             val desc  = etDesc.text.toString().trim()
             if (title.isNotEmpty() || desc.isNotEmpty()) {
-                viewModel.updateNote(note.copy(title = title, description = desc, color = selectedColor))
+                viewModel.saveNote(note.copy(title = title, description = desc, color = selectedColor))
             }
+        }
+
+        btnClose.setOnClickListener { dialog.dismiss() }
+
+        // Auto-save on dismiss (back press, swipe down, tap outside, or the close arrow).
+        // Also re-armed via onPause() below in case the activity is backgrounded or
+        // finished while this sheet is still open — dismiss alone doesn't cover that.
+        dialog.setOnDismissListener {
+            save()
+            activeNoteDialog = null
+            pendingNoteSave = null
         }
 
         dialog.setContentView(view)
@@ -151,6 +173,8 @@ class SearchActivity : AppCompatActivity() {
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.skipCollapsed = true
         }
+        activeNoteDialog = dialog
+        pendingNoteSave = save
         dialog.show()
     }
 

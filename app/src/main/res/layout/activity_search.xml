@@ -9,6 +9,7 @@
 
     <!-- ── Search bar row ──────────────────────────────────────────────── -->
     <LinearLayout
+        android:id="@+id/searchBarRow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

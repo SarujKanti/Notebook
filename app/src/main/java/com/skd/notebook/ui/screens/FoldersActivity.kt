@@ -26,6 +26,7 @@ import com.skd.notebook.R
 import com.skd.notebook.data.local.FolderEntity
 import com.skd.notebook.ui.FolderAdapter
 import com.skd.notebook.ui.NoteViewModel
+import com.skd.notebook.util.fitTopInsetAsPadding
 
 class FoldersActivity : AppCompatActivity() {
 
@@ -54,6 +55,7 @@ class FoldersActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_folders)
 
+        findViewById<View>(R.id.appBarLayout).fitTopInsetAsPadding()
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Folders"
