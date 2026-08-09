@@ -49,22 +49,14 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     // ─── Note operations ─────────────────────────────────────────────────────
 
-    fun addNote(title: String, desc: String, color: String = "", folderId: String = "") {
-        viewModelScope.launch {
-            repo.addNote(NoteEntity(
-                id          = UUID.randomUUID().toString(),
-                title       = title,
-                description = desc,
-                timestamp   = System.currentTimeMillis(),
-                color       = color,
-                folderId    = folderId
-            ))
-            refreshPinnedWidget()
-        }
-    }
-
-    fun updateNote(note: NoteEntity) = viewModelScope.launch {
-        repo.update(note.copy(timestamp = System.currentTimeMillis()))
+    /**
+     * Upserts a note (insert-or-replace by id). Used for both creating a new note
+     * and editing an existing one — the note editor pre-generates an id up front
+     * and calls this repeatedly as it auto-saves, so it must be safe to call more
+     * than once with the same id (e.g. on dismiss, then again from onPause).
+     */
+    fun saveNote(note: NoteEntity) = viewModelScope.launch {
+        repo.addNote(note.copy(timestamp = System.currentTimeMillis()))
         refreshPinnedWidget()
     }
 

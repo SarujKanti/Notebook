@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.skd.notebook.R
 import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteViewModel
+import com.skd.notebook.util.fitTopInsetAsPadding
 
 class BinActivity : AppCompatActivity() {
 
@@ -28,6 +29,7 @@ class BinActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_bin)
 
+        findViewById<View>(R.id.appBarLayout).fitTopInsetAsPadding()
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Bin"

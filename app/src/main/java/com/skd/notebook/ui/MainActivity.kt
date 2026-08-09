@@ -41,6 +41,7 @@ import com.skd.notebook.ui.screens.BinActivity
 import com.skd.notebook.ui.screens.FoldersActivity
 import com.skd.notebook.ui.screens.SearchActivity
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
 
@@ -63,6 +64,11 @@ class MainActivity : AppCompatActivity() {
 
     private var isGridLayout = true
     private var staggeredManager: StaggeredGridLayoutManager? = null
+
+    // Currently open note editor sheet (if any) — used to force a save if the
+    // activity is paused/finished while it's still showing.
+    private var activeNoteDialog: BottomSheetDialog? = null
+    private var pendingNoteSave: (() -> Unit)? = null
 
     private val noteColors = listOf(
         "",        "#FFCDD2", "#F8BBD9", "#FFE0B2", "#FFF9C4",
@@ -166,6 +172,14 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         navigationView.setCheckedItem(R.id.navNotes)
+    }
+
+    // Force-save the note editor if it's still open when the app is backgrounded,
+    // the activity finishes, or the process is about to be killed — onPause is
+    // guaranteed to run before any of those, unlike the dialog's dismiss callback.
+    override fun onPause() {
+        super.onPause()
+        if (activeNoteDialog?.isShowing == true) pendingNoteSave?.invoke()
     }
 
     @Deprecated("Deprecated in Java")
@@ -395,16 +409,26 @@ class MainActivity : AppCompatActivity() {
             applyNoteColor(dialogRoot, chosen)
         }
 
-        btnClose.setOnClickListener { dialog.dismiss() }
-
-        // Auto-save on dismiss (back press, swipe down, tap outside, or the close arrow)
-        dialog.setOnDismissListener {
+        val noteId = existingNote?.id ?: UUID.randomUUID().toString()
+        val save: () -> Unit = {
             val title = etTitle.text.toString().trim()
             val desc  = etDesc.text.toString().trim()
             if (title.isNotEmpty() || desc.isNotEmpty()) {
-                if (existingNote == null) viewModel.addNote(title, desc, selectedColor)
-                else viewModel.updateNote(existingNote.copy(title = title, description = desc, color = selectedColor))
+                val note = (existingNote ?: NoteEntity(id = noteId))
+                    .copy(title = title, description = desc, color = selectedColor)
+                viewModel.saveNote(note)
             }
+        }
+
+        btnClose.setOnClickListener { dialog.dismiss() }
+
+        // Auto-save on dismiss (back press, swipe down, tap outside, or the close arrow).
+        // Also re-armed via onPause() below in case the activity is backgrounded or
+        // finished while this sheet is still open — dismiss alone doesn't cover that.
+        dialog.setOnDismissListener {
+            save()
+            activeNoteDialog = null
+            pendingNoteSave = null
         }
 
         dialog.setContentView(view)
@@ -415,6 +439,8 @@ class MainActivity : AppCompatActivity() {
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.skipCollapsed = true
         }
+        activeNoteDialog = dialog
+        pendingNoteSave = save
         dialog.show()
         etDesc.requestFocus()
     }
