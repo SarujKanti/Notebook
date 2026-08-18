@@ -3,6 +3,7 @@ package com.skd.notebook.widget
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
@@ -25,6 +26,7 @@ class PinnedNotesRemoteViewsFactory(
         notes = try {
             runBlocking { NoteDatabase.getDatabase(context).noteDao().getPinnedNotesList() }
         } catch (e: Exception) {
+            Log.e(TAG, "onDataSetChanged failed — showing empty list instead of crashing", e)
             emptyList()
         }
     }
@@ -35,7 +37,7 @@ class PinnedNotesRemoteViewsFactory(
 
     override fun getCount() = notes.size
 
-    override fun getViewAt(position: Int): RemoteViews {
+    override fun getViewAt(position: Int): RemoteViews = try {
         val note = notes.getOrNull(position)
             ?: return RemoteViews(context.packageName, R.layout.widget_pinned_note_item)
         val views = RemoteViews(context.packageName, R.layout.widget_pinned_note_item)
@@ -54,7 +56,10 @@ class PinnedNotesRemoteViewsFactory(
         val fillInIntent = Intent().putExtra(MainActivity.EXTRA_NOTE_ID, note.id)
         views.setOnClickFillInIntent(R.id.pinnedItemRoot, fillInIntent)
 
-        return views
+        views
+    } catch (e: Exception) {
+        Log.e(TAG, "getViewAt($position) failed — falling back to a blank row", e)
+        RemoteViews(context.packageName, R.layout.widget_pinned_note_item)
     }
 
     override fun getLoadingView(): RemoteViews? = null
@@ -63,6 +68,7 @@ class PinnedNotesRemoteViewsFactory(
     override fun hasStableIds() = true
 
     companion object {
+        private const val TAG = "PinnedNotesWidget"
         private const val DEFAULT_ACCENT = 0xFF7B5CF0.toInt() // colorPrimaryLight
     }
 }

@@ -13,8 +13,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.skd.notebook.R
+import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteViewModel
+import com.skd.notebook.ui.showActionSheet
+import com.skd.notebook.ui.tintPositiveButtonDestructive
 import com.skd.notebook.util.fitTopInsetAsPadding
 
 class BinActivity : AppCompatActivity() {
@@ -42,22 +45,18 @@ class BinActivity : AppCompatActivity() {
         adapter   = NoteAdapter(
             onClick     = { /* read-only in bin */ },
             onLongClick = { note ->
-                val items = arrayOf("Restore", "Delete Permanently")
-                MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-                    .setItems(items) { _, which ->
-                        when (which) {
-                            0 -> viewModel.restoreFromBin(note)
-                            1 -> {
-                                MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-                                    .setTitle("Delete permanently?")
-                                    .setMessage("This note will be deleted forever.")
-                                    .setPositiveButton("Delete") { _, _ -> viewModel.deletePermanently(note) }
-                                    .setNegativeButton("Cancel", null)
-                                    .show()
-                            }
-                        }
+                showActionSheet(items = listOf(
+                    ActionItem("Restore", R.drawable.ic_done) { viewModel.restoreFromBin(note) },
+                    ActionItem("Delete Permanently", R.drawable.ic_delete, destructive = true) {
+                        val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
+                            .setTitle("Delete permanently?")
+                            .setMessage("This note will be deleted forever.")
+                            .setPositiveButton("Delete") { _, _ -> viewModel.deletePermanently(note) }
+                            .setNegativeButton("Cancel", null)
+                            .show()
+                        dialog.tintPositiveButtonDestructive(this)
                     }
-                    .show()
+                ))
             },
             showPin = false
         )
@@ -81,12 +80,13 @@ class BinActivity : AppCompatActivity() {
         return when (item.itemId) {
             android.R.id.home -> { finish(); true }
             1 -> {
-                MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
+                val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
                     .setTitle("Empty Bin?")
                     .setMessage("All notes in Bin will be permanently deleted.")
                     .setPositiveButton("Empty") { _, _ -> viewModel.emptyBin() }
                     .setNegativeButton("Cancel", null)
                     .show()
+                dialog.tintPositiveButtonDestructive(this)
                 true
             }
             else -> super.onOptionsItemSelected(item)
