@@ -24,8 +24,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.skd.notebook.R
 import com.skd.notebook.data.local.FolderEntity
+import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.FolderAdapter
 import com.skd.notebook.ui.NoteViewModel
+import com.skd.notebook.ui.showActionSheet
+import com.skd.notebook.ui.tintPositiveButtonDestructive
 import com.skd.notebook.util.fitTopInsetAsPadding
 
 class FoldersActivity : AppCompatActivity() {
@@ -91,24 +94,20 @@ class FoldersActivity : AppCompatActivity() {
     // ── Long-press action sheet ───────────────────────────────────────────────
 
     private fun showFolderActions(folder: FolderEntity) {
-        MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-            .setTitle(folder.name)
-            .setItems(arrayOf("✏️  Edit folder", "🗑️  Delete folder")) { _, which ->
-                when (which) {
-                    0 -> showFolderDialog(folder)
-                    1 -> confirmDelete(folder)
-                }
-            }
-            .show()
+        showActionSheet(title = folder.name, items = listOf(
+            ActionItem("Edit folder", R.drawable.ic_edit) { showFolderDialog(folder) },
+            ActionItem("Delete folder", R.drawable.ic_delete, destructive = true) { confirmDelete(folder) }
+        ))
     }
 
     private fun confirmDelete(folder: FolderEntity) {
-        MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
+        val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
             .setTitle("Delete \"${folder.name}\"?")
             .setMessage("Notes inside this folder will be moved back to your main notes.")
             .setPositiveButton("Delete") { _, _ -> viewModel.deleteFolder(folder) }
             .setNegativeButton("Cancel", null)
             .show()
+        dialog.tintPositiveButtonDestructive(this)
     }
 
     // ── Create / Edit folder bottom-sheet ────────────────────────────────────

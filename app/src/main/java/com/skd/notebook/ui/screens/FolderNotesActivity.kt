@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
@@ -21,8 +20,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
+import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteViewModel
+import com.skd.notebook.ui.showActionSheet
 import java.util.UUID
 
 class FolderNotesActivity : AppCompatActivity() {
@@ -73,16 +74,11 @@ class FolderNotesActivity : AppCompatActivity() {
         adapter   = NoteAdapter(
             onClick     = { note -> showNoteDialog(note) },
             onLongClick = { note ->
-                val items = arrayOf("Edit", "Remove from Folder", "Move to Bin")
-                MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-                    .setItems(items) { _, which ->
-                        when (which) {
-                            0 -> showNoteDialog(note)
-                            1 -> viewModel.moveToFolder(note, "")   // back to root
-                            2 -> viewModel.moveToBin(note)
-                        }
-                    }
-                    .show()
+                showActionSheet(items = listOf(
+                    ActionItem("Edit", R.drawable.ic_edit) { showNoteDialog(note) },
+                    ActionItem("Remove from Folder", R.drawable.ic_folder) { viewModel.moveToFolder(note, "") },
+                    ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) { viewModel.moveToBin(note) }
+                ))
             },
             onPinClick = { note -> viewModel.togglePin(note) }
         )

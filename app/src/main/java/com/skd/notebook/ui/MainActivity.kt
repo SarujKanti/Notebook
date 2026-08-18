@@ -326,27 +326,22 @@ class MainActivity : AppCompatActivity() {
     // ─── Note action sheet ───────────────────────────────────────────────────
 
     private fun showNoteActions(note: NoteEntity) {
-        val items = arrayOf("Edit", "Archive", "Move to Folder", "Move to Bin")
-        MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-            .setItems(items) { _, which ->
-                when (which) {
-                    0 -> showNoteDialog(note)
-                    1 -> {
-                        viewModel.archive(note)
-                        Snackbar.make(recyclerView, "Note archived", Snackbar.LENGTH_SHORT)
-                            .setAction("UNDO") { viewModel.unarchive(note) }
-                            .show()
-                    }
-                    2 -> showMoveFolderDialog(note)
-                    3 -> {
-                        viewModel.moveToBin(note)
-                        Snackbar.make(recyclerView, "Moved to Bin", Snackbar.LENGTH_LONG)
-                            .setAction("UNDO") { viewModel.restoreFromBin(note) }
-                            .show()
-                    }
-                }
+        showActionSheet(items = listOf(
+            ActionItem("Edit", R.drawable.ic_edit) { showNoteDialog(note) },
+            ActionItem("Archive", R.drawable.ic_archive) {
+                viewModel.archive(note)
+                Snackbar.make(recyclerView, "Note archived", Snackbar.LENGTH_SHORT)
+                    .setAction("UNDO") { viewModel.unarchive(note) }
+                    .show()
+            },
+            ActionItem("Move to Folder", R.drawable.ic_folder) { showMoveFolderDialog(note) },
+            ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) {
+                viewModel.moveToBin(note)
+                Snackbar.make(recyclerView, "Moved to Bin", Snackbar.LENGTH_LONG)
+                    .setAction("UNDO") { viewModel.restoreFromBin(note) }
+                    .show()
             }
-            .show()
+        ))
     }
 
     private fun showMoveFolderDialog(note: NoteEntity) {
@@ -359,11 +354,12 @@ class MainActivity : AppCompatActivity() {
                 .show()
             return
         }
-        val names = folders.map { it.name }.toTypedArray()
-        MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-            .setTitle("Move to folder")
-            .setItems(names) { _, i -> viewModel.moveToFolder(note, folders[i].id) }
-            .show()
+        showActionSheet(
+            title = "Move to folder",
+            items = folders.map { folder ->
+                ActionItem(folder.name, R.drawable.ic_folder) { viewModel.moveToFolder(note, folder.id) }
+            }
+        )
     }
 
     // ─── Auth ────────────────────────────────────────────────────────────────

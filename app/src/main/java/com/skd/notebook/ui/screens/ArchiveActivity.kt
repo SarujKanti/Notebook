@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
@@ -12,8 +11,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.skd.notebook.R
+import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteViewModel
+import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.util.fitTopInsetAsPadding
 
 class ArchiveActivity : AppCompatActivity() {
@@ -41,15 +42,10 @@ class ArchiveActivity : AppCompatActivity() {
         adapter   = NoteAdapter(
             onClick     = { /* tap to view */ },
             onLongClick = { note ->
-                val items = arrayOf("Unarchive", "Move to Bin")
-                MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-                    .setItems(items) { _, which ->
-                        when (which) {
-                            0 -> viewModel.unarchive(note)
-                            1 -> viewModel.moveToBin(note)
-                        }
-                    }
-                    .show()
+                showActionSheet(items = listOf(
+                    ActionItem("Unarchive", R.drawable.ic_archive) { viewModel.unarchive(note) },
+                    ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) { viewModel.moveToBin(note) }
+                ))
             },
             showPin = false
         )
