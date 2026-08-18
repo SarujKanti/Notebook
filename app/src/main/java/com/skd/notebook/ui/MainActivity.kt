@@ -28,10 +28,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
@@ -208,6 +210,43 @@ class MainActivity : AppCompatActivity() {
             ?: user?.email?.substringBefore('@') ?: "User"
     }
 
+    private fun showEditNameDialog(currentName: String, onSaved: (String) -> Unit) {
+        val dialog = BottomSheetDialog(this)
+        val view   = layoutInflater.inflate(R.layout.dialog_edit_name, null)
+
+        val etName    = view.findViewById<TextInputEditText>(R.id.etEditName)
+        val btnClose  = view.findViewById<ImageButton>(R.id.btnEditNameClose)
+        val btnCancel = view.findViewById<MaterialButton>(R.id.btnEditNameCancel)
+        val btnSave   = view.findViewById<MaterialButton>(R.id.btnEditNameSave)
+
+        etName.setText(currentName)
+        etName.setSelection(etName.text?.length ?: 0)
+
+        val dismiss = { dialog.dismiss() }
+        btnClose.setOnClickListener  { dismiss() }
+        btnCancel.setOnClickListener { dismiss() }
+
+        btnSave.setOnClickListener {
+            val newName = etName.text?.toString()?.trim()?.ifEmpty { resolvedDisplayName() } ?: resolvedDisplayName()
+            getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit().putString(KEY_CUSTOM_NAME, newName).apply()
+            onSaved(newName)
+            dismiss()
+        }
+
+        dialog.setContentView(view)
+        val sheet = dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+        sheet?.let {
+            BottomSheetBehavior.from(it).apply {
+                state         = BottomSheetBehavior.STATE_EXPANDED
+                skipCollapsed = true
+            }
+        }
+
+        etName.requestFocus()
+        dialog.show()
+    }
+
     private fun setupDrawer() {
         val header    = navigationView.getHeaderView(0)
         val tvName    = header.findViewById<TextView>(R.id.tvNavName)
@@ -224,25 +263,7 @@ class MainActivity : AppCompatActivity() {
         tvEmail.text = user?.email ?: ""
 
         // ── Tap name or avatar to edit ───────────────────────────────────────
-        val clickToEdit = View.OnClickListener {
-            val input = EditText(this).apply {
-                setText(tvName.text)
-                selectAll()
-                hint = "Your name"
-                setSingleLine()
-            }
-            MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-                .setTitle("Edit name")
-                .setView(input)
-                .setPositiveButton("Save") { _, _ ->
-                    val newName = input.text.toString().trim().ifEmpty { resolvedDisplayName() }
-                    getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                        .edit().putString(KEY_CUSTOM_NAME, newName).apply()
-                    applyName(newName)
-                }
-                .setNegativeButton("Cancel", null)
-                .show()
-        }
+        val clickToEdit = View.OnClickListener { showEditNameDialog(tvName.text.toString(), ::applyName) }
         tvName.setOnClickListener(clickToEdit)
         header.findViewById<View>(R.id.tvNavInitial)
             .setOnClickListener(clickToEdit)
