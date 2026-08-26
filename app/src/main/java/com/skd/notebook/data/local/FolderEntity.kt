@@ -1,5 +1,6 @@
 package com.skd.notebook.data.local
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.firestore.IgnoreExtraProperties
@@ -9,7 +10,12 @@ import com.google.firebase.firestore.IgnoreExtraProperties
  *
  * @IgnoreExtraProperties prevents Firestore deserialization errors on field mismatches.
  * [color] hex string (e.g. "#F44336"). Empty = use app primary colour.
+ *
+ * @Keep — Firestore serializes/deserializes this via runtime reflection on its
+ * getters, which R8 will otherwise rename/strip in release builds, breaking cloud
+ * sync with "No properties to serialize found" (see also proguard-rules.pro).
  */
+@Keep
 @IgnoreExtraProperties
 @Entity(tableName = "folders")
 data class FolderEntity(
