@@ -24,8 +24,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
@@ -77,6 +80,43 @@ class MainActivity : AppCompatActivity() {
     // activity is paused/finished while it's still showing.
     private var activeNoteDialog: BottomSheetDialog? = null
     private var pendingNoteSave: (() -> Unit)? = null
+
+    // Lets a guest sign in with Google directly from here (drawer item or the
+    // guest-mode dialog) without detouring through LoginActivity.
+    private val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account    = task.getResult(ApiException::class.java)
+            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+            FirebaseAuth.getInstance().signInWithCredential(credential)
+                .addOnSuccessListener { onGuestSignedIn() }
+                .addOnFailureListener { e ->
+                    Snackbar.make(recyclerView, e.localizedMessage ?: "Sign in failed", Snackbar.LENGTH_LONG).show()
+                }
+        } catch (e: ApiException) {
+            if (e.statusCode != 0) {   // 0 = user cancelled — silent
+                Snackbar.make(recyclerView, "Sign in failed (${e.statusCode})", Snackbar.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    /** Same flow as LoginActivity's "Continue with Google" button. */
+    private fun startGoogleSignIn() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInLauncher.launch(GoogleSignIn.getClient(this, gso).signInIntent)
+    }
+
+    /** Restart fresh as a fully-authenticated MainActivity — drawer header, sync, and menu all re-init correctly. */
+    private fun onGuestSignedIn() {
+        getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_GUEST_MODE, false).apply()
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
+        finish()
+    }
 
     private val noteColors = listOf(
         "",        "#FFCDD2", "#F8BBD9", "#FFE0B2", "#FFF9C4",
@@ -281,6 +321,16 @@ class MainActivity : AppCompatActivity() {
         header.findViewById<View>(R.id.tvNavInitial)
             .setOnClickListener(clickToEdit)
 
+        // Guest: bottom drawer item offers to log in instead of signing out.
+        val authItem = navigationView.menu.findItem(R.id.navSignOut)
+        if (isGuestMode()) {
+            authItem.title = "Login"
+            authItem.icon  = ContextCompat.getDrawable(this, R.drawable.ic_google)
+        } else {
+            authItem.title = "Sign Out"
+            authItem.icon  = ContextCompat.getDrawable(this, R.drawable.ic_logout)
+        }
+
         navigationView.setNavigationItemSelectedListener { item ->
             drawerLayout.closeDrawer(GravityCompat.START)
             when (item.itemId) {
@@ -288,7 +338,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navFolders -> startActivity(Intent(this, FoldersActivity::class.java))
                 R.id.navArchive -> startActivity(Intent(this, ArchiveActivity::class.java))
                 R.id.navBin     -> startActivity(Intent(this, BinActivity::class.java))
-                R.id.navSignOut -> signOut()
+                R.id.navSignOut -> if (isGuestMode()) startGoogleSignIn() else signOut()
             }
             true
         }
@@ -408,7 +458,7 @@ class MainActivity : AppCompatActivity() {
                 "sync it to the cloud."
             )
             .setNegativeButton("Cancel", null)
-            .setPositiveButton("Login") { _, _ -> startActivity(Intent(this, LoginActivity::class.java)) }
+            .setPositiveButton("Login") { _, _ -> startGoogleSignIn() }
             .show()
     }
 
