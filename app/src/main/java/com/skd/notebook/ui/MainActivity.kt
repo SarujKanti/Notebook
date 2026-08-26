@@ -24,8 +24,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
@@ -52,6 +55,12 @@ class MainActivity : AppCompatActivity() {
         const val ACTION_NEW_NOTE = "com.skd.notebook.ACTION_NEW_NOTE"
         /** Note id extra set by the "Pinned Notes" widget when a list item is tapped. */
         const val EXTRA_NOTE_ID = "extra_note_id"
+        /** Set by LoginActivity's Skip button so MainActivity shows the local-storage notice once. */
+        const val EXTRA_SHOW_GUEST_DIALOG = "extra_show_guest_dialog"
+
+        const val PREFS_NAME = "notebook_prefs"
+        /** Whether the user chose "Skip" on the login screen and is browsing without an account. */
+        const val KEY_GUEST_MODE = "guest_mode"
     }
 
     private lateinit var viewModel: NoteViewModel
@@ -71,6 +80,43 @@ class MainActivity : AppCompatActivity() {
     // activity is paused/finished while it's still showing.
     private var activeNoteDialog: BottomSheetDialog? = null
     private var pendingNoteSave: (() -> Unit)? = null
+
+    // Lets a guest sign in with Google directly from here (drawer item or the
+    // guest-mode dialog) without detouring through LoginActivity.
+    private val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account    = task.getResult(ApiException::class.java)
+            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+            FirebaseAuth.getInstance().signInWithCredential(credential)
+                .addOnSuccessListener { onGuestSignedIn() }
+                .addOnFailureListener { e ->
+                    Snackbar.make(recyclerView, e.localizedMessage ?: "Sign in failed", Snackbar.LENGTH_LONG).show()
+                }
+        } catch (e: ApiException) {
+            if (e.statusCode != 0) {   // 0 = user cancelled — silent
+                Snackbar.make(recyclerView, "Sign in failed (${e.statusCode})", Snackbar.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    /** Same flow as LoginActivity's "Continue with Google" button. */
+    private fun startGoogleSignIn() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInLauncher.launch(GoogleSignIn.getClient(this, gso).signInIntent)
+    }
+
+    /** Restart fresh as a fully-authenticated MainActivity — drawer header, sync, and menu all re-init correctly. */
+    private fun onGuestSignedIn() {
+        getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_GUEST_MODE, false).apply()
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
+        finish()
+    }
 
     private val noteColors = listOf(
         "",        "#FFCDD2", "#F8BBD9", "#FFE0B2", "#FFF9C4",
@@ -136,11 +182,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         handleWidgetIntent(intent)
+
+        if (intent.getBooleanExtra(EXTRA_SHOW_GUEST_DIALOG, false)) {
+            intent.removeExtra(EXTRA_SHOW_GUEST_DIALOG)
+            showGuestModeDialog()
+        }
     }
+
+    private fun isGuestMode() =
+        getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getBoolean(KEY_GUEST_MODE, false)
 
     override fun onStart() {
         super.onStart()
-        if (FirebaseAuth.getInstance().currentUser == null) goToLogin()
+        if (FirebaseAuth.getInstance().currentUser == null && !isGuestMode()) goToLogin()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -197,7 +251,6 @@ class MainActivity : AppCompatActivity() {
     // ─── Drawer ──────────────────────────────────────────────────────────────
 
     // ─── SharedPreferences key for the user-edited display name ─────────────
-    private val PREFS_NAME     = "notebook_prefs"
     private val KEY_CUSTOM_NAME = "custom_display_name"
 
     /** Returns the name to show: custom override → Firebase displayName → email prefix */
@@ -248,25 +301,47 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupDrawer() {
-        val header    = navigationView.getHeaderView(0)
-        val tvName    = header.findViewById<TextView>(R.id.tvNavName)
-        val tvEmail   = header.findViewById<TextView>(R.id.tvNavEmail)
-        val tvInitial = header.findViewById<TextView>(R.id.tvNavInitial)
-        val user      = FirebaseAuth.getInstance().currentUser
+        val header      = navigationView.getHeaderView(0)
+        val tvName      = header.findViewById<TextView>(R.id.tvNavName)
+        val tvEmail     = header.findViewById<TextView>(R.id.tvNavEmail)
+        val tvInitial   = header.findViewById<TextView>(R.id.tvNavInitial)
+        val ivEditPencil = header.findViewById<View>(R.id.ivNavEditPencil)
+        val user        = FirebaseAuth.getInstance().currentUser
 
         fun applyName(name: String) {
             tvName.text    = name
             tvInitial.text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "U"
         }
 
-        applyName(resolvedDisplayName())
-        tvEmail.text = user?.email ?: ""
+        if (isGuestMode()) {
+            // Guest: no account to attach a name to, so show a fixed placeholder
+            // and don't let it be edited/saved as if it were a real profile name.
+            applyName("Unknown")
+            tvEmail.text = ""
+            ivEditPencil.visibility = View.GONE
+            tvName.isClickable    = false
+            tvInitial.isClickable = false
+        } else {
+            applyName(resolvedDisplayName())
+            tvEmail.text = user?.email ?: ""
+            ivEditPencil.visibility = View.VISIBLE
 
-        // ── Tap name or avatar to edit ───────────────────────────────────────
-        val clickToEdit = View.OnClickListener { showEditNameDialog(tvName.text.toString(), ::applyName) }
-        tvName.setOnClickListener(clickToEdit)
-        header.findViewById<View>(R.id.tvNavInitial)
-            .setOnClickListener(clickToEdit)
+            // ── Tap name or avatar to edit ───────────────────────────────────
+            val clickToEdit = View.OnClickListener { showEditNameDialog(tvName.text.toString(), ::applyName) }
+            tvName.setOnClickListener(clickToEdit)
+            header.findViewById<View>(R.id.tvNavInitial)
+                .setOnClickListener(clickToEdit)
+        }
+
+        // Guest: bottom drawer item offers to log in instead of signing out.
+        val authItem = navigationView.menu.findItem(R.id.navSignOut)
+        if (isGuestMode()) {
+            authItem.title = "Login"
+            authItem.icon  = ContextCompat.getDrawable(this, R.drawable.ic_google)
+        } else {
+            authItem.title = "Sign Out"
+            authItem.icon  = ContextCompat.getDrawable(this, R.drawable.ic_logout)
+        }
 
         navigationView.setNavigationItemSelectedListener { item ->
             drawerLayout.closeDrawer(GravityCompat.START)
@@ -275,7 +350,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navFolders -> startActivity(Intent(this, FoldersActivity::class.java))
                 R.id.navArchive -> startActivity(Intent(this, ArchiveActivity::class.java))
                 R.id.navBin     -> startActivity(Intent(this, BinActivity::class.java))
-                R.id.navSignOut -> signOut()
+                R.id.navSignOut -> if (isGuestMode()) startGoogleSignIn() else signOut()
             }
             true
         }
@@ -385,12 +460,27 @@ class MainActivity : AppCompatActivity() {
 
     // ─── Auth ────────────────────────────────────────────────────────────────
 
+    /** Shown once, right after arriving here via the login screen's Skip button. */
+    private fun showGuestModeDialog() {
+        MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
+            .setTitle("You're browsing as a guest")
+            .setMessage(
+                "You can create notes, folders and files, but they'll only be stored on " +
+                "this device. Log in with your Google account to back everything up and " +
+                "sync it to the cloud."
+            )
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Login") { _, _ -> startGoogleSignIn() }
+            .show()
+    }
+
     private fun signOut() {
         viewModel.clearLocalData()
         FirebaseAuth.getInstance().signOut()
         GoogleSignIn.getClient(this,
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
         ).signOut()
+        getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_GUEST_MODE, false).apply()
         goToLogin()
     }
 

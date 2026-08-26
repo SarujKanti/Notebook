@@ -10,54 +10,79 @@
     android:background="@color/cardview_light_background">
 
     <!-- ── Hero section (gradient) ──────────────────────────────────────── -->
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@drawable/bg_splash"
-        android:paddingBottom="40dp">
+        android:background="@drawable/bg_splash">
 
-        <!-- Logo ring -->
-        <FrameLayout
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center_horizontal">
+        <!-- Skip → continue without signing in (local-only mode) -->
+        <TextView
+            android:id="@+id/btnSkip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="36dp"
+            android:layout_marginEnd="12dp"
+            android:text="Skip"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:alpha="0.85"
+            android:padding="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"/>
 
-            <View
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingBottom="40dp">
+
+            <!-- Logo ring -->
+            <FrameLayout
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:background="@drawable/bg_icon_splash"/>
+                android:layout_gravity="center_horizontal">
 
-            <ImageView
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_logo"
-                android:contentDescription="@string/app_name"/>
-        </FrameLayout>
+                <View
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="@drawable/bg_icon_splash"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textColor="#FFFFFF"
-            android:textSize="36sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
-            android:layout_marginTop="20dp"
-            android:letterSpacing="0.04"/>
+                <ImageView
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_logo"
+                    android:contentDescription="@string/app_name"/>
+            </FrameLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/tagline"
-            android:textColor="#B8A8FF"
-            android:textSize="15sp"
-            android:layout_marginTop="6dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textColor="#FFFFFF"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginTop="20dp"
+                android:letterSpacing="0.04"/>
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tagline"
+                android:textColor="#B8A8FF"
+                android:textSize="15sp"
+                android:layout_marginTop="6dp"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
 
     <!-- ── Sign-in card ──────────────────────────────────────────────────── -->
     <androidx.cardview.widget.CardView
