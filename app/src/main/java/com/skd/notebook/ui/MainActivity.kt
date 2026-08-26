@@ -301,25 +301,37 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupDrawer() {
-        val header    = navigationView.getHeaderView(0)
-        val tvName    = header.findViewById<TextView>(R.id.tvNavName)
-        val tvEmail   = header.findViewById<TextView>(R.id.tvNavEmail)
-        val tvInitial = header.findViewById<TextView>(R.id.tvNavInitial)
-        val user      = FirebaseAuth.getInstance().currentUser
+        val header      = navigationView.getHeaderView(0)
+        val tvName      = header.findViewById<TextView>(R.id.tvNavName)
+        val tvEmail     = header.findViewById<TextView>(R.id.tvNavEmail)
+        val tvInitial   = header.findViewById<TextView>(R.id.tvNavInitial)
+        val ivEditPencil = header.findViewById<View>(R.id.ivNavEditPencil)
+        val user        = FirebaseAuth.getInstance().currentUser
 
         fun applyName(name: String) {
             tvName.text    = name
             tvInitial.text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "U"
         }
 
-        applyName(resolvedDisplayName())
-        tvEmail.text = user?.email ?: ""
+        if (isGuestMode()) {
+            // Guest: no account to attach a name to, so show a fixed placeholder
+            // and don't let it be edited/saved as if it were a real profile name.
+            applyName("Unknown")
+            tvEmail.text = ""
+            ivEditPencil.visibility = View.GONE
+            tvName.isClickable    = false
+            tvInitial.isClickable = false
+        } else {
+            applyName(resolvedDisplayName())
+            tvEmail.text = user?.email ?: ""
+            ivEditPencil.visibility = View.VISIBLE
 
-        // ── Tap name or avatar to edit ───────────────────────────────────────
-        val clickToEdit = View.OnClickListener { showEditNameDialog(tvName.text.toString(), ::applyName) }
-        tvName.setOnClickListener(clickToEdit)
-        header.findViewById<View>(R.id.tvNavInitial)
-            .setOnClickListener(clickToEdit)
+            // ── Tap name or avatar to edit ───────────────────────────────────
+            val clickToEdit = View.OnClickListener { showEditNameDialog(tvName.text.toString(), ::applyName) }
+            tvName.setOnClickListener(clickToEdit)
+            header.findViewById<View>(R.id.tvNavInitial)
+                .setOnClickListener(clickToEdit)
+        }
 
         // Guest: bottom drawer item offers to log in instead of signing out.
         val authItem = navigationView.menu.findItem(R.id.navSignOut)

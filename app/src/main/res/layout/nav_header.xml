@@ -55,6 +55,7 @@
 
         <!-- Small pencil hint -->
         <ImageView
+            android:id="@+id/ivNavEditPencil"
             android:layout_width="14dp"
             android:layout_height="14dp"
             android:layout_marginStart="6dp"
