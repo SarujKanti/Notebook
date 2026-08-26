@@ -1,5 +1,6 @@
 package com.skd.notebook.ui.auth
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -23,6 +24,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
 
     private lateinit var btnGoogle: MaterialButton
+    private lateinit var btnSkip: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var tvError: TextView
 
@@ -40,8 +42,20 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         btnGoogle   = findViewById(R.id.btnGoogleSignIn)
+        btnSkip     = findViewById(R.id.btnSkip)
         progressBar = findViewById(R.id.progressBar)
         tvError     = findViewById(R.id.tvError)
+
+        btnSkip.setOnClickListener {
+            getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE)
+                .edit().putBoolean(MainActivity.KEY_GUEST_MODE, true).apply()
+            startActivity(Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                putExtra(MainActivity.EXTRA_SHOW_GUEST_DIALOG, true)
+            })
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            finish()
+        }
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -65,7 +79,11 @@ class LoginActivity : AppCompatActivity() {
                 val account    = task.getResult(ApiException::class.java)
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
                 auth.signInWithCredential(credential)
-                    .addOnSuccessListener { goToMain() }
+                    .addOnSuccessListener {
+                        getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE)
+                            .edit().putBoolean(MainActivity.KEY_GUEST_MODE, false).apply()
+                        goToMain()
+                    }
                     .addOnFailureListener { e ->
                         setLoading(false)
                         tvError.text       = e.localizedMessage ?: "Sign in failed"

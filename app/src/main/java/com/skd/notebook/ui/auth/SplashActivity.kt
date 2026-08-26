@@ -1,6 +1,7 @@
 package com.skd.notebook.ui.auth
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -20,7 +21,9 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val next = if (FirebaseAuth.getInstance().currentUser != null) {
+            val isGuest = getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE)
+                .getBoolean(MainActivity.KEY_GUEST_MODE, false)
+            val next = if (FirebaseAuth.getInstance().currentUser != null || isGuest) {
                 Intent(this, MainActivity::class.java)
             } else {
                 Intent(this, LoginActivity::class.java)

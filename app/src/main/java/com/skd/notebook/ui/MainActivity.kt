@@ -52,6 +52,12 @@ class MainActivity : AppCompatActivity() {
         const val ACTION_NEW_NOTE = "com.skd.notebook.ACTION_NEW_NOTE"
         /** Note id extra set by the "Pinned Notes" widget when a list item is tapped. */
         const val EXTRA_NOTE_ID = "extra_note_id"
+        /** Set by LoginActivity's Skip button so MainActivity shows the local-storage notice once. */
+        const val EXTRA_SHOW_GUEST_DIALOG = "extra_show_guest_dialog"
+
+        const val PREFS_NAME = "notebook_prefs"
+        /** Whether the user chose "Skip" on the login screen and is browsing without an account. */
+        const val KEY_GUEST_MODE = "guest_mode"
     }
 
     private lateinit var viewModel: NoteViewModel
@@ -136,11 +142,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         handleWidgetIntent(intent)
+
+        if (intent.getBooleanExtra(EXTRA_SHOW_GUEST_DIALOG, false)) {
+            intent.removeExtra(EXTRA_SHOW_GUEST_DIALOG)
+            showGuestModeDialog()
+        }
     }
+
+    private fun isGuestMode() =
+        getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getBoolean(KEY_GUEST_MODE, false)
 
     override fun onStart() {
         super.onStart()
-        if (FirebaseAuth.getInstance().currentUser == null) goToLogin()
+        if (FirebaseAuth.getInstance().currentUser == null && !isGuestMode()) goToLogin()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -197,7 +211,6 @@ class MainActivity : AppCompatActivity() {
     // ─── Drawer ──────────────────────────────────────────────────────────────
 
     // ─── SharedPreferences key for the user-edited display name ─────────────
-    private val PREFS_NAME     = "notebook_prefs"
     private val KEY_CUSTOM_NAME = "custom_display_name"
 
     /** Returns the name to show: custom override → Firebase displayName → email prefix */
@@ -385,12 +398,27 @@ class MainActivity : AppCompatActivity() {
 
     // ─── Auth ────────────────────────────────────────────────────────────────
 
+    /** Shown once, right after arriving here via the login screen's Skip button. */
+    private fun showGuestModeDialog() {
+        MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
+            .setTitle("You're browsing as a guest")
+            .setMessage(
+                "You can create notes, folders and files, but they'll only be stored on " +
+                "this device. Log in with your Google account to back everything up and " +
+                "sync it to the cloud."
+            )
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Login") { _, _ -> startActivity(Intent(this, LoginActivity::class.java)) }
+            .show()
+    }
+
     private fun signOut() {
         viewModel.clearLocalData()
         FirebaseAuth.getInstance().signOut()
         GoogleSignIn.getClient(this,
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
         ).signOut()
+        getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_GUEST_MODE, false).apply()
         goToLogin()
     }
 
