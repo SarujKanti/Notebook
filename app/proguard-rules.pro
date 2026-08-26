@@ -4,6 +4,7 @@
 
 # Keep data classes used by Room and Firestore (fields must not be renamed)
 -keep class com.skd.notebook.data.local.NoteEntity { *; }
+-keep class com.skd.notebook.data.local.FolderEntity { *; }
 
 # Room – keep generated implementations
 -keep class * extends androidx.room.RoomDatabase
