@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
@@ -378,7 +377,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSwipeToDelete() {
         val deleteIcon = ContextCompat.getDrawable(this, R.drawable.ic_delete)
-        val swipeBg    = ColorDrawable(ContextCompat.getColor(this, R.color.swipe_delete))
+
+        // Rounded to match the note card's own corner radius, instead of a flat
+        // rectangle peeking out from behind the card's rounded corners.
+        val swipeBg = GradientDrawable().apply {
+            setColor(ContextCompat.getColor(this@MainActivity, R.color.swipe_delete))
+            cornerRadius = resources.getDimension(R.dimen.card_corner_radius)
+        }
 
         val callback = object : ItemTouchHelper.SimpleCallback(
             0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
@@ -401,12 +406,17 @@ class MainActivity : AppCompatActivity() {
                 val iconMargin = (item.height - iconSize) / 2
                 val iconTop    = item.top + iconMargin
                 val iconBottom = iconTop + iconSize
+                // Clamp to the card's own width — in a 2-column staggered grid, an
+                // unclamped dX (e.g. during the fling-away animation after release)
+                // grows past the item's width and spills into the next column.
                 if (dX > 0) {
-                    swipeBg.setBounds(item.left, item.top, item.left + dX.toInt(), item.bottom)
+                    val right = (item.left + dX.toInt()).coerceAtMost(item.right)
+                    swipeBg.setBounds(item.left, item.top, right, item.bottom)
                     val iconLeft = item.left + iconMargin
                     deleteIcon?.setBounds(iconLeft, iconTop, iconLeft + iconSize, iconBottom)
                 } else if (dX < 0) {
-                    swipeBg.setBounds(item.right + dX.toInt(), item.top, item.right, item.bottom)
+                    val left = (item.right + dX.toInt()).coerceAtLeast(item.left)
+                    swipeBg.setBounds(left, item.top, item.right, item.bottom)
                     val iconRight = item.right - iconMargin
                     deleteIcon?.setBounds(iconRight - iconSize, iconTop, iconRight, iconBottom)
                 }
