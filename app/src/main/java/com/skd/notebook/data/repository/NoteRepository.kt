@@ -17,7 +17,6 @@ class NoteRepository(
     val archivedNotes= noteDao.getArchivedNotes()
     val pinnedNotes  = noteDao.getPinnedNotes()
     val folders      = folderDao.getAllFolders()
-    
     fun getFolderNotes(folderId: String) = noteDao.getNotesByFolder(folderId)
     fun searchNotes(query: String)      = noteDao.searchNotes(query)
     suspend fun getNoteById(id: String) = noteDao.getNoteById(id)
