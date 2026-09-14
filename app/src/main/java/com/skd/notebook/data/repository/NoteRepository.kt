@@ -53,7 +53,6 @@ class NoteRepository(
         noteDao.delete(note)
         trySync { firebase.deleteNote(note.id) }
     }
-
     
     /** Delete all bin notes permanently */
     suspend fun emptyBin() {
