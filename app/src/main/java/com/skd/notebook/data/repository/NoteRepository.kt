@@ -33,7 +33,7 @@ class NoteRepository(
         trySync { firebase.saveNote(note) }
     }
 
-    
+
     /** Soft-delete: moves note to Bin */
     suspend fun moveToBin(note: NoteEntity) {
         val updated = note.copy(isDeleted = true, deletedAt = System.currentTimeMillis(), isArchived = false)
@@ -54,6 +54,7 @@ class NoteRepository(
         trySync { firebase.deleteNote(note.id) }
     }
 
+    
     /** Delete all bin notes permanently */
     suspend fun emptyBin() {
         // Collect IDs before wiping locally so we can delete from Firestore too
