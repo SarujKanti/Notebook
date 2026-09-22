@@ -28,11 +28,13 @@ class NoteRepository(
         trySync { firebase.saveNote(note) }
     }
 
+
+    
     suspend fun update(note: NoteEntity) {
         noteDao.update(note)
         trySync { firebase.saveNote(note) }
     }
-    
+
     /** Soft-delete: moves note to Bin */
     suspend fun moveToBin(note: NoteEntity) {
         val updated = note.copy(isDeleted = true, deletedAt = System.currentTimeMillis(), isArchived = false)
