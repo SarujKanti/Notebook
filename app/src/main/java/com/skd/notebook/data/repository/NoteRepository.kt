@@ -28,7 +28,6 @@ class NoteRepository(
         trySync { firebase.saveNote(note) }
     }
 
-
     
     suspend fun update(note: NoteEntity) {
         noteDao.update(note)
