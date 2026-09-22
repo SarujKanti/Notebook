@@ -32,8 +32,6 @@ class NoteRepository(
         noteDao.update(note)
         trySync { firebase.saveNote(note) }
     }
-
-
     
     /** Soft-delete: moves note to Bin */
     suspend fun moveToBin(note: NoteEntity) {
