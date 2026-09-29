@@ -61,7 +61,6 @@ class NoteRepository(
         noteDao.emptyBin()
         trySync { ids.forEach { firebase.deleteNote(it) } }
     }
-    
 
     /** Toggle a note's pinned state */
     suspend fun togglePin(note: NoteEntity) {
