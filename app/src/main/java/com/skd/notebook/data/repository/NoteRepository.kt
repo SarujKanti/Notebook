@@ -62,7 +62,7 @@ class NoteRepository(
         trySync { ids.forEach { firebase.deleteNote(it) } }
     }
 
-    
+
     /** Toggle a note's pinned state */
     suspend fun togglePin(note: NoteEntity) {
         val updated = note.copy(isPinned = !note.isPinned)
@@ -98,6 +98,9 @@ class NoteRepository(
         trySync { firebase.saveFolder(folder) }
     }
 
+
+
+    
     suspend fun updateFolder(folder: FolderEntity) {
         folderDao.insert(folder)                    // REPLACE strategy acts as upsert
         trySync { firebase.saveFolder(folder) }
