@@ -98,7 +98,7 @@ class NoteRepository(
         trySync { firebase.saveFolder(folder) }
     }
 
-    
+
     suspend fun updateFolder(folder: FolderEntity) {
         folderDao.insert(folder)                    // REPLACE strategy acts as upsert
         trySync { firebase.saveFolder(folder) }
@@ -117,6 +117,8 @@ class NoteRepository(
             firebase.getFolders().forEach { folderDao.insert(it) }
         }
     }
+
+    
 
     suspend fun clearLocalData() {
         noteDao.deleteAll()
