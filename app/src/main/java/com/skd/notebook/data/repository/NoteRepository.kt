@@ -118,8 +118,6 @@ class NoteRepository(
         }
     }
 
-    
-
     suspend fun clearLocalData() {
         noteDao.deleteAll()
         folderDao.deleteAll()
