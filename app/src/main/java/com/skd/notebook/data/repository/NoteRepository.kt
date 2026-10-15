@@ -104,7 +104,7 @@ class NoteRepository(
     }
 
 
-    
+
     suspend fun deleteFolder(folder: FolderEntity) {
         folderDao.delete(folder)
         trySync { firebase.deleteFolder(folder.id) }
