@@ -21,6 +21,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
+import com.skd.notebook.util.NoteColors
 import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteViewModel
 import com.skd.notebook.util.fitTopInsetAsPadding
@@ -179,9 +180,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun applyNoteColor(root: LinearLayout, hex: String) {
-        val bg = if (hex.isEmpty()) Color.WHITE
-                 else runCatching { Color.parseColor(hex) }.getOrDefault(Color.WHITE)
-        root.setBackgroundColor(bg)
+        root.setBackgroundColor(NoteColors.background(this, hex))
     }
 
     private fun buildColorPicker(container: LinearLayout, currentColor: String, onPick: (String) -> Unit) {

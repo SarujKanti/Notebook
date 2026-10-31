@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
+import com.skd.notebook.util.NoteColors
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -58,16 +59,16 @@ class NoteAdapter(
 
         if (note.color.isNotEmpty()) {
             // Colored note: use note color as card background, show accent stripe
-            val cardColor = runCatching { Color.parseColor(note.color) }.getOrDefault(Color.WHITE)
+            val cardColor = NoteColors.background(ctx, note.color)
             holder.card.setCardBackgroundColor(cardColor)
             holder.card.strokeWidth = 0
             // Derive a slightly darker accent from the card color
             holder.accent.setBackgroundColor(darken(cardColor, 0.75f))
             holder.accent.visibility = View.VISIBLE
         } else {
-            // Default white card: show primary color accent stripe for visual structure
+            // Default surface card (white in light, dark in dark): show primary color accent stripe for visual structure
             holder.card.setCardBackgroundColor(
-                ContextCompat.getColor(ctx, android.R.color.white)
+                ContextCompat.getColor(ctx, R.color.colorSurface)
             )
             holder.card.strokeWidth = ctx.resources.getDimensionPixelSize(R.dimen.card_stroke_width)
             holder.card.strokeColor = ContextCompat.getColor(ctx, R.color.colorSurfaceVariant)
