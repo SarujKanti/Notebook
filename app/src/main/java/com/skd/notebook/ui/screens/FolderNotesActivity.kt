@@ -24,6 +24,7 @@ import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteViewModel
 import com.skd.notebook.ui.showActionSheet
+import com.skd.notebook.util.fitTopInsetAsPadding
 import java.util.UUID
 
 class FolderNotesActivity : AppCompatActivity() {
@@ -59,6 +60,7 @@ class FolderNotesActivity : AppCompatActivity() {
         folderId = intent.getStringExtra(EXTRA_FOLDER_ID) ?: run { finish(); return }
         val folderName = intent.getStringExtra(EXTRA_FOLDER_NAME) ?: "Folder"
 
+        findViewById<View>(R.id.appBarLayout).fitTopInsetAsPadding()
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         toolbar.title = folderName
         setSupportActionBar(toolbar)
