@@ -10,6 +10,11 @@
     <color name="colorPrimaryLight2">#886DEF</color>
     <color name="colorOnPrimary">#FFFFFF</color>
 
+    <!-- One color for the app bar AND the status bar behind it, so they read as a single seamless bar -->
+    <color name="colorAppBar">#5C35C9</color>
+    <!-- Top of the splash/login gradient (bg_splash); the status bar over those screens matches it -->
+    <color name="colorSplashTop">#2D1065</color>
+
     <!-- Accent (mint, taken from the logo) — used for primary actions that should pop against purple -->
     <color name="colorAccent">#B59EF1</color>
     <color name="colorAccentDark">#00A870</color>
