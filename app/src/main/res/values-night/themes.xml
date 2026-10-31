@@ -4,9 +4,9 @@
         <item name="android:colorBackground">#1A1625</item>
         <item name="colorSurface">#251E36</item>
         <item name="android:windowBackground">#1A1625</item>
-        <item name="android:statusBarColor">@color/colorPrimary</item>
-        <!-- DrawerLayout paints its status-bar band with this; without it dark mode falls back to a light purple -->
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:statusBarColor">@color/colorAppBar</item>
+        <!-- DrawerLayout paints its status-bar band with this, so it must match the app bar -->
+        <item name="colorPrimaryDark">@color/colorAppBar</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
     </style>

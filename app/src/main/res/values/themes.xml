@@ -6,9 +6,9 @@
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="colorSurface">@color/colorSurface</item>
         <item name="android:windowBackground">@color/colorBackground</item>
-        <item name="android:statusBarColor">@color/colorPrimary</item>
-        <!-- DrawerLayout paints its status-bar band with this; without it dark mode falls back to a light purple -->
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:statusBarColor">@color/colorAppBar</item>
+        <!-- DrawerLayout paints its status-bar band with this, so it must match the app bar -->
+        <item name="colorPrimaryDark">@color/colorAppBar</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
         <!--
             Android 15 (API 35+) forces edge-to-edge for apps targeting >= 35.

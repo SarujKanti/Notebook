@@ -6,6 +6,7 @@
     <color name="colorSurface">#251E36</color>
     <color name="colorSurfaceVariant">#2F2745</color>
 
+    <color name="colorAppBar">#3D2A8A</color>
     <color name="colorSectionLabel">#00D68F</color>
     <color name="colorFeatureIconBg">#2F2745</color>
 </resources>
