@@ -392,7 +392,14 @@ class MainActivity : AppCompatActivity() {
                                 target: RecyclerView.ViewHolder) = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val note = adapter.currentList[viewHolder.adapterPosition]
+                // The list can be re-submitted mid-swipe (cloud sync), leaving the holder
+                // without a valid position — indexing with NO_POSITION (-1) would crash.
+                val position = viewHolder.bindingAdapterPosition
+                val note = adapter.currentList.getOrNull(position)
+                if (note == null) {
+                    adapter.notifyDataSetChanged()
+                    return
+                }
                 viewModel.moveToBin(note)
                 Snackbar.make(recyclerView, "Moved to Bin", Snackbar.LENGTH_LONG)
                     .setAction("UNDO") { viewModel.restoreFromBin(note) }
