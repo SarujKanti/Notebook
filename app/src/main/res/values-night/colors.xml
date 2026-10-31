@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark theme surfaces. Same names as values/colors.xml so every screen that uses
+         these (backgrounds, cards, sheets) switches automatically. -->
+    <color name="colorBackground">#1A1625</color>
+    <color name="colorSurface">#251E36</color>
+    <color name="colorSurfaceVariant">#2F2745</color>
+
+    <color name="colorSectionLabel">#00D68F</color>
+    <color name="colorFeatureIconBg">#2F2745</color>
+</resources>
