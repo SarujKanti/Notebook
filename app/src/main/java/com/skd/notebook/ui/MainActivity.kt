@@ -46,6 +46,8 @@ import com.skd.notebook.ui.screens.BinActivity
 import com.skd.notebook.ui.screens.FoldersActivity
 import com.skd.notebook.ui.screens.SearchActivity
 import kotlinx.coroutines.launch
+import com.skd.notebook.util.appVersionLabel
+import com.skd.notebook.util.keepClearOfSystemBars
 import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
@@ -325,6 +327,23 @@ class MainActivity : AppCompatActivity() {
         val tvInitial   = header.findViewById<TextView>(R.id.tvNavInitial)
         val ivEditPencil = header.findViewById<View>(R.id.ivNavEditPencil)
         val user        = FirebaseAuth.getInstance().currentUser
+        val tvStatus     = header.findViewById<TextView>(R.id.tvNavStatus)
+
+        // The header is drawn under the status bar; keep its content clear of it on every Android version.
+        header.keepClearOfSystemBars(top = true)
+
+        // Version pinned at the bottom of the drawer, clear of the navigation bar.
+        findViewById<TextView>(R.id.tvNavVersion).apply {
+            text = "NoteStack  •  Version ${appVersionLabel()}"
+            keepClearOfSystemBars(top = false, bottom = true)
+        }
+
+        // Status chip: mint dot when notes sync to the cloud, soft lavender when local-only.
+        val guest = isGuestMode()
+        tvStatus.text = if (guest) "Local only" else "Synced to cloud"
+        tvStatus.compoundDrawablesRelative[0]?.mutate()?.setTint(
+            ContextCompat.getColor(this, if (guest) R.color.colorPrimaryLight2 else R.color.colorAccent)
+        )
 
         fun applyName(name: String) {
             tvName.text    = name
