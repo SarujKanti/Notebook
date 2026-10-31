@@ -39,6 +39,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
+import com.skd.notebook.util.NoteColors
 import com.skd.notebook.ui.auth.LoginActivity
 import com.skd.notebook.ui.screens.ArchiveActivity
 import com.skd.notebook.ui.screens.BinActivity
@@ -590,9 +591,7 @@ class MainActivity : AppCompatActivity() {
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
     private fun applyNoteColor(root: LinearLayout, hex: String) {
-        val bg = if (hex.isEmpty()) Color.WHITE
-                 else runCatching { Color.parseColor(hex) }.getOrDefault(Color.WHITE)
-        root.setBackgroundColor(bg)
+        root.setBackgroundColor(NoteColors.background(this, hex))
     }
 
     private fun buildColorPicker(container: LinearLayout, currentColor: String, onPick: (String) -> Unit) {

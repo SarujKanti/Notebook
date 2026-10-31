@@ -11,7 +11,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/cardview_light_background">
+        android:background="@color/colorBackground">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBarLayout"
@@ -186,11 +186,12 @@
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="24dp"
             android:text="New Note"
-            android:textColor="@color/colorOnPrimary"
+            android:textColor="@color/colorOnAccent"
             android:textSize="15sp"
+            android:textStyle="bold"
             app:icon="@drawable/ic_add"
-            app:iconTint="@color/colorOnPrimary"
-            app:backgroundTint="@color/colorPrimaryLight2"
+            app:iconTint="@color/colorOnAccent"
+            app:backgroundTint="@color/colorAccent"
             app:elevation="6dp"
             app:cornerRadius="28dp"/>
 
