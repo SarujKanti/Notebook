@@ -10,7 +10,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorAppBar"
         app:liftOnScroll="false"
         app:elevation="0dp">
 
@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:title="Archive"
-            android:background="@color/colorPrimary"
+            android:background="@color/colorAppBar"
             app:navigationIcon="@drawable/ic_arrow_back_white"
             app:titleTextColor="@color/colorOnPrimary"/>
 
