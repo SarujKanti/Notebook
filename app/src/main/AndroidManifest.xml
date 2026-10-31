@@ -41,6 +41,12 @@
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize"/>
 
+        <!-- About -->
+        <activity
+            android:name=".ui.screens.AboutActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.MainActivity"/>
+
         <!-- ④ Bin -->
         <activity
             android:name=".ui.screens.BinActivity"
