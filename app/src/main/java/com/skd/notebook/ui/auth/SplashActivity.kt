@@ -18,6 +18,9 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, true)
+        // Dark gradient screen: match the status bar to the gradient top (honored on Android 14 and below;
+        // on newer versions the gradient itself draws behind the bar in the same color).
+        window.statusBarColor = androidx.core.content.ContextCompat.getColor(this, R.color.colorSplashTop)
         setContentView(R.layout.activity_splash)
 
         Handler(Looper.getMainLooper()).postDelayed({

@@ -36,6 +36,9 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
         WindowCompat.setDecorFitsSystemWindows(window, true)
+        // Dark gradient screen: match the status bar to the gradient top (honored on Android 14 and below;
+        // on newer versions the gradient itself draws behind the bar in the same color).
+        window.statusBarColor = androidx.core.content.ContextCompat.getColor(this, R.color.colorSplashTop)
 
         if (auth.currentUser != null) { goToMain(); return }
 
