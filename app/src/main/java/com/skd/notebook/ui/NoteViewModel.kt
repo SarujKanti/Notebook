@@ -107,7 +107,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
         notesListener = firebase.listenToNotes { notes ->
             viewModelScope.launch {
-                notes.forEach { db.noteDao().insert(it) }
+                db.noteDao().insertAll(notes)
                 isSyncing.postValue(false)   // first snapshot received — stop spinner
                 refreshPinnedWidget()
             }
@@ -115,7 +115,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
         foldersListener = firebase.listenToFolders { folders ->
             viewModelScope.launch {
-                folders.forEach { db.folderDao().insert(it) }
+                db.folderDao().insertAll(folders)
             }
         }
     }
