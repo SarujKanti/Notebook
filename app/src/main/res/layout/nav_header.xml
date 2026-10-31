@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="180dp"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="bottom"
-    android:padding="20dp"
-    android:paddingBottom="24dp"
+    android:clipToPadding="false"
+    android:clipChildren="false"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingTop="28dp"
+    android:paddingBottom="20dp"
     android:background="@drawable/bg_nav_header">
 
     <!-- Circular avatar with user initial (tap to edit name) -->
     <FrameLayout
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:clickable="true"
         android:focusable="true">
 
         <View
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:background="@drawable/bg_avatar"/>
 
         <TextView
@@ -28,7 +33,7 @@
             android:gravity="center"
             android:text="U"
             android:textColor="#FFFFFF"
-            android:textSize="22sp"
+            android:textSize="26sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"/>
     </FrameLayout>
@@ -37,7 +42,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="14dp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
@@ -45,7 +50,7 @@
             android:id="@+id/tvNavName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="17sp"
+            android:textSize="19sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
             android:letterSpacing="0.01"
@@ -58,12 +63,11 @@
             android:id="@+id/ivNavEditPencil"
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="8dp"
             android:src="@drawable/ic_edit"
-            android:alpha="0.6"
+            android:alpha="0.7"
             android:importantForAccessibility="no"
-            app:tint="#FFFFFF"
-            xmlns:app="http://schemas.android.com/apk/res-auto"/>
+            app:tint="#FFFFFF"/>
 
     </LinearLayout>
 
@@ -74,7 +78,26 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:textSize="13sp"
-        android:textColor="#C8C0FF"
+        android:textColor="#D4CCFF"
         android:text=""/>
+
+    <!-- Sync status chip: "Synced to cloud" / "Local only" -->
+    <TextView
+        android:id="@+id/tvNavStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_nav_chip"
+        android:drawableStart="@drawable/bg_status_dot"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.02"/>
 
 </LinearLayout>
