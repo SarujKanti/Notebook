@@ -8,6 +8,9 @@ interface FolderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(folder: FolderEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(folders: List<FolderEntity>)
+
     @Update
     suspend fun update(folder: FolderEntity)
     @Delete

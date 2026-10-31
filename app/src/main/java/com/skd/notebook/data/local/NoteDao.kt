@@ -8,6 +8,10 @@ interface NoteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(note: NoteEntity)
 
+    /** Single transaction — used for cloud syncs so observers never see a half-written list. */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(notes: List<NoteEntity>)
+
     @Update
     suspend fun update(note: NoteEntity)
 
