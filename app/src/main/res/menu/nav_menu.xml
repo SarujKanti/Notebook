@@ -4,7 +4,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/navNotes"
-            android:icon="@drawable/ic_logo"
+            android:icon="@drawable/ic_notes"
             android:title="Notes"
             android:checked="true"/>
         <item
@@ -21,6 +21,14 @@
             android:title="Bin"/>
     </group>
 
+    <item
+        android:id="@+id/navTheme"
+        android:icon="@drawable/ic_theme"
+        android:title="Theme"/>
+    <item
+        android:id="@+id/navAbout"
+        android:icon="@drawable/ic_info"
+        android:title="About"/>
     <item
         android:id="@+id/navSignOut"
         android:icon="@drawable/ic_logout"

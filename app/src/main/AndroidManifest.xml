@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".NoteStackApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -39,6 +40,12 @@
             android:exported="false"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize"/>
+
+        <!-- About -->
+        <activity
+            android:name=".ui.screens.AboutActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.MainActivity"/>
 
         <!-- ④ Bin -->
         <activity

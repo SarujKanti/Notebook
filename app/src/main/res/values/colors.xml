@@ -10,6 +10,15 @@
     <color name="colorPrimaryLight2">#886DEF</color>
     <color name="colorOnPrimary">#FFFFFF</color>
 
+    <!-- Accent (mint, taken from the logo) — used for primary actions that should pop against purple -->
+    <color name="colorAccent">#B59EF1</color>
+    <color name="colorAccentDark">#00A870</color>
+    <color name="colorOnAccent">#12073A</color>
+
+    <!-- Small helpers that differ between light and dark (see values-night/colors.xml) -->
+    <color name="colorSectionLabel">#00875A</color>
+    <color name="colorFeatureIconBg">#EDE9F9</color>
+
     <!-- Surface & background -->
     <color name="colorBackground">#F4F2FF</color>
     <color name="colorSurface">#FFFFFF</color>

@@ -39,11 +39,16 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
+import com.skd.notebook.util.NoteColors
 import com.skd.notebook.ui.auth.LoginActivity
+import com.skd.notebook.ui.screens.AboutActivity
 import com.skd.notebook.ui.screens.ArchiveActivity
 import com.skd.notebook.ui.screens.BinActivity
 import com.skd.notebook.ui.screens.FoldersActivity
 import com.skd.notebook.ui.screens.SearchActivity
+import com.skd.notebook.util.ThemePrefs
+import com.skd.notebook.util.appVersionLabel
+import com.skd.notebook.util.keepClearOfSystemBars
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -323,6 +328,23 @@ class MainActivity : AppCompatActivity() {
         val tvEmail     = header.findViewById<TextView>(R.id.tvNavEmail)
         val tvInitial   = header.findViewById<TextView>(R.id.tvNavInitial)
         val ivEditPencil = header.findViewById<View>(R.id.ivNavEditPencil)
+        val tvStatus     = header.findViewById<TextView>(R.id.tvNavStatus)
+
+        // The header is drawn under the status bar; keep its content clear of it on every Android version.
+        header.keepClearOfSystemBars(top = true)
+
+        // Version pinned at the bottom of the drawer, clear of the navigation bar.
+        findViewById<TextView>(R.id.tvNavVersion).apply {
+            text = "NoteStack  •  Version ${appVersionLabel()}"
+            keepClearOfSystemBars(top = false, bottom = true)
+        }
+
+        // Status chip: mint dot when notes sync to the cloud, soft lavender when local-only.
+        val guest = isGuestMode()
+        tvStatus.text = if (guest) "Local only" else "Synced to cloud"
+        tvStatus.compoundDrawablesRelative[0]?.mutate()?.setTint(
+            ContextCompat.getColor(this, if (guest) R.color.colorPrimaryLight2 else R.color.colorAccent)
+        )
         val user        = FirebaseAuth.getInstance().currentUser
 
         fun applyName(name: String) {
@@ -367,6 +389,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.navFolders -> startActivity(Intent(this, FoldersActivity::class.java))
                 R.id.navArchive -> startActivity(Intent(this, ArchiveActivity::class.java))
                 R.id.navBin     -> startActivity(Intent(this, BinActivity::class.java))
+                R.id.navTheme   -> showThemeDialog()
+                R.id.navAbout   -> startActivity(Intent(this, AboutActivity::class.java))
                 R.id.navSignOut -> if (isGuestMode()) startGoogleSignIn() else signOut()
             }
             true
@@ -493,6 +517,20 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    /** Light / Dark / System choice. Applies immediately; "System default" is the default. */
+    private fun showThemeDialog() {
+        val modes  = intArrayOf(ThemePrefs.SYSTEM, ThemePrefs.LIGHT, ThemePrefs.DARK)
+        val labels = arrayOf("System default", "Light", "Dark")
+        MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
+            .setTitle("Choose theme")
+            .setSingleChoiceItems(labels, modes.indexOf(ThemePrefs.saved(this)).coerceAtLeast(0)) { dialog, which ->
+                dialog.dismiss()
+                ThemePrefs.set(this, modes[which])
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
     // ─── Auth ────────────────────────────────────────────────────────────────
 
     /** Shown once, right after arriving here via the login screen's Skip button. */
@@ -590,9 +628,7 @@ class MainActivity : AppCompatActivity() {
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
     private fun applyNoteColor(root: LinearLayout, hex: String) {
-        val bg = if (hex.isEmpty()) Color.WHITE
-                 else runCatching { Color.parseColor(hex) }.getOrDefault(Color.WHITE)
-        root.setBackgroundColor(bg)
+        root.setBackgroundColor(NoteColors.background(this, hex))
     }
 
     private fun buildColorPicker(container: LinearLayout, currentColor: String, onPick: (String) -> Unit) {
