@@ -163,8 +163,26 @@ class MainActivity : AppCompatActivity() {
         // activeNotes.observe never re-fires and "No notes" never appears.
         viewModel.isSyncing.observe(this) { refreshEmptyState() }
 
+        // A new or just-edited note jumps to the top of the list (sorted newest-first), so
+        // scroll up to show it. NEVER do this when the list shrank (swipe-to-delete, bin,
+        // archive): scrolling while an item is being removed makes the staggered grid
+        // blank out until the next update.
+        var firstNoteId: String? = null
+        var lastCount = -1
         viewModel.activeNotes.observe(this) { notes ->
-            adapter.submitList(notes)
+            val newFirstId = notes.firstOrNull()?.id
+            val noteMovedToTop = lastCount >= 0 && notes.size >= lastCount &&
+                newFirstId != null && newFirstId != firstNoteId
+            firstNoteId = newFirstId
+            lastCount = notes.size
+            adapter.submitList(notes) {
+                // scrollToPosition() called right here is swallowed by the staggered grid
+                // while the "move to top" item animation is still in flight, so wait for
+                // that layout pass and then anchor position 0 to the very top edge.
+                if (noteMovedToTop) recyclerView.post {
+                    staggeredManager?.scrollToPositionWithOffset(0, 0)
+                }
+            }
             refreshEmptyState()
         }
 
