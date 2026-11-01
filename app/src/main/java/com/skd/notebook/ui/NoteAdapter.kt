@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.shape.CornerFamily
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.NoteColors
@@ -48,6 +49,7 @@ class NoteAdapter(
             override fun areContentsTheSame(a: NoteEntity, b: NoteEntity) = a == b
         }
         private val DATE_FORMAT = SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
+        private const val FOLD_SIZE_DP = 18f // matches bg_pin_fold
     }
 
     inner class NoteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -110,6 +112,15 @@ class NoteAdapter(
             holder.btnPin.visibility = View.GONE
         }
 
+        // A folded note really has its top-right corner cut off (not painted over), so no card
+        // edge or shadow is left showing around the missing corner. Others keep the round corner.
+        val density = ctx.resources.displayMetrics.density
+        holder.card.shapeAppearanceModel = holder.card.shapeAppearanceModel.toBuilder()
+            .setTopRightCorner(
+                if (folded) CornerFamily.CUT else CornerFamily.ROUNDED,
+                if (folded) FOLD_SIZE_DP * density else ctx.resources.getDimension(R.dimen.card_corner_radius)
+            )
+            .build()
         holder.pinFold.visibility = if (folded) View.VISIBLE else View.GONE
 
         holder.itemView.setOnClickListener     { onClick(note) }
