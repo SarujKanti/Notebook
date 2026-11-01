@@ -26,6 +26,7 @@ import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteViewModel
 import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.util.fitTopInsetAsPadding
+import com.skd.notebook.util.peekOnScroll
 import java.util.UUID
 
 class FolderNotesActivity : AppCompatActivity() {
@@ -95,7 +96,7 @@ class FolderNotesActivity : AppCompatActivity() {
             layoutEmpty.visibility = if (notes.isEmpty()) View.VISIBLE else View.GONE
         }
 
-        fabAdd.setOnClickListener { showNoteDialog(null) }
+        fabAdd.peekOnScroll(recyclerView) { showNoteDialog(null) }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

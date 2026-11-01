@@ -49,6 +49,7 @@ import com.skd.notebook.ui.screens.SearchActivity
 import com.skd.notebook.util.ThemePrefs
 import com.skd.notebook.util.appVersionLabel
 import com.skd.notebook.util.keepClearOfSystemBars
+import com.skd.notebook.util.peekOnScroll
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -193,7 +194,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.startRealtimeSync()
 
-        fabAdd.setOnClickListener          { showNoteDialog(null) }
+        fabAdd.peekOnScroll(recyclerView) { showNoteDialog(null) }
         btnToggleLayout.setOnClickListener { toggleLayout() }
         btnMenu.setOnClickListener         { drawerLayout.openDrawer(GravityCompat.START) }
 
