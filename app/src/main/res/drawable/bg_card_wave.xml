@@ -1,0 +1,15 @@
+<!-- Faint light waves along the bottom of a note card. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="80dp"
+    android:viewportWidth="200"
+    android:viewportHeight="80">
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.28"
+        android:pathData="M0,50 C40,20 80,70 130,40 C160,22 185,20 200,30 V80 H0 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.20"
+        android:pathData="M0,64 C50,40 100,80 150,54 C175,42 190,44 200,50 V80 H0 Z"/>
+</vector>

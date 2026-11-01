@@ -5,7 +5,7 @@
     <dimen name="color_circle_margin">6dp</dimen>
 
     <!-- Note cards -->
-    <dimen name="card_corner_radius">16dp</dimen>
+    <dimen name="card_corner_radius">22dp</dimen>
     <dimen name="card_stroke_width">1dp</dimen>
     <dimen name="grid_spacing">5dp</dimen>
     <dimen name="grid_columns">2</dimen>

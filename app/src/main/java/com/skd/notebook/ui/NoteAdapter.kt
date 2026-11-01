@@ -28,7 +28,9 @@ class NoteAdapter(
     private val onClick: (NoteEntity) -> Unit = {},
     private val onLongClick: (NoteEntity) -> Unit = {},
     private val onPinClick: (NoteEntity) -> Unit = {},
-    private val showPin: Boolean = true
+    private val showPin: Boolean = true,
+    /** When set, each card shows a "more" (...) button that calls this. */
+    private val onMoreClick: ((NoteEntity) -> Unit)? = null
 ) : ListAdapter<NoteEntity, NoteAdapter.NoteViewHolder>(DIFF_CALLBACK) {
 
     /** While true, cards show a check circle instead of the pin and mark the selected ones. */
@@ -71,6 +73,7 @@ class NoteAdapter(
         val btnPin: ImageButton    = view.findViewById(R.id.btnPin)
         val pinFold: View          = view.findViewById(R.id.pinFold)
         val folderChip: TextView   = view.findViewById(R.id.txtFolder)
+        val btnMore: ImageButton   = view.findViewById(R.id.btnMore)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -163,6 +166,9 @@ class NoteAdapter(
             )
             .build()
         holder.pinFold.visibility = if (folded) View.VISIBLE else View.GONE
+
+        holder.btnMore.visibility = if (onMoreClick != null) View.VISIBLE else View.GONE
+        holder.btnMore.setOnClickListener { onMoreClick?.invoke(note) }
 
         holder.itemView.setOnClickListener     { onClick(note) }
         holder.itemView.setOnLongClickListener { onLongClick(note); true }

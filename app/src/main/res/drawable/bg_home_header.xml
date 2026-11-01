@@ -1,0 +1,12 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Starts in the app-bar color so it meets the status bar without a seam -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="@color/colorAppBar"
+                android:endColor="@color/home_head_end"/>
+        </shape>
+    </item>
+    <item android:drawable="@drawable/bg_home_header_waves"/>
+</layer-list>

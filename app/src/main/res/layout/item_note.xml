@@ -5,8 +5,8 @@
     android:id="@+id/cardNote"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    app:cardElevation="2dp"
+    android:layout_margin="6dp"
+    app:cardElevation="3dp"
     app:cardCornerRadius="@dimen/card_corner_radius"
     app:strokeWidth="0dp"
     app:cardBackgroundColor="?attr/colorSurface">
@@ -15,81 +15,110 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- Faint waves along the bottom edge -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="84dp"
+            android:layout_gravity="bottom"
+            android:scaleType="fitXY"
+            android:src="@drawable/bg_card_wave"
+            android:importantForAccessibility="no"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
 
+            <!-- Title -->
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnSurface"
+                android:paddingEnd="46dp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:lineSpacingMultiplier="1.1"/>
+
+            <!-- Description -->
+            <TextView
+                android:id="@+id/txtDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:layout_marginTop="6dp"
+                android:maxLines="6"
+                android:ellipsize="end"
+                android:lineSpacingMultiplier="1.3"/>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="?attr/colorOutline"
+                android:alpha="0.28"/>
+
+            <!-- The folder this note lives in (if any): its own line so a long name never squeezes the date -->
+            <TextView
+                android:id="@+id/txtFolder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:drawablePadding="5dp"
+                android:gravity="center_vertical"
+                android:paddingStart="8dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:visibility="gone"/>
+
+            <!-- Footer: calendar + date on the left, "more" on the right -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="14dp">
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-                <!-- Title -->
-                <TextView
-                    android:id="@+id/txtTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:paddingEnd="26dp"
-                    android:maxLines="2"
-                    android:ellipsize="end"
-                    android:lineSpacingMultiplier="1.1"/>
-
-                <!-- Description -->
-                <TextView
-                    android:id="@+id/txtDesc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="13sp"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:layout_marginTop="5dp"
-                    android:maxLines="8"
-                    android:ellipsize="end"
-                    android:lineSpacingMultiplier="1.3"/>
-
-                <!-- Divider -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
-                    android:background="?attr/colorOutline"
-                    android:alpha="0.28"/>
-
-                <!-- Footer. A long folder name must never squeeze the date, so the folder pill gets
-                     its own line (full width, name cut with "…") and the date sits below it. -->
-                <TextView
-                    android:id="@+id/txtFolder"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:drawablePadding="5dp"
-                    android:gravity="center_vertical"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"
-                    android:visibility="gone"/>
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_calendar"
+                    android:alpha="0.8"
+                    android:importantForAccessibility="no"
+                    app:tint="?attr/colorOnSurface"/>
 
                 <TextView
                     android:id="@+id/txtTimestamp"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
                     android:maxLines="1"
-                    android:textSize="11sp"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:alpha="0.65"
-                    android:gravity="end"/>
+                    android:textSize="12sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:alpha="0.8"/>
 
+                <ImageButton
+                    android:id="@+id/btnMore"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_more_horiz"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="More actions"
+                    android:visibility="gone"
+                    app:tint="?attr/colorOnSurface"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -104,16 +133,17 @@
             android:importantForAccessibility="no"
             android:visibility="gone"/>
 
+        <!-- Pin: the clip sits on a small white circle -->
         <ImageButton
             android:id="@+id/btnPin"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
             android:layout_gravity="top|end"
             android:layout_marginTop="12dp"
-            android:layout_marginEnd="6dp"
-            android:padding="4dp"
+            android:layout_marginEnd="10dp"
+            android:padding="7dp"
             android:src="@drawable/ic_pin"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/bg_pin_circle"
             android:contentDescription="@string/pin_note"/>
 
     </FrameLayout>
