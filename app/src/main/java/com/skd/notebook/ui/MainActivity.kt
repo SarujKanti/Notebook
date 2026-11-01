@@ -12,7 +12,6 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -503,11 +502,13 @@ class MainActivity : AppCompatActivity() {
     private fun showMoveFolderDialog(note: NoteEntity) {
         val folders = viewModel.folders.value.orEmpty()
         if (folders.isEmpty()) {
-            MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-                .setTitle("No folders")
-                .setMessage("Create a folder first from Menu → Folders.")
-                .setPositiveButton("OK", null)
-                .show()
+            showAppDialog(
+                title = "No folders yet",
+                icon = R.drawable.ic_folder,
+                message = "Create a folder first from Menu → Folders, then move notes into it.",
+                positiveText = "Got it",
+                negativeText = null
+            )
             return
         }
         showActionSheet(
@@ -522,30 +523,27 @@ class MainActivity : AppCompatActivity() {
     private fun showThemeDialog() {
         val modes  = intArrayOf(ThemePrefs.SYSTEM, ThemePrefs.LIGHT, ThemePrefs.DARK)
         val labels = arrayOf("System default", "Light", "Dark")
-        MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-            .setTitle("Choose theme")
-            .setSingleChoiceItems(labels, modes.indexOf(ThemePrefs.saved(this)).coerceAtLeast(0)) { dialog, which ->
-                dialog.dismiss()
-                ThemePrefs.set(this, modes[which])
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+        showChoiceDialog(
+            title = "Choose theme",
+            icon = R.drawable.ic_theme,
+            labels = labels.toList(),
+            selectedIndex = modes.indexOf(ThemePrefs.saved(this)).coerceAtLeast(0)
+        ) { which -> ThemePrefs.set(this, modes[which]) }
     }
 
     // ─── Auth ────────────────────────────────────────────────────────────────
 
     /** Shown once, right after arriving here via the login screen's Skip button. */
     private fun showGuestModeDialog() {
-        MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-            .setTitle("You're browsing as a guest")
-            .setMessage(
-                "You can create notes, folders and files, but they'll only be stored on " +
+        showAppDialog(
+            title = "You're browsing as a guest",
+            icon = R.drawable.ic_account,
+            message = "You can create notes, folders and files, but they'll only be stored on " +
                 "this device. Log in with your Google account to back everything up and " +
-                "sync it to the cloud."
-            )
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("Login") { _, _ -> startGoogleSignIn() }
-            .show()
+                "sync it to the cloud.",
+            positiveText = "Login",
+            onPositive = { startGoogleSignIn() }
+        )
     }
 
     private fun signOut() {

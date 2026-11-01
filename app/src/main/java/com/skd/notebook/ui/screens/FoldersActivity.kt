@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.skd.notebook.R
@@ -31,7 +30,7 @@ import com.skd.notebook.ui.FolderAdapter
 import com.skd.notebook.ui.NoteViewModel
 import com.skd.notebook.ui.showCustomColorDialog
 import com.skd.notebook.ui.showActionSheet
-import com.skd.notebook.ui.tintPositiveButtonDestructive
+import com.skd.notebook.ui.showAppDialog
 import com.skd.notebook.util.fitTopInsetAsPadding
 
 class FoldersActivity : AppCompatActivity() {
@@ -110,13 +109,14 @@ class FoldersActivity : AppCompatActivity() {
     }
 
     private fun confirmDelete(folder: FolderEntity) {
-        val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-            .setTitle("Delete \"${folder.name}\"?")
-            .setMessage("Notes inside this folder will be moved back to your main notes.")
-            .setPositiveButton("Delete") { _, _ -> viewModel.deleteFolder(folder) }
-            .setNegativeButton("Cancel", null)
-            .show()
-        dialog.tintPositiveButtonDestructive(this)
+        showAppDialog(
+            title = "Delete \"${folder.name}\"?",
+            icon = R.drawable.ic_delete,
+            message = "Notes inside this folder will be moved back to your main notes.",
+            destructive = true,
+            positiveText = "Delete",
+            onPositive = { viewModel.deleteFolder(folder) }
+        )
     }
 
     // ── Create / Edit folder bottom-sheet ────────────────────────────────────

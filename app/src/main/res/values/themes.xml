@@ -21,14 +21,18 @@
 
     <style name="Theme.NoteBook" parent="Base.Theme.NoteBook" />
 
+    <!-- Toolbars sit on the purple app bar: overflow (three dots) and menu icons must be light -->
+    <style name="ThemeOverlay.NoteBook.Toolbar" parent="">
+        <item name="colorControlNormal">@color/colorOnPrimary</item>
+    </style>
+
     <!-- Rounded MaterialAlertDialog used throughout the app -->
     <style name="MaterialAlertDialog_Rounded" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Dialog.Rounded</item>
-        <item name="android:paddingTop">8dp</item>
     </style>
 
     <style name="ShapeAppearance.Dialog.Rounded" parent="ShapeAppearance.MaterialComponents.MediumComponent">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">20dp</item>
+        <item name="cornerSize">28dp</item>
     </style>
 </resources>
