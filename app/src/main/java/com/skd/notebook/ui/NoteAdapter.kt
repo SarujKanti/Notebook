@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.shape.CornerFamily
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.NoteColors
@@ -48,6 +49,7 @@ class NoteAdapter(
             override fun areContentsTheSame(a: NoteEntity, b: NoteEntity) = a == b
         }
         private val DATE_FORMAT = SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
+        private const val FOLD_SIZE_DP = 18f // matches bg_pin_fold
     }
 
     inner class NoteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -64,6 +66,7 @@ class NoteAdapter(
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val note = getItem(position)
+        val folded = showPin && note.isPinned // pinned notes get the folded corner instead of an outline
         val ctx  = holder.itemView.context
 
         val highlightColor = ColorUtils.setAlphaComponent(ContextCompat.getColor(ctx, R.color.colorAccent), 0x99)
@@ -81,11 +84,11 @@ class NoteAdapter(
             holder.card.setCardBackgroundColor(cardColor)
             holder.card.strokeWidth = 0
         } else {
-            // Default surface card (white in light, dark in dark) with a hairline outline
+            // Default surface card (white in light, dark in dark); the hairline outline is dropped on folded cards
             holder.card.setCardBackgroundColor(
                 ContextCompat.getColor(ctx, R.color.colorSurface)
             )
-            holder.card.strokeWidth = ctx.resources.getDimensionPixelSize(R.dimen.card_stroke_width)
+            holder.card.strokeWidth = if (folded) 0 else ctx.resources.getDimensionPixelSize(R.dimen.card_stroke_width)
             holder.card.strokeColor = ContextCompat.getColor(ctx, R.color.colorSurfaceVariant)
         }
 
@@ -109,7 +112,16 @@ class NoteAdapter(
             holder.btnPin.visibility = View.GONE
         }
 
-        holder.pinFold.visibility = if (showPin && note.isPinned) View.VISIBLE else View.GONE
+        // A folded note really has its top-right corner cut off (not painted over), so no card
+        // edge or shadow is left showing around the missing corner. Others keep the round corner.
+        val density = ctx.resources.displayMetrics.density
+        holder.card.shapeAppearanceModel = holder.card.shapeAppearanceModel.toBuilder()
+            .setTopRightCorner(
+                if (folded) CornerFamily.CUT else CornerFamily.ROUNDED,
+                if (folded) FOLD_SIZE_DP * density else ctx.resources.getDimension(R.dimen.card_corner_radius)
+            )
+            .build()
+        holder.pinFold.visibility = if (folded) View.VISIBLE else View.GONE
 
         holder.itemView.setOnClickListener     { onClick(note) }
         holder.itemView.setOnLongClickListener { onLongClick(note); true }
