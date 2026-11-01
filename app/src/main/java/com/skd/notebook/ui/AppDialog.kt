@@ -18,6 +18,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.skd.notebook.R
+import com.skd.notebook.util.AppSettings
 
 /**
  * The one dialog design used across the app: a round icon badge, centered title and message,
@@ -35,7 +36,8 @@ fun Context.showAppDialog(
     positiveText: String? = "OK",
     onPositive: () -> Unit = {},
     negativeText: String? = "Cancel",
-    content: View? = null
+    content: View? = null,
+    onCancel: (() -> Unit)? = null
 ): AlertDialog {
     val view = LayoutInflater.from(this).inflate(R.layout.dialog_app, null)
 
@@ -61,6 +63,7 @@ fun Context.showAppDialog(
         }
     }
 
+    var acted = false // set when the action button is used, so dismissing any other way counts as cancel
     val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
         .setView(view)
         .create()
@@ -84,6 +87,7 @@ fun Context.showAppDialog(
             btnPositive.setTextColor(Color.WHITE)
         }
         btnPositive.setOnClickListener {
+            acted = true
             dialog.dismiss()
             onPositive()
         }
@@ -101,6 +105,7 @@ fun Context.showAppDialog(
         view.findViewById<LinearLayout>(R.id.dialogButtons).visibility = View.GONE
     }
 
+    onCancel?.let { cancel -> dialog.setOnDismissListener { if (!acted) cancel() } }
     dialog.show()
     return dialog
 }
@@ -142,4 +147,24 @@ fun Context.showChoiceDialog(
         content = list
     )
     return dialog
+}
+
+/**
+ * Asks "Move to Bin?" first when Delete Confirmation is on in Settings; otherwise just does it.
+ * [onCancel] runs if the user backs out, so a swiped row can slide back.
+ */
+fun Context.confirmMoveToBin(onCancel: () -> Unit = {}, onConfirm: () -> Unit) {
+    if (!AppSettings.confirmDelete(this)) {
+        onConfirm()
+        return
+    }
+    showAppDialog(
+        title = "Move to Bin?",
+        icon = R.drawable.ic_delete,
+        message = "You can restore it from the Bin later.",
+        destructive = true,
+        positiveText = "Move to Bin",
+        onPositive = onConfirm,
+        onCancel = onCancel
+    )
 }

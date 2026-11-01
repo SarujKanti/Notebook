@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
+import com.skd.notebook.ui.BaseActivity
+import com.skd.notebook.ui.confirmMoveToBin
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
@@ -18,7 +19,7 @@ import com.skd.notebook.ui.NoteViewModel
 import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.util.fitTopInsetAsPadding
 
-class ArchiveActivity : AppCompatActivity() {
+class ArchiveActivity : BaseActivity() {
 
     private lateinit var viewModel: NoteViewModel
     private lateinit var adapter: NoteAdapter
@@ -28,6 +29,10 @@ class ArchiveActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Hide Archive Preview (Settings): blank thumbnail in recent apps and no screenshots here
+        if (com.skd.notebook.util.AppSettings.hideArchivePreview(this)) {
+            window.setFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE, android.view.WindowManager.LayoutParams.FLAG_SECURE)
+        }
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_archive)
 
@@ -47,7 +52,7 @@ class ArchiveActivity : AppCompatActivity() {
             onLongClick = { note ->
                 showActionSheet(items = listOf(
                     ActionItem("Unarchive", R.drawable.ic_archive) { viewModel.unarchive(note) },
-                    ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) { viewModel.moveToBin(note) }
+                    ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) { confirmMoveToBin { viewModel.moveToBin(note) } }
                 ))
             },
             showPin = false

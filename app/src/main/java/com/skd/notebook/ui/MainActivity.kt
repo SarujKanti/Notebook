@@ -12,7 +12,6 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.WindowCompat
@@ -38,6 +37,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
+import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.NoteColors
 import com.skd.notebook.ui.auth.LoginActivity
 import com.skd.notebook.ui.screens.AboutActivity
@@ -45,14 +45,14 @@ import com.skd.notebook.ui.screens.ArchiveActivity
 import com.skd.notebook.ui.screens.BinActivity
 import com.skd.notebook.ui.screens.FoldersActivity
 import com.skd.notebook.ui.screens.SearchActivity
-import com.skd.notebook.util.ThemePrefs
+import com.skd.notebook.ui.screens.SettingsActivity
 import com.skd.notebook.util.appVersionLabel
 import com.skd.notebook.util.keepClearOfSystemBars
 import com.skd.notebook.util.peekOnScroll
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     companion object {
         /** Set on the launch intent by the "New Note" widget. */
@@ -79,6 +79,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
 
     private var isGridLayout = true
+    private var latestNotes: List<NoteEntity> = emptyList()
+    private var appliedSort: com.skd.notebook.util.SortOrder? = null
+    private var appliedGrid = true
     private var staggeredManager: StaggeredGridLayoutManager? = null
 
     // Currently open note editor sheet (if any) — used to force a save if the
@@ -173,10 +176,15 @@ class MainActivity : AppCompatActivity() {
         // blank out until the next update.
         var firstNoteId: String? = null
         var lastCount = -1
-        viewModel.activeNotes.observe(this) { notes ->
+        viewModel.activeNotes.observe(this) { unsorted ->
+            latestNotes = unsorted
+            appliedSort = AppSettings.sortOrder(this)
+            val notes = appliedSort!!.apply(unsorted)
             tvSectionTitle.text = if (notes.isEmpty()) getString(R.string.my_notes) else getString(R.string.my_notes_count, notes.size)
             val newFirstId = notes.firstOrNull()?.id
-            val noteMovedToTop = lastCount >= 0 && notes.size >= lastCount &&
+            // "Jump to top" only makes sense when the newest note is what sits at the top.
+            val noteMovedToTop = appliedSort == com.skd.notebook.util.SortOrder.NEWEST &&
+                lastCount >= 0 && notes.size >= lastCount &&
                 newFirstId != null && newFirstId != firstNoteId
             firstNoteId = newFirstId
             lastCount = notes.size
@@ -250,6 +258,18 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         navigationView.setCheckedItem(R.id.navNotes)
+        applySettingsChanges()
+    }
+
+    /** Picks up a new default sorting / view chosen in Settings while this screen was behind. */
+    private fun applySettingsChanges() {
+        val sort = AppSettings.sortOrder(this)
+        if (appliedSort != null && sort != appliedSort) {
+            appliedSort = sort
+            adapter.submitList(sort.apply(latestNotes))
+        }
+        val grid = AppSettings.gridView(this)
+        if (grid != appliedGrid) setGridLayout(grid)
     }
 
     // Force-save the note editor if it's still open when the app is backgrounded,
@@ -389,7 +409,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navFolders -> startActivity(Intent(this, FoldersActivity::class.java))
                 R.id.navArchive -> startActivity(Intent(this, ArchiveActivity::class.java))
                 R.id.navBin     -> startActivity(Intent(this, BinActivity::class.java))
-                R.id.navTheme   -> showThemeDialog()
+                R.id.navSettings -> startActivity(Intent(this, SettingsActivity::class.java))
                 R.id.navAbout   -> startActivity(Intent(this, AboutActivity::class.java))
                 R.id.navSignOut -> if (isGuestMode()) startGoogleSignIn() else signOut()
             }
@@ -400,18 +420,31 @@ class MainActivity : AppCompatActivity() {
     // ─── RecyclerView ────────────────────────────────────────────────────────
 
     private fun setupRecyclerView() {
-        val spanCount = resources.getInteger(R.integer.grid_span_count)
+        isGridLayout = AppSettings.gridView(this)
+        appliedGrid = isGridLayout
+        val spanCount = if (isGridLayout) resources.getInteger(R.integer.grid_span_count) else 1
         staggeredManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = staggeredManager
         recyclerView.adapter = adapter
-    }
-
-    private fun toggleLayout() {
-        val spanCount = resources.getInteger(R.integer.grid_span_count)
-        isGridLayout = !isGridLayout
-        staggeredManager?.spanCount = if (isGridLayout) spanCount else 1
         btnToggleLayout.setImageResource(
             if (isGridLayout) R.drawable.ic_view_module else R.drawable.ic_view_list
+        )
+    }
+
+    /** The toggle button changes the saved default view too, so it matches what Settings shows. */
+    private fun toggleLayout() {
+        val grid = !isGridLayout
+        AppSettings.setGridView(this, grid)
+        setGridLayout(grid)
+    }
+
+    private fun setGridLayout(grid: Boolean) {
+        val spanCount = resources.getInteger(R.integer.grid_span_count)
+        isGridLayout = grid
+        appliedGrid = grid
+        staggeredManager?.spanCount = if (grid) spanCount else 1
+        btnToggleLayout.setImageResource(
+            if (grid) R.drawable.ic_view_module else R.drawable.ic_view_list
         )
     }
 
@@ -442,10 +475,12 @@ class MainActivity : AppCompatActivity() {
                     adapter.notifyDataSetChanged()
                     return
                 }
-                viewModel.moveToBin(note)
-                Snackbar.make(recyclerView, "Moved to Bin", Snackbar.LENGTH_LONG)
-                    .setAction("UNDO") { viewModel.restoreFromBin(note) }
-                    .show()
+                confirmMoveToBin(onCancel = { adapter.notifyItemChanged(position) }) {
+                    viewModel.moveToBin(note)
+                    Snackbar.make(recyclerView, "Moved to Bin", Snackbar.LENGTH_LONG)
+                        .setAction("UNDO") { viewModel.restoreFromBin(note) }
+                        .show()
+                }
             }
 
             override fun onChildDraw(c: Canvas, rv: RecyclerView, vh: RecyclerView.ViewHolder,
@@ -491,10 +526,12 @@ class MainActivity : AppCompatActivity() {
             },
             ActionItem("Move to Folder", R.drawable.ic_folder) { showMoveFolderDialog(note) },
             ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) {
-                viewModel.moveToBin(note)
-                Snackbar.make(recyclerView, "Moved to Bin", Snackbar.LENGTH_LONG)
-                    .setAction("UNDO") { viewModel.restoreFromBin(note) }
-                    .show()
+                confirmMoveToBin {
+                    viewModel.moveToBin(note)
+                    Snackbar.make(recyclerView, "Moved to Bin", Snackbar.LENGTH_LONG)
+                        .setAction("UNDO") { viewModel.restoreFromBin(note) }
+                        .show()
+                }
             }
         ))
     }
@@ -517,18 +554,6 @@ class MainActivity : AppCompatActivity() {
                 ActionItem(folder.name, R.drawable.ic_folder) { viewModel.moveToFolder(note, folder.id) }
             }
         )
-    }
-
-    /** Light / Dark / System choice. Applies immediately; "System default" is the default. */
-    private fun showThemeDialog() {
-        val modes  = intArrayOf(ThemePrefs.SYSTEM, ThemePrefs.LIGHT, ThemePrefs.DARK)
-        val labels = arrayOf("System default", "Light", "Dark")
-        showChoiceDialog(
-            title = "Choose theme",
-            icon = R.drawable.ic_theme,
-            labels = labels.toList(),
-            selectedIndex = modes.indexOf(ThemePrefs.saved(this)).coerceAtLeast(0)
-        ) { which -> ThemePrefs.set(this, modes[which]) }
     }
 
     // ─── Auth ────────────────────────────────────────────────────────────────

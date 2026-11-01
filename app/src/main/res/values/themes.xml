@@ -21,6 +21,11 @@
 
     <style name="Theme.NoteBook" parent="Base.Theme.NoteBook" />
 
+    <style name="TextAppearance.NoteBook.ToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
     <!-- Toolbars sit on the purple app bar: overflow (three dots) and menu icons must be light -->
     <style name="ThemeOverlay.NoteBook.Toolbar" parent="">
         <item name="colorControlNormal">@color/colorOnPrimary</item>

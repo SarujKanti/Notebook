@@ -6,7 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
+import com.skd.notebook.ui.BaseActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
@@ -24,7 +24,7 @@ import com.skd.notebook.util.fitTopInsetAsPadding
  * Bin. Long-press a note to start selecting; tap more notes to add or remove them, or use
  * "Select all". Selected notes can be restored or deleted forever. "Empty Bin" is in the menu.
  */
-class BinActivity : AppCompatActivity() {
+class BinActivity : BaseActivity() {
 
     private lateinit var viewModel: NoteViewModel
     private lateinit var adapter: NoteAdapter
