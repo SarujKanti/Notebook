@@ -22,6 +22,12 @@
 
     <!-- Small helpers that differ between light and dark (see values-night/colors.xml) -->
     <color name="colorSectionLabel">#00875A</color>
+
+    <!-- Home-screen widget surfaces (the launcher draws them, so they get their own light/dark pair) -->
+    <color name="colorWidgetSurface">#FFFFFF</color>
+    <color name="colorWidgetTitle">#0F0F0F</color>
+    <color name="colorWidgetBody">#6E6E73</color>
+    <color name="colorWidgetDivider">#E0E0E0</color>
     <color name="colorFeatureIconBg">#EDE9F9</color>
 
     <!-- Surface & background -->

@@ -40,23 +40,7 @@ class PinnedNotesRemoteViewsFactory(
     override fun getViewAt(position: Int): RemoteViews = try {
         val note = notes.getOrNull(position)
             ?: return RemoteViews(context.packageName, R.layout.widget_pinned_note_item)
-        val views = RemoteViews(context.packageName, R.layout.widget_pinned_note_item)
-
-        views.setTextViewText(R.id.itemTitle, note.title)
-        views.setViewVisibility(R.id.itemTitle, if (note.title.isBlank()) View.GONE else View.VISIBLE)
-
-        views.setTextViewText(R.id.itemDesc, note.description)
-        views.setViewVisibility(R.id.itemDesc, if (note.description.isBlank()) View.GONE else View.VISIBLE)
-
-        val accentColor = if (note.color.isNotEmpty()) {
-            runCatching { Color.parseColor(note.color) }.getOrNull()
-        } else null
-        views.setInt(R.id.itemAccent, "setBackgroundColor", accentColor ?: DEFAULT_ACCENT)
-
-        val fillInIntent = Intent().putExtra(MainActivity.EXTRA_NOTE_ID, note.id)
-        views.setOnClickFillInIntent(R.id.pinnedItemRoot, fillInIntent)
-
-        views
+        buildRow(context, note)
     } catch (e: Exception) {
         Log.e(TAG, "getViewAt($position) failed — falling back to a blank row", e)
         RemoteViews(context.packageName, R.layout.widget_pinned_note_item)
@@ -70,5 +54,25 @@ class PinnedNotesRemoteViewsFactory(
     companion object {
         private const val TAG = "PinnedNotesWidget"
         private const val DEFAULT_ACCENT = 0xFF7B5CF0.toInt() // colorPrimaryLight
+
+        /** One list row for [note]. Kept separate from the factory so it can be exercised directly. */
+        fun buildRow(context: Context, note: NoteEntity): RemoteViews {
+            val views = RemoteViews(context.packageName, R.layout.widget_pinned_note_item)
+
+            views.setTextViewText(R.id.itemTitle, note.title)
+            views.setViewVisibility(R.id.itemTitle, if (note.title.isBlank()) View.GONE else View.VISIBLE)
+
+            views.setTextViewText(R.id.itemDesc, note.description)
+            views.setViewVisibility(R.id.itemDesc, if (note.description.isBlank()) View.GONE else View.VISIBLE)
+
+            val accentColor = if (note.color.isNotEmpty()) {
+                runCatching { Color.parseColor(note.color) }.getOrNull()
+            } else null
+            views.setInt(R.id.itemAccent, "setBackgroundColor", accentColor ?: DEFAULT_ACCENT)
+
+            val fillInIntent = Intent().putExtra(MainActivity.EXTRA_NOTE_ID, note.id)
+            views.setOnClickFillInIntent(R.id.pinnedItemRoot, fillInIntent)
+            return views
+        }
     }
 }
