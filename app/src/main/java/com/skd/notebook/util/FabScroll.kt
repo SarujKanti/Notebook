@@ -87,3 +87,61 @@ fun ExtendedFloatingActionButton.peekOnScroll(recyclerView: RecyclerView, onClic
 
     setOnClickListener { if (peeking) reveal() else onClick() }
 }
+
+/**
+ * The round, icon-only New Note button: the same tuck-away behaviour, built so the "+" is centered by
+ * construction (a plain circle holding a centered icon, so there is no button padding to get wrong).
+ *
+ * While tucked, half of the circle stays on screen and [icon] slides to the middle of that visible half,
+ * so the "+" is never cut off. Tapping the sliver brings the button back instead of creating a note.
+ */
+fun View.peekCircleOnScroll(recyclerView: RecyclerView, icon: View, onClick: () -> Unit) {
+    val fab = this
+    var peeking = false
+    val threshold = resources.displayMetrics.density * 2
+
+    fun edgeDirection() = if (fab.layoutDirection == View.LAYOUT_DIRECTION_RTL) -1f else 1f
+
+    fun tuck() {
+        if (peeking) return
+        peeking = true
+        val margin = (fab.layoutParams as? android.view.ViewGroup.MarginLayoutParams)?.marginEnd ?: 0
+        val hiddenPart = fab.width * (1f - PEEK_VISIBLE_FRACTION) + margin
+        fab.animate().cancel()
+        fab.animate()
+            .translationX(hiddenPart * edgeDirection())
+            .setDuration(SLIDE_DURATION_MS)
+            .setInterpolator(DecelerateInterpolator())
+            .start()
+        // The visible half's middle is a quarter of the circle away from its center.
+        icon.animate().cancel()
+        icon.animate()
+            .translationX(-edgeDirection() * fab.width * (1f - PEEK_VISIBLE_FRACTION) / 2f)
+            .setDuration(SLIDE_DURATION_MS)
+            .setInterpolator(DecelerateInterpolator())
+            .start()
+    }
+
+    fun reveal() {
+        if (!peeking) return
+        peeking = false
+        fab.animate().cancel()
+        fab.animate().translationX(0f).setDuration(SLIDE_DURATION_MS)
+            .setInterpolator(DecelerateInterpolator()).start()
+        icon.animate().cancel()
+        icon.animate().translationX(0f).setDuration(SLIDE_DURATION_MS)
+            .setInterpolator(DecelerateInterpolator()).start()
+    }
+
+    recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
+            when {
+                !rv.canScrollVertically(-1) -> reveal()
+                dy > threshold -> tuck()
+                dy < -threshold -> reveal()
+            }
+        }
+    })
+
+    setOnClickListener { if (peeking) reveal() else onClick() }
+}

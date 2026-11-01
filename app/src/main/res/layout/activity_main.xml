@@ -295,22 +295,30 @@
             android:clipToPadding="false"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-        <!-- Round "+" button (no label): a fixed 60dp circle, also when it shrinks to tuck away on scroll -->
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        <!-- Round "+" button: a 60dp circle holding a centered icon (see peekCircleOnScroll) -->
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/fabAdd"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="bottom|end"
             android:layout_marginBottom="80dp"
             android:layout_marginEnd="16dp"
+            android:clickable="true"
+            android:focusable="true"
             android:contentDescription="New note"
-            app:icon="@drawable/ic_add"
-            app:iconSize="30dp"
-            app:iconTint="@android:color/white"
-            app:collapsedSize="60dp"
-            app:backgroundTint="@color/fab_home"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.NoteBook.Circle"
-            app:elevation="8dp"/>
+            app:cardCornerRadius="30dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/fab_home">
+
+            <ImageView
+                android:id="@+id/fabAddIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_add"
+                android:importantForAccessibility="no"/>
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

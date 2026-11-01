@@ -37,7 +37,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -56,7 +55,7 @@ import com.skd.notebook.ui.screens.SearchActivity
 import com.skd.notebook.ui.screens.SettingsActivity
 import com.skd.notebook.util.appVersionLabel
 import com.skd.notebook.util.keepClearOfSystemBars
-import com.skd.notebook.util.peekOnScroll
+import com.skd.notebook.util.peekCircleOnScroll
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -78,7 +77,7 @@ class MainActivity : BaseActivity() {
     private lateinit var viewModel: NoteViewModel
     private lateinit var adapter: NoteAdapter
     private lateinit var recyclerView: RecyclerView
-    private lateinit var fabAdd: ExtendedFloatingActionButton
+    private lateinit var fabAdd: View
     private lateinit var tvSectionTitle: TextView
     private lateinit var layoutEmpty: LinearLayout
     private lateinit var btnToggleLayout: ImageButton
@@ -220,7 +219,7 @@ class MainActivity : BaseActivity() {
         }
         viewModel.startRealtimeSync()
 
-        fabAdd.peekOnScroll(recyclerView) { showNoteDialog(null) }
+        fabAdd.peekCircleOnScroll(recyclerView, findViewById(R.id.fabAddIcon)) { showNoteDialog(null) }
         btnMenu.setOnClickListener         { drawerLayout.openDrawer(GravityCompat.START) }
 
         // Search pill → open SearchActivity
