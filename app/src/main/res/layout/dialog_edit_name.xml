@@ -30,7 +30,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Edit name"
+            android:text="Edit profile"
             android:textSize="19sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"/>
@@ -53,6 +53,90 @@
         android:background="?attr/colorOutlineVariant"
         android:alpha="0.4"/>
 
+    <!-- Profile picture: tap it (or "Change photo") to pick one from the device -->
+    <FrameLayout
+        android:id="@+id/avatarBlock"
+        android:layout_width="104dp"
+        android:layout_height="104dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="Profile picture">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivEditAvatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="3dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/bg_drawer_avatar"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.NoteBook.Circle"/>
+
+        <TextView
+            android:id="@+id/tvEditAvatarInitial"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"/>
+
+        <FrameLayout
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_gravity="bottom|end"
+            android:background="@drawable/bg_glass_primary">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_camera"
+                android:importantForAccessibility="no"/>
+        </FrameLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/btnChangePhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="Change photo"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#CDBBFF"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:id="@+id/btnRemovePhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="Remove"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#FF9A93"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"/>
+    </LinearLayout>
+
     <!-- Name field (Material OutlinedBox) -->
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -60,7 +144,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:hint="Your name"
         app:boxCornerRadiusTopStart="12dp"

@@ -79,14 +79,26 @@
                     android:focusable="true"
                     android:background="@drawable/bg_glass_circle"
                     android:foreground="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="Profile">
+                    android:contentDescription="Edit profile">
 
                     <ImageView
+                        android:id="@+id/ivProfileIcon"
                         android:layout_width="26dp"
                         android:layout_height="26dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_person_filled"
                         android:importantForAccessibility="no"/>
+
+                    <!-- The user's own photo, when they set one -->
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivProfilePhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="2dp"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"
+                        android:importantForAccessibility="no"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.NoteBook.Circle"/>
                 </FrameLayout>
             </LinearLayout>
 

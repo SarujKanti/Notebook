@@ -25,6 +25,16 @@
             android:layout_gravity="start"
             android:background="@drawable/bg_drawer_avatar">
 
+            <!-- The user's own photo, when they set one; the initial below is shown otherwise -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivNavAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="3dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.NoteBook.Circle"/>
+
             <TextView
                 android:id="@+id/tvNavInitial"
                 android:layout_width="match_parent"
