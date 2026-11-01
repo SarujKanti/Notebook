@@ -16,6 +16,8 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.skd.notebook.R
 import com.skd.notebook.ui.AppLock
@@ -26,7 +28,6 @@ import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.FontPrefs
 import com.skd.notebook.util.SortOrder
 import com.skd.notebook.util.ThemePrefs
-import com.skd.notebook.util.keepClearOfSystemBars
 
 /**
  * Settings: Personalization, Note preferences, Security & privacy, Support & information.
@@ -51,16 +52,31 @@ class SettingsActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, true)
+        // Draw edge to edge and pad by the real bar sizes ourselves; the old "measure where the view
+        // landed" trick left the status bar area white after the screen was recreated.
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_settings)
 
-        findViewById<View>(R.id.appBarLayout).keepClearOfSystemBars(top = true)
+        applySystemBarInsets()
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Settings"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         buildScreen()
+    }
+
+    /** Purple app bar grows under the status bar; the list gets room above the navigation bar. */
+    private fun applySystemBarInsets() {
+        val appBar = findViewById<View>(R.id.appBarLayout)
+        val content = findViewById<View>(R.id.settingsContainer)
+        val baseBottom = content.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settingsRoot)) { _, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            appBar.setPadding(0, bars.top, 0, 0)
+            content.setPadding(content.paddingLeft, content.paddingTop, content.paddingRight, baseBottom + bars.bottom)
+            insets
+        }
     }
 
     /** Rebuilds every row; called again after a value changes so the chips show the new value. */
@@ -72,13 +88,13 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun sections() = listOf(
-        Section(R.drawable.ic_person_filled, "PERSONALIZATION", listOf(
+        Section(R.drawable.ic_person_filled, "Personalization", listOf(
             Row(R.drawable.ic_theme, "Theme", "Light / Dark / System Default",
                 value = { themeLabel() }, onClick = { chooseTheme() }),
             Row(R.drawable.ic_font_size, "Font Size", "Small / Medium / Large",
                 value = { FontPrefs.LABELS[FontPrefs.saved(this)] }, onClick = { chooseFontSize() })
         )),
-        Section(R.drawable.ic_notes, "NOTE PREFERENCES", listOf(
+        Section(R.drawable.ic_notes, "Note preferences", listOf(
             Row(R.drawable.ic_sort, "Default Sorting", "Newest / Oldest / Alphabetical",
                 value = { AppSettings.sortOrder(this).chip }, onClick = { chooseSorting() }),
             Row(R.drawable.ic_view_module, "Default View", "Grid / List",
@@ -87,14 +103,14 @@ class SettingsActivity : BaseActivity() {
                 isOn = { AppSettings.confirmDelete(this) },
                 onToggle = { AppSettings.setConfirmDelete(this, it) })
         )),
-        Section(R.drawable.ic_shield, "SECURITY & PRIVACY", listOf(
+        Section(R.drawable.ic_shield, "Security & privacy", listOf(
             Row(R.drawable.ic_lock, "App Lock", "PIN / Fingerprint protection",
                 isOn = { AppSettings.appLock(this) }, onToggle = { setAppLock(it) }),
             Row(R.drawable.ic_visibility_off, "Hide Archive Preview", "Hide Archive in recent apps and screenshots",
                 isOn = { AppSettings.hideArchivePreview(this) },
                 onToggle = { AppSettings.setHideArchivePreview(this, it) })
         )),
-        Section(R.drawable.ic_info, "SUPPORT & INFORMATION", listOf(
+        Section(R.drawable.ic_info, "Support & information", listOf(
             Row(R.drawable.ic_feedback, "Send Feedback", onClick = { sendFeedback() }),
             Row(R.drawable.ic_star, "Rate NoteStack", onClick = { rateApp() }),
             Row(R.drawable.ic_privacy, "Privacy Policy", onClick = { openLink(PRIVACY_POLICY_URL) }),
@@ -107,7 +123,6 @@ class SettingsActivity : BaseActivity() {
     private fun inflateSection(section: Section, parent: ViewGroup): View {
         val inflater = LayoutInflater.from(this)
         val card = inflater.inflate(R.layout.item_setting_section, parent, false)
-        card.findViewById<ImageView>(R.id.sectionIcon).setImageResource(section.icon)
         card.findViewById<TextView>(R.id.sectionTitle).text = section.title
 
         val rows = card.findViewById<LinearLayout>(R.id.sectionRows)
@@ -171,7 +186,7 @@ class SettingsActivity : BaseActivity() {
     private fun divider() = View(this).apply {
         val dp = resources.displayMetrics.density
         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1).also {
-            it.marginStart = (58 * dp).toInt()
+            it.marginStart = (76 * dp).toInt()
             it.marginEnd = (16 * dp).toInt()
         }
         setBackgroundColor(com.google.android.material.color.MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutlineVariant))
