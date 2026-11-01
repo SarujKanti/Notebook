@@ -12,11 +12,11 @@ android {
     defaultConfig {
 
         applicationId = "com.skd.notebook"
-        minSdk = 23
+        minSdk = 25
 
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 4
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
