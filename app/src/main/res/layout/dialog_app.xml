@@ -1,87 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<!-- Glass dialog. The outer padding leaves room around the panel because the dialog window itself is transparent. -->
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:paddingStart="24dp"
-    android:paddingEnd="24dp"
-    android:paddingTop="28dp"
-    android:paddingBottom="20dp">
-
-    <!-- Round badge; its tint is set in code so it follows the dialog's tone -->
-    <FrameLayout
-        android:id="@+id/dialogBadge"
-        android:layout_width="64dp"
-        android:layout_height="64dp">
-
-        <ImageView
-            android:id="@+id/dialogIcon"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center"
-            android:contentDescription="@null"/>
-    </FrameLayout>
-
-    <TextView
-        android:id="@+id/dialogTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:gravity="center"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface"/>
-
-    <TextView
-        android:id="@+id/dialogMessage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:textSize="14sp"
-        android:lineSpacingMultiplier="1.2"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:visibility="gone"/>
-
-    <FrameLayout
-        android:id="@+id/dialogContent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:visibility="gone"/>
+    android:padding="14dp">
 
     <LinearLayout
-        android:id="@+id/dialogButtons"
+        android:id="@+id/dialogPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="22dp"
+        android:background="@drawable/bg_glass_panel">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/dialogNegative"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="52dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="6dp"
-            android:textAllCaps="false"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:cornerRadius="16dp"/>
+        <!-- Title + subtitle on the left, round icon on the right -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="top">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/dialogPositive"
-            android:layout_width="0dp"
-            android:layout_height="52dp"
-            android:layout_weight="1"
-            android:layout_marginStart="6dp"
-            android:textAllCaps="false"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/dialogTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textSize="25sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"/>
+
+                <TextView
+                    android:id="@+id/dialogSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textSize="15sp"
+                    android:textColor="#DCD3F7"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/dialogBadge"
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:background="@drawable/bg_glass_circle">
+
+                <ImageView
+                    android:id="@+id/dialogIcon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"/>
+            </FrameLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/dialogMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
             android:textSize="15sp"
-            android:textStyle="bold"
-            app:cornerRadius="16dp"/>
+            android:lineSpacingMultiplier="1.25"
+            android:textColor="#E9E4FA"
+            android:visibility="gone"/>
+
+        <FrameLayout
+            android:id="@+id/dialogContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:id="@+id/dialogButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/dialogNegative"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/bg_glass_button"
+                android:foreground="?attr/selectableItemBackground"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/dialogPositive"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1.25"
+                android:layout_marginStart="8dp"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/bg_glass_primary"
+                android:foreground="?attr/selectableItemBackground"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
     </LinearLayout>
-
-</LinearLayout>
+</FrameLayout>

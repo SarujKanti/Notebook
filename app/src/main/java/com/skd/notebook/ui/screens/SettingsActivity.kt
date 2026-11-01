@@ -23,6 +23,7 @@ import com.skd.notebook.R
 import com.skd.notebook.ui.AppLock
 import com.skd.notebook.ui.BaseActivity
 import com.skd.notebook.ui.showAppDialog
+import com.skd.notebook.ui.ChoiceOption
 import com.skd.notebook.ui.showChoiceDialog
 import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.FontPrefs
@@ -201,22 +202,32 @@ class SettingsActivity : BaseActivity() {
         else -> "System"
     }
 
-    /** Same choice dialog the drawer used to have. Changing the theme recreates this screen. */
+    /** Light / Dark / System default. Changing the theme recreates this screen. */
     private fun chooseTheme() {
         val modes = intArrayOf(ThemePrefs.SYSTEM, ThemePrefs.LIGHT, ThemePrefs.DARK)
         showChoiceDialog(
-            title = "Choose theme",
+            title = "Choose Theme",
+            subtitle = "Customize the app appearance",
             icon = R.drawable.ic_theme,
-            labels = listOf("System default", "Light", "Dark"),
+            options = listOf(
+                ChoiceOption("System default", "Follow your device theme (recommended)", R.drawable.ic_choice_phone),
+                ChoiceOption("Light", "Use light theme", R.drawable.ic_choice_sun),
+                ChoiceOption("Dark", "Use dark theme", R.drawable.ic_choice_moon)
+            ),
             selectedIndex = modes.indexOf(ThemePrefs.saved(this)).coerceAtLeast(0)
         ) { which -> ThemePrefs.set(this, modes[which]) }
     }
 
     private fun chooseFontSize() {
         showChoiceDialog(
-            title = "Font size",
+            title = "Font Size",
+            subtitle = "Make text smaller or larger",
             icon = R.drawable.ic_font_size,
-            labels = FontPrefs.LABELS,
+            options = listOf(
+                ChoiceOption("Small", "Compact text, fits more on screen", R.drawable.ic_font_size),
+                ChoiceOption("Medium", "The default size", R.drawable.ic_font_size),
+                ChoiceOption("Large", "Bigger text that is easier to read", R.drawable.ic_font_size)
+            ),
             selectedIndex = FontPrefs.saved(this)
         ) { which ->
             FontPrefs.set(this, which)
@@ -228,10 +239,16 @@ class SettingsActivity : BaseActivity() {
 
     private fun chooseSorting() {
         val orders = SortOrder.values().toList()
+        val hints = mapOf(
+            SortOrder.NEWEST to "Latest notes on top",
+            SortOrder.OLDEST to "Oldest notes on top",
+            SortOrder.ALPHABETICAL to "A to Z, by title"
+        )
         showChoiceDialog(
-            title = "Default sorting",
+            title = "Default Sorting",
+            subtitle = "How your notes are ordered",
             icon = R.drawable.ic_sort,
-            labels = orders.map { it.label },
+            options = orders.map { ChoiceOption(it.label, hints[it], R.drawable.ic_sort) },
             selectedIndex = orders.indexOf(AppSettings.sortOrder(this))
         ) { which ->
             AppSettings.setSortOrder(this, orders[which])
@@ -241,9 +258,13 @@ class SettingsActivity : BaseActivity() {
 
     private fun chooseView() {
         showChoiceDialog(
-            title = "Default view",
+            title = "Default View",
+            subtitle = "How your notes are laid out",
             icon = R.drawable.ic_view_module,
-            labels = listOf("Grid", "List"),
+            options = listOf(
+                ChoiceOption("Grid", "Notes side by side", R.drawable.ic_view_module),
+                ChoiceOption("List", "One note per row", R.drawable.ic_view_list)
+            ),
             selectedIndex = if (AppSettings.gridView(this)) 0 else 1
         ) { which ->
             AppSettings.setGridView(this, which == 0)

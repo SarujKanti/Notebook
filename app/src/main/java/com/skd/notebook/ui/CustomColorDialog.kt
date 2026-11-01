@@ -24,7 +24,8 @@ fun Context.showCustomColorDialog(initialColor: Int, onPicked: (String) -> Unit)
         val row = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         row.addView(TextView(this).apply {
             text = label
-            textSize = 12f
+            textSize = 13f
+            setTextColor(0xFFE9E4FA.toInt())
             setPadding(0, (12 * dp).toInt(), 0, 0)
         })
         row.addView(SeekBar(this).apply {

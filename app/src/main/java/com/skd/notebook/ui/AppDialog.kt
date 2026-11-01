@@ -1,32 +1,53 @@
 package com.skd.notebook.ui
 
+import android.app.Dialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.skd.notebook.R
 import com.skd.notebook.util.AppSettings
 
 /**
- * The one dialog design used across the app: a round icon badge, centered title and message,
- * optional custom [content], and a Cancel / action button pair. [destructive] switches the
- * badge and the action button to red.
+ * Frosted-glass look for every dialog window: the screen behind is dimmed and, on Android 12+
+ * phones that allow window blur, blurred too. Elsewhere it simply stays a translucent panel.
+ */
+internal fun Dialog.applyGlassBackdrop() {
+    val w = window ?: return
+    w.setDimAmount(0.45f)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        w.addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND)
+        val attrs = w.attributes
+        attrs.blurBehindRadius = (22 * context.resources.displayMetrics.density).toInt()
+        w.attributes = attrs
+    }
+}
+
+/** One selectable row in [showChoiceDialog]. */
+class ChoiceOption(
+    val label: String,
+    val subtitle: String? = null,
+    @DrawableRes val icon: Int = 0
+)
+
+/**
+ * The one dialog design used across the app, in frosted glass: title and subtitle on the left, a
+ * round icon on the right, an optional message or custom [content], and a Cancel / action button
+ * pair. [destructive] turns the action button red.
  *
- * Pass `positiveText = null` for a dialog that only offers dismiss (choice lists), or
- * `negativeText = null` for a single-button info dialog.
+ * Pass `positiveText = null` for a dialog that only offers dismiss, or `negativeText = null` for a
+ * single-button info dialog.
  */
 fun Context.showAppDialog(
     title: String,
@@ -37,22 +58,19 @@ fun Context.showAppDialog(
     onPositive: () -> Unit = {},
     negativeText: String? = "Cancel",
     content: View? = null,
-    onCancel: (() -> Unit)? = null
+    onCancel: (() -> Unit)? = null,
+    subtitle: String? = null
 ): AlertDialog {
     val view = LayoutInflater.from(this).inflate(R.layout.dialog_app, null)
 
-    val tone = if (destructive) ContextCompat.getColor(this, R.color.color_red_700)
-               else MaterialColors.getColor(view, androidx.appcompat.R.attr.colorPrimary)
-
-    view.findViewById<FrameLayout>(R.id.dialogBadge).background = GradientDrawable().apply {
-        shape = GradientDrawable.OVAL
-        setColor(ColorUtils.setAlphaComponent(tone, 0x2E))
-    }
     view.findViewById<ImageView>(R.id.dialogIcon).apply {
         setImageResource(icon)
-        imageTintList = ColorStateList.valueOf(tone)
+        imageTintList = ColorStateList.valueOf(if (destructive) Color.parseColor("#FF9A93") else Color.WHITE)
     }
     view.findViewById<TextView>(R.id.dialogTitle).text = title
+    view.findViewById<TextView>(R.id.dialogSubtitle).apply {
+        if (!subtitle.isNullOrBlank()) { text = subtitle; visibility = View.VISIBLE }
+    }
     view.findViewById<TextView>(R.id.dialogMessage).apply {
         if (!message.isNullOrBlank()) { text = message; visibility = View.VISIBLE }
     }
@@ -63,13 +81,17 @@ fun Context.showAppDialog(
         }
     }
 
-    var acted = false // set when the action button is used, so dismissing any other way counts as cancel
     val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
         .setView(view)
         .create()
+    // The glass panel draws its own rounded background; the window behind it must be see-through.
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    dialog.applyGlassBackdrop()
 
-    val btnNegative = view.findViewById<MaterialButton>(R.id.dialogNegative)
-    val btnPositive = view.findViewById<MaterialButton>(R.id.dialogPositive)
+    var acted = false // set when the action button is used, so dismissing any other way counts as cancel
+
+    val btnNegative = view.findViewById<TextView>(R.id.dialogNegative)
+    val btnPositive = view.findViewById<TextView>(R.id.dialogPositive)
 
     if (negativeText == null) {
         btnNegative.visibility = View.GONE
@@ -82,10 +104,7 @@ fun Context.showAppDialog(
         btnPositive.visibility = View.GONE
     } else {
         btnPositive.text = positiveText
-        if (destructive) {
-            btnPositive.backgroundTintList = ColorStateList.valueOf(tone)
-            btnPositive.setTextColor(Color.WHITE)
-        }
+        if (destructive) btnPositive.setBackgroundResource(R.drawable.bg_glass_danger)
         btnPositive.setOnClickListener {
             acted = true
             dialog.dismiss()
@@ -110,43 +129,60 @@ fun Context.showAppDialog(
     return dialog
 }
 
-/** Single-choice list in the same design; picking a row applies it and closes the dialog. */
+/**
+ * Single-choice list in the same glass design: tap a row to select it, then Apply. Each row can
+ * carry an icon and a one-line description.
+ */
 fun Context.showChoiceDialog(
     title: String,
+    subtitle: String? = null,
     @DrawableRes icon: Int,
-    labels: List<String>,
+    options: List<ChoiceOption>,
     selectedIndex: Int,
+    applyText: String = "Apply",
     onPick: (Int) -> Unit
 ): AlertDialog {
-    var dialog: AlertDialog? = null
+    var selected = selectedIndex.coerceIn(0, options.lastIndex)
     val inflater = LayoutInflater.from(this)
     val list = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-    val primary = MaterialColors.getColor(list, androidx.appcompat.R.attr.colorPrimary)
+    val rows = mutableListOf<View>()
+    val gap = (10 * resources.displayMetrics.density).toInt()
 
-    labels.forEachIndexed { index, label ->
-        val row = inflater.inflate(R.layout.item_dialog_choice, list, false)
-        val selected = index == selectedIndex
-        row.findViewById<TextView>(R.id.choiceLabel).text = label
-        row.findViewById<ImageView>(R.id.choiceMark).setImageResource(
-            if (selected) R.drawable.ic_check_circle else R.drawable.ic_circle_outline
-        )
-        row.background = GradientDrawable().apply {
-            cornerRadius = 16 * resources.displayMetrics.density
-            setColor(if (selected) ColorUtils.setAlphaComponent(primary, 0x24) else Color.TRANSPARENT)
+    fun paint() {
+        rows.forEachIndexed { index, row ->
+            val on = index == selected
+            row.setBackgroundResource(if (on) R.drawable.bg_glass_row_selected else R.drawable.bg_glass_row)
+            row.findViewById<ImageView>(R.id.choiceMark)
+                .setImageResource(if (on) R.drawable.radio_glass_on else R.drawable.radio_glass_off)
         }
-        row.setOnClickListener {
-            dialog?.dismiss()
-            onPick(index)
-        }
-        list.addView(row)
     }
 
-    dialog = showAppDialog(
-        title = title, icon = icon,
-        positiveText = null, negativeText = "Cancel",
+    options.forEachIndexed { index, option ->
+        val row = inflater.inflate(R.layout.item_dialog_choice, list, false)
+        row.findViewById<TextView>(R.id.choiceLabel).text = option.label
+        row.findViewById<TextView>(R.id.choiceSubtitle).apply {
+            if (option.subtitle == null) visibility = View.GONE else text = option.subtitle
+        }
+        row.findViewById<ImageView>(R.id.choiceIcon).apply {
+            if (option.icon == 0) visibility = View.GONE
+            else {
+                setImageResource(option.icon)
+                imageTintList = ColorStateList.valueOf(Color.WHITE)
+            }
+        }
+        row.setOnClickListener { selected = index; paint() }
+        (row.layoutParams as LinearLayout.LayoutParams).bottomMargin = if (index < options.lastIndex) gap else 0
+        rows += row
+        list.addView(row)
+    }
+    paint()
+
+    return showAppDialog(
+        title = title, subtitle = subtitle, icon = icon,
+        positiveText = applyText, onPositive = { onPick(selected) },
+        negativeText = "Cancel",
         content = list
     )
-    return dialog
 }
 
 /**

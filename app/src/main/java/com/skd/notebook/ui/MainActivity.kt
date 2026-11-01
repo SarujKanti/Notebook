@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.content.res.ColorStateList
@@ -305,8 +306,8 @@ class MainActivity : BaseActivity() {
     }
 
     private fun showEditNameDialog(currentName: String, onSaved: (String) -> Unit) {
-        val dialog = BottomSheetDialog(this)
-        val view   = layoutInflater.inflate(R.layout.dialog_edit_name, null)
+        val dialog = BottomSheetDialog(this, R.style.ThemeOverlay_NoteBook_GlassSheet).also { it.applyGlassBackdrop() }
+        val view   = LayoutInflater.from(dialog.context).inflate(R.layout.dialog_edit_name, null)
 
         val etName    = view.findViewById<TextInputEditText>(R.id.etEditName)
         val btnClose  = view.findViewById<ImageButton>(R.id.btnEditNameClose)

@@ -40,4 +40,18 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">28dp</item>
     </style>
+
+    <!-- Glass bottom sheets (action menu, folder editor, name editor): light text on a frosted panel -->
+    <style name="ThemeOverlay.NoteBook.GlassSheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorOnSurfaceVariant">#DCD3F7</item>
+        <item name="colorOutline">#99FFFFFF</item>
+        <item name="colorOutlineVariant">#33FFFFFF</item>
+        <item name="colorPrimary">#CDBBFF</item>
+        <item name="bottomSheetStyle">@style/Widget.NoteBook.GlassBottomSheet</item>
+    </style>
+
+    <style name="Widget.NoteBook.GlassBottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@android:color/transparent</item>
+    </style>
 </resources>

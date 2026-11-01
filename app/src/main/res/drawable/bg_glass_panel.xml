@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Frosted-glass panel for dialogs: a translucent purple body, a soft light sheen from the top-left,
+    and a thin bright rim. On phones that support it the window also blurs what is behind it.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Body: deep violet, mostly (but not fully) opaque so text stays readable on any screen -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="315"
+                android:startColor="#E04A3D96"
+                android:endColor="#E0281F5E"/>
+            <corners android:radius="32dp"/>
+        </shape>
+    </item>
+
+    <!-- Sheen -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="315"
+                android:startColor="#3AFFFFFF"
+                android:centerColor="#0DFFFFFF"
+                android:endColor="#1AB9A0FF"/>
+            <corners android:radius="32dp"/>
+        </shape>
+    </item>
+
+    <!-- Rim -->
+    <item>
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="1.5dp"
+                android:color="#66FFFFFF"/>
+            <corners android:radius="32dp"/>
+        </shape>
+    </item>
+</layer-list>
