@@ -100,9 +100,10 @@
 
             <!-- Section title row -->
             <TextView
+                android:id="@+id/tvSectionTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="My Notes"
+                android:text="@string/my_notes"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 android:textColor="@color/colorOnPrimary"
@@ -185,8 +186,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_marginBottom="24dp"
-            android:text="New Note"
             android:layout_marginEnd="16dp"
+            android:text="New Note"
             android:textColor="@color/colorOnAccent"
             android:textSize="15sp"
             android:textStyle="bold"
