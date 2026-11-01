@@ -200,6 +200,7 @@ class MainActivity : BaseActivity() {
             refreshEmptyState()
         }
 
+        viewModel.folders.observe(this) { adapter.setFolders(it) }
         viewModel.startRealtimeSync()
 
         fabAdd.peekOnScroll(recyclerView) { showNoteDialog(null) }

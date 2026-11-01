@@ -18,8 +18,8 @@ interface NoteDao {
     @Delete
     suspend fun delete(note: NoteEntity)
 
-    /** Active notes: not deleted, not archived, no folder */
-    @Query("SELECT * FROM notes WHERE isDeleted = 0 AND isArchived = 0 AND folderId = '' ORDER BY timestamp DESC")
+    /** Active notes for the dashboard: not deleted, not archived, whether or not they sit in a folder */
+    @Query("SELECT * FROM notes WHERE isDeleted = 0 AND isArchived = 0 ORDER BY timestamp DESC")
     fun getActiveNotes(): Flow<List<NoteEntity>>
 
     /** Bin: soft-deleted notes */

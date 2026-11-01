@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.DiffUtil
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.shape.CornerFamily
 import com.skd.notebook.R
+import com.skd.notebook.data.local.FolderEntity
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.NoteColors
 import com.skd.notebook.util.highlightMatches
@@ -43,6 +46,14 @@ class NoteAdapter(
     /** Text to mark in titles and previews (search results). Empty = no highlighting. */
     var highlightQuery: String = ""
 
+    /** Folders by id, so a note that lives in one can show which (see the folder chip). */
+    private var folders: Map<String, FolderEntity> = emptyMap()
+
+    fun setFolders(list: List<FolderEntity>) {
+        folders = list.associateBy { it.id }
+        notifyItemRangeChanged(0, itemCount)
+    }
+
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<NoteEntity>() {
             override fun areItemsTheSame(a: NoteEntity, b: NoteEntity) = a.id == b.id
@@ -59,10 +70,38 @@ class NoteAdapter(
         val timestamp: TextView    = view.findViewById(R.id.txtTimestamp)
         val btnPin: ImageButton    = view.findViewById(R.id.btnPin)
         val pinFold: View          = view.findViewById(R.id.pinFold)
+        val folderChip: TextView   = view.findViewById(R.id.txtFolder)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         NoteViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_note, parent, false))
+
+    /** "In a folder" marker: a small pill with the folder's icon (in its color) and name. */
+    private fun bindFolderChip(holder: NoteViewHolder, note: NoteEntity) {
+        val folder = if (note.folderId.isNotEmpty()) folders[note.folderId] else null
+        val chip = holder.folderChip
+        if (folder == null) {
+            chip.visibility = View.GONE
+            return
+        }
+        val ctx = chip.context
+        val dp = ctx.resources.displayMetrics.density
+        val accent = runCatching { Color.parseColor(folder.color) }
+            .getOrDefault(ContextCompat.getColor(ctx, R.color.colorPrimary))
+
+        chip.text = folder.name
+        chip.visibility = View.VISIBLE
+        chip.background = GradientDrawable().apply {
+            cornerRadius = 12 * dp
+            setColor(ColorUtils.setAlphaComponent(accent, 0x2E))
+        }
+        ContextCompat.getDrawable(ctx, R.drawable.ic_folder)?.mutate()?.let { icon ->
+            icon.setTint(accent)
+            val size = (14 * dp).toInt()
+            icon.setBounds(0, 0, size, size)
+            chip.setCompoundDrawablesRelative(icon, null, null, null)
+        }
+    }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val note = getItem(position)
@@ -77,6 +116,8 @@ class NoteAdapter(
         holder.desc.visibility = if (note.description.isBlank()) View.GONE else View.VISIBLE
 
         holder.timestamp.text = DATE_FORMAT.format(Date(note.timestamp))
+        bindFolderChip(holder, note)
+
 
         if (note.color.isNotEmpty()) {
             // Colored note: the note color is the whole card background

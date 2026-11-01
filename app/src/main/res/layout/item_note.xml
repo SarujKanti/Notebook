@@ -59,16 +59,43 @@
                     android:background="?attr/colorOutlineVariant"
                     android:alpha="0.5"/>
 
-                <!-- Timestamp -->
-                <TextView
-                    android:id="@+id/txtTimestamp"
+                <!-- Footer: the folder this note lives in (if any) on the left, timestamp on the right -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="11sp"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:alpha="0.65"
                     android:layout_marginTop="8dp"
-                    android:gravity="end"/>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/txtFolder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxWidth="130dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:drawablePadding="5dp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurface"
+                        android:visibility="gone"/>
+
+                    <TextView
+                        android:id="@+id/txtTimestamp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:textSize="11sp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:alpha="0.65"
+                        android:gravity="end"/>
+                </LinearLayout>
 
             </LinearLayout>
 
