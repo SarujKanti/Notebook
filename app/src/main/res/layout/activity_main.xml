@@ -141,7 +141,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Filter pills: All Notes / Pinned / Folders / Archived -->
+            <!-- Filter pills (All Notes / Pinned / Folders / Archived): commented out for now, bring back by removing the comment markers.
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -158,6 +158,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"/>
             </HorizontalScrollView>
+            -->
 
             <!-- Rounded sheet header: title with the note count, and the sort control -->
             <LinearLayout

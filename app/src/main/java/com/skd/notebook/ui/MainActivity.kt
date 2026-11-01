@@ -522,6 +522,9 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupHomeHeader() {
+        // Filter pills (All Notes / Pinned / Folders / Archived) are commented out for now; the layout
+        // block in activity_main.xml is commented out too. Remove both comments to bring them back.
+        /*
         val row = findViewById<LinearLayout>(R.id.chipRow)
         row.removeAllViews()
         chips.clear()
@@ -544,6 +547,7 @@ class MainActivity : BaseActivity() {
             startActivity(Intent(this, ArchiveActivity::class.java))
         }
         paintChips()
+        */
 
         tvSort.setOnClickListener { showSortDialog() }
         btnToggleLayout.setOnClickListener { showLayoutDialog() }
