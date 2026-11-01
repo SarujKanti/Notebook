@@ -9,6 +9,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.skd.notebook.data.local.FolderEntity
 import com.skd.notebook.data.local.NoteDatabase
 import com.skd.notebook.data.local.NoteEntity
+import com.skd.notebook.util.escapeLike
 import com.skd.notebook.data.remote.FirebaseService
 import com.skd.notebook.data.repository.NoteRepository
 import com.skd.notebook.widget.WidgetUpdater
@@ -45,7 +46,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     val isSyncing = MutableLiveData(true)
 
     fun getFolderNotes(folderId: String) = repo.getFolderNotes(folderId).asLiveData()
-    fun searchNotes(query: String)       = repo.searchNotes(query).asLiveData()
+    fun searchNotes(query: String)       = repo.searchNotes(escapeLike(query)).asLiveData()
 
     // ─── Note operations ─────────────────────────────────────────────────────
 

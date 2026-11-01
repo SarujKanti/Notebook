@@ -50,7 +50,7 @@ interface NoteDao {
     @Query("""
         SELECT * FROM notes
         WHERE isDeleted = 0 AND isArchived = 0
-        AND (title LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%')
+        AND (title LIKE '%' || :query || '%' ESCAPE '\' OR description LIKE '%' || :query || '%' ESCAPE '\')
         ORDER BY timestamp DESC
     """)
     fun searchNotes(query: String): Flow<List<NoteEntity>>
