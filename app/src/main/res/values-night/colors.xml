@@ -17,4 +17,12 @@
 
     <color name="colorFoldFlap">#33FFFFFF</color>
     <color name="colorFoldEdge">#26FFFFFF</color>
+
+    <color name="drawer_head_start">#5B35B8</color>
+    <color name="drawer_head_end">#1B0A45</color>
+    <color name="drawer_blob">#8E63F0</color>
+    <color name="drawer_body">#1C172B</color>
+    <color name="drawer_row_selected">#352A55</color>
+    <color name="drawer_logout_bg">#43202B</color>
+    <color name="drawer_logout_text">#FFB4AB</color>
 </resources>

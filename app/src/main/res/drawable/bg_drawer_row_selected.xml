@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/drawer_row_selected"/>
+    <corners android:radius="22dp"/>
+</shape>
