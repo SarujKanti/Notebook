@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,8 @@ import com.google.android.material.card.MaterialCardView
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.NoteColors
+import com.skd.notebook.util.highlightMatches
+import com.skd.notebook.util.snippetAroundMatch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -23,6 +26,9 @@ class NoteAdapter(
     private val onPinClick: (NoteEntity) -> Unit = {},
     private val showPin: Boolean = true
 ) : ListAdapter<NoteEntity, NoteAdapter.NoteViewHolder>(DIFF_CALLBACK) {
+
+    /** Text to mark in titles and previews (search results). Empty = no highlighting. */
+    var highlightQuery: String = ""
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<NoteEntity>() {
@@ -47,10 +53,11 @@ class NoteAdapter(
         val note = getItem(position)
         val ctx  = holder.itemView.context
 
-        holder.title.text       = note.title
+        val highlightColor = ColorUtils.setAlphaComponent(ContextCompat.getColor(ctx, R.color.colorAccent), 0x99)
+        holder.title.text       = highlightMatches(note.title, highlightQuery, highlightColor)
         holder.title.visibility = if (note.title.isBlank()) View.GONE else View.VISIBLE
 
-        holder.desc.text       = note.description
+        holder.desc.text       = highlightMatches(snippetAroundMatch(note.description, highlightQuery), highlightQuery, highlightColor)
         holder.desc.visibility = if (note.description.isBlank()) View.GONE else View.VISIBLE
 
         holder.timestamp.text = DATE_FORMAT.format(Date(note.timestamp))

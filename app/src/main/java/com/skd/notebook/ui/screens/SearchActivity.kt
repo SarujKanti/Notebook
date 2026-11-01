@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
@@ -14,11 +15,15 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.switchMap
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.NoteColors
@@ -28,6 +33,12 @@ import com.skd.notebook.util.fitTopInsetAsPadding
 
 class SearchActivity : AppCompatActivity() {
 
+    private companion object {
+        const val PREFS_NAME = "search_prefs"
+        const val KEY_RECENT = "recent"
+        const val MAX_RECENT = 8
+    }
+
     private lateinit var viewModel: NoteViewModel
     private lateinit var adapter: NoteAdapter
     private lateinit var etSearch: EditText
@@ -36,6 +47,10 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var recyclerSearch: RecyclerView
     private lateinit var layoutHint: LinearLayout
     private lateinit var tvHintMessage: TextView
+    private lateinit var tvResultCount: TextView
+    private lateinit var layoutRecent: LinearLayout
+    private lateinit var chipsRecent: ChipGroup
+    private val query = MutableLiveData("")
 
     // Currently open note editor sheet (if any) — used to force a save if the
     // activity is paused/finished while it's still showing.
@@ -59,11 +74,14 @@ class SearchActivity : AppCompatActivity() {
         recyclerSearch = findViewById(R.id.recyclerSearch)
         layoutHint     = findViewById(R.id.layoutHint)
         tvHintMessage  = findViewById(R.id.tvHintMessage)
+        tvResultCount  = findViewById(R.id.tvResultCount)
+        layoutRecent   = findViewById(R.id.layoutRecent)
+        chipsRecent    = findViewById(R.id.chipsRecent)
 
         viewModel = ViewModelProvider(this)[NoteViewModel::class.java]
 
         adapter = NoteAdapter(
-            onClick     = { note -> openNoteEditor(note) },
+            onClick     = { note -> saveRecent(query.value.orEmpty()); openNoteEditor(note) },
             onLongClick = { /* no long-press actions in search */ },
             onPinClick  = { note -> viewModel.togglePin(note) }
         )
@@ -72,16 +90,32 @@ class SearchActivity : AppCompatActivity() {
         recyclerSearch.layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerSearch.adapter = adapter
 
+        // One live query → one results stream. (Observing a fresh LiveData per keystroke used to
+        // leave every old observer attached, so a slow older query could overwrite newer results.)
+        query.switchMap { q ->
+            if (q.isEmpty()) MutableLiveData(emptyList()) else viewModel.searchNotes(q)
+        }.observe(this) { results -> showResults(query.value.orEmpty(), results) }
+
         // ── Search text watcher ──────────────────────────────────────────
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                val query = s?.toString()?.trim() ?: ""
-                btnClear.visibility = if (query.isNotEmpty()) View.VISIBLE else View.GONE
-                performSearch(query)
+                val text = s?.toString()?.trim() ?: ""
+                btnClear.visibility = if (text.isNotEmpty()) View.VISIBLE else View.GONE
+                if (text.isEmpty()) showIdle()
+                query.value = text
             }
         })
+
+        // Keyboard "search" key: dismiss the keyboard and remember the query.
+        etSearch.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                saveRecent(query.value.orEmpty())
+                hideKeyboard()
+                true
+            } else false
+        }
 
         btnBack.setOnClickListener { finish() }
 
@@ -89,6 +123,13 @@ class SearchActivity : AppCompatActivity() {
             etSearch.setText("")
             etSearch.requestFocus()
         }
+
+        findViewById<View>(R.id.btnClearRecent).setOnClickListener {
+            prefs.edit().remove(KEY_RECENT).apply()
+            showIdle()
+        }
+
+        showIdle()
 
         // Auto-open keyboard
         etSearch.requestFocus()
@@ -105,25 +146,79 @@ class SearchActivity : AppCompatActivity() {
         if (activeNoteDialog?.isShowing == true) pendingNoteSave?.invoke()
     }
 
-    private fun performSearch(query: String) {
-        if (query.isEmpty()) {
-            recyclerSearch.visibility = View.GONE
-            layoutHint.visibility     = View.VISIBLE
-            tvHintMessage.text        = "Type to search your notes"
+    // ─── Search states ───────────────────────────────────────────────────────
+
+    private val prefs get() = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+
+    private fun recentSearches(): List<String> =
+        prefs.getString(KEY_RECENT, "").orEmpty().split('\n').filter { it.isNotBlank() }
+
+    private fun saveRecent(text: String) {
+        val clean = text.trim().replace('\n', ' ')
+        if (clean.length < 2) return
+        val updated = (listOf(clean) + recentSearches().filterNot { it.equals(clean, ignoreCase = true) })
+            .take(MAX_RECENT)
+        prefs.edit().putString(KEY_RECENT, updated.joinToString("\n")).apply()
+    }
+
+    private fun removeRecent(text: String) {
+        prefs.edit().putString(KEY_RECENT, recentSearches().filterNot { it == text }.joinToString("\n")).apply()
+        showIdle()
+    }
+
+    private fun hideKeyboard() {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
+    }
+
+    /** Empty search box: recent searches if there are any, otherwise the plain hint. */
+    private fun showIdle() {
+        recyclerSearch.visibility = View.GONE
+        tvResultCount.visibility  = View.GONE
+        val recents = recentSearches()
+        if (recents.isEmpty()) {
+            layoutRecent.visibility = View.GONE
+            layoutHint.visibility   = View.VISIBLE
+            tvHintMessage.text      = getString(R.string.search_hint_idle)
             return
         }
+        layoutHint.visibility   = View.GONE
+        layoutRecent.visibility = View.VISIBLE
+        chipsRecent.removeAllViews()
+        recents.forEach { term ->
+            chipsRecent.addView(Chip(this).apply {
+                text = term
+                setChipIconResource(R.drawable.ic_history)
+                isCloseIconVisible = true
+                contentDescription = term
+                setOnClickListener {
+                    etSearch.setText(term)
+                    etSearch.setSelection(term.length)
+                    hideKeyboard()
+                }
+                setOnCloseIconClickListener { removeRecent(term) }
+            })
+        }
+    }
 
-        // Remove previous observer before adding a new one (query changes)
-        viewModel.searchNotes(query).observe(this) { results ->
-            if (results.isEmpty()) {
-                recyclerSearch.visibility = View.GONE
-                layoutHint.visibility     = View.VISIBLE
-                tvHintMessage.text        = "No notes found for \"$query\""
-            } else {
-                layoutHint.visibility     = View.GONE
-                recyclerSearch.visibility = View.VISIBLE
-                adapter.submitList(results)
-            }
+    private fun showResults(q: String, results: List<NoteEntity>) {
+        if (q.isEmpty()) return
+        layoutRecent.visibility = View.GONE
+        if (results.isEmpty()) {
+            recyclerSearch.visibility = View.GONE
+            tvResultCount.visibility  = View.GONE
+            layoutHint.visibility     = View.VISIBLE
+            tvHintMessage.text        = "No notes found for \"$q\""
+            return
+        }
+        layoutHint.visibility     = View.GONE
+        recyclerSearch.visibility = View.VISIBLE
+        tvResultCount.visibility  = View.VISIBLE
+        tvResultCount.text = resources.getQuantityString(R.plurals.search_result_count, results.size, results.size)
+        adapter.highlightQuery = q
+        adapter.submitList(results) {
+            // The same notes can match a longer query; rebind so the marks follow the new text.
+            adapter.notifyItemRangeChanged(0, adapter.itemCount)
         }
     }
 

@@ -15,6 +15,13 @@
     <string name="about_description">NoteStack is a simple, fast notebook for the things you want to remember. Jot a quick thought, keep a list, or write a longer note, then sort everything into colors and folders so it is easy to find again.\n\nYour notes are saved on your device the moment you write them. Sign in with Google and they are also backed up to the cloud and available on any device you use.</string>
     <string name="pin_note">Pin note</string>
     <string name="my_notes">My Notes</string>
+    <string name="recent_searches">RECENT SEARCHES</string>
+    <string name="clear_recent">Clear</string>
+    <string name="search_hint_idle">Type to search your notes</string>
+    <plurals name="search_result_count">
+        <item quantity="one">%1$d NOTE FOUND</item>
+        <item quantity="other">%1$d NOTES FOUND</item>
+    </plurals>
     <string name="my_notes_count">My Notes · %1$d</string>
 
     <!-- Widgets -->
