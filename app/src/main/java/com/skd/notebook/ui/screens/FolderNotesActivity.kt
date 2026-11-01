@@ -9,7 +9,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
+import com.skd.notebook.ui.BaseActivity
+import com.skd.notebook.ui.confirmMoveToBin
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +21,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
+import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.NoteColors
 import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.NoteAdapter
@@ -29,7 +31,7 @@ import com.skd.notebook.util.fitTopInsetAsPadding
 import com.skd.notebook.util.peekOnScroll
 import java.util.UUID
 
-class FolderNotesActivity : AppCompatActivity() {
+class FolderNotesActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_FOLDER_ID   = "folder_id"
@@ -78,18 +80,18 @@ class FolderNotesActivity : AppCompatActivity() {
                 showActionSheet(items = listOf(
                     ActionItem("Edit", R.drawable.ic_edit) { showNoteDialog(note) },
                     ActionItem("Remove from Folder", R.drawable.ic_folder) { viewModel.moveToFolder(note, "") },
-                    ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) { viewModel.moveToBin(note) }
+                    ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) { confirmMoveToBin { viewModel.moveToBin(note) } }
                 ))
             },
             onPinClick = { note -> viewModel.togglePin(note) }
         )
 
-        val spanCount = resources.getInteger(R.integer.grid_span_count)
+        val spanCount = if (AppSettings.gridView(this)) resources.getInteger(R.integer.grid_span_count) else 1
         recyclerView.layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.adapter = adapter
 
         viewModel.getFolderNotes(folderId).observe(this) { notes ->
-            adapter.submitList(notes)
+            adapter.submitList(AppSettings.sortOrder(this).apply(notes))
             layoutEmpty.visibility = if (notes.isEmpty()) View.VISIBLE else View.GONE
         }
 

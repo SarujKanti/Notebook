@@ -11,7 +11,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import com.skd.notebook.ui.BaseActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
@@ -33,7 +33,7 @@ import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.ui.showAppDialog
 import com.skd.notebook.util.fitTopInsetAsPadding
 
-class FoldersActivity : AppCompatActivity() {
+class FoldersActivity : BaseActivity() {
 
     private lateinit var viewModel: NoteViewModel
     private lateinit var adapter: FolderAdapter
