@@ -127,7 +127,7 @@ class BinActivity : AppCompatActivity() {
             menu.add(Menu.NONE, MENU_RESTORE, 1, "Restore")
                 .setIcon(R.drawable.ic_restore_white).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             menu.add(Menu.NONE, MENU_DELETE, 2, "Delete forever")
-                .setIcon(R.drawable.ic_delete).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                .setIcon(R.drawable.ic_delete_white).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             if (!allSelected) {
                 menu.add(Menu.NONE, MENU_SELECT_ALL, 3, "Select all")
                     .setIcon(R.drawable.ic_select_all_white).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
