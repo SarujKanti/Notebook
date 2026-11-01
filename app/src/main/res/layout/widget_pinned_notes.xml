@@ -19,7 +19,7 @@
         <ImageView
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/ic_pin_filled"
+            android:src="@drawable/ic_widget_pin"
             android:tint="@color/colorOnPrimary"
             android:contentDescription="@null"/>
 
@@ -49,13 +49,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/colorSurface">
+        android:background="@color/colorWidgetSurface">
 
         <ListView
             android:id="@+id/widgetListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@color/color_grey_100"
+            android:divider="@color/colorWidgetDivider"
             android:dividerHeight="1dp"/>
 
         <TextView
@@ -65,7 +65,7 @@
             android:gravity="center"
             android:padding="20dp"
             android:text="@string/widget_no_pinned_notes"
-            android:textColor="@color/color_gray_550"
+            android:textColor="@color/colorWidgetBody"
             android:textSize="13sp"/>
 
     </FrameLayout>
