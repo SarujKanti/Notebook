@@ -24,6 +24,18 @@ class NoteAdapter(
     private val showPin: Boolean = true
 ) : ListAdapter<NoteEntity, NoteAdapter.NoteViewHolder>(DIFF_CALLBACK) {
 
+    /** While true, cards show a check circle instead of the pin and mark the selected ones. */
+    var selectionMode: Boolean = false
+        private set
+    var selectedIds: Set<String> = emptySet()
+        private set
+
+    fun setSelection(mode: Boolean, ids: Set<String>) {
+        selectionMode = mode
+        selectedIds = ids
+        notifyItemRangeChanged(0, itemCount)
+    }
+
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<NoteEntity>() {
             override fun areItemsTheSame(a: NoteEntity, b: NoteEntity) = a.id == b.id
@@ -69,7 +81,18 @@ class NoteAdapter(
             holder.card.strokeColor = ContextCompat.getColor(ctx, R.color.colorSurfaceVariant)
         }
 
-        if (showPin) {
+        if (selectionMode) {
+            val selected = note.id in selectedIds
+            holder.btnPin.visibility = View.VISIBLE
+            holder.btnPin.setImageResource(if (selected) R.drawable.ic_check_circle else R.drawable.ic_circle_outline)
+            holder.btnPin.contentDescription = if (selected) "Selected" else "Not selected"
+            holder.btnPin.setOnClickListener(null)
+            holder.btnPin.isClickable = false
+            if (selected) {
+                holder.card.strokeWidth = ctx.resources.getDimensionPixelSize(R.dimen.card_stroke_width) * 3
+                holder.card.strokeColor = ContextCompat.getColor(ctx, R.color.colorPrimary)
+            }
+        } else if (showPin) {
             holder.btnPin.visibility = View.VISIBLE
             holder.btnPin.setImageResource(if (note.isPinned) R.drawable.ic_pin_filled else R.drawable.ic_pin)
             holder.btnPin.contentDescription = ctx.getString(R.string.pin_note)
