@@ -12,13 +12,12 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteViewModel
-import com.skd.notebook.ui.tintPositiveButtonDestructive
+import com.skd.notebook.ui.showAppDialog
 import com.skd.notebook.util.fitTopInsetAsPadding
 
 /**
@@ -167,26 +166,28 @@ class BinActivity : AppCompatActivity() {
         val notes = selectedNotes()
         if (notes.isEmpty()) return
         val what = if (notes.size == 1) "This note" else "These ${notes.size} notes"
-        val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-            .setTitle("Delete permanently?")
-            .setMessage("$what will be deleted forever.")
-            .setPositiveButton("Delete") { _, _ ->
+        showAppDialog(
+            title = "Delete permanently?",
+            icon = R.drawable.ic_delete,
+            message = "$what will be deleted forever. This cannot be undone.",
+            destructive = true,
+            positiveText = "Delete",
+            onPositive = {
                 viewModel.deleteAllPermanently(notes)
                 stopSelecting()
             }
-            .setNegativeButton("Cancel", null)
-            .show()
-        dialog.tintPositiveButtonDestructive(this)
+        )
     }
 
     private fun confirmEmptyBin() {
-        val dialog = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-            .setTitle("Empty Bin?")
-            .setMessage("All notes in Bin will be permanently deleted.")
-            .setPositiveButton("Empty") { _, _ -> viewModel.emptyBin() }
-            .setNegativeButton("Cancel", null)
-            .show()
-        dialog.tintPositiveButtonDestructive(this)
+        showAppDialog(
+            title = "Empty Bin?",
+            icon = R.drawable.ic_delete,
+            message = "All notes in the Bin will be permanently deleted. This cannot be undone.",
+            destructive = true,
+            positiveText = "Empty Bin",
+            onPositive = { viewModel.emptyBin() }
+        )
     }
 
     private companion object {
