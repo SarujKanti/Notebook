@@ -7,6 +7,9 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
+import android.content.res.ColorStateList
+import com.google.android.material.color.MaterialColors
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
@@ -31,7 +34,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -76,7 +78,6 @@ class MainActivity : BaseActivity() {
     private lateinit var btnToggleLayout: ImageButton
     private lateinit var btnMenu: ImageButton
     private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navigationView: NavigationView
 
     private var isGridLayout = true
     private var latestNotes: List<NoteEntity> = emptyList()
@@ -136,7 +137,6 @@ class MainActivity : BaseActivity() {
         setContentView(R.layout.activity_main)
 
         drawerLayout    = findViewById(R.id.drawerLayout)
-        navigationView  = findViewById(R.id.navigationView)
         recyclerView    = findViewById(R.id.recyclerView)
         fabAdd          = findViewById(R.id.fabAdd)
         tvSectionTitle  = findViewById(R.id.tvSectionTitle)
@@ -257,7 +257,6 @@ class MainActivity : BaseActivity() {
     // (e.g. after pressing back from Folders / Archive / Bin)
     override fun onResume() {
         super.onResume()
-        navigationView.setCheckedItem(R.id.navNotes)
         applySettingsChanges()
     }
 
@@ -342,37 +341,42 @@ class MainActivity : BaseActivity() {
         dialog.show()
     }
 
+    private class NavItem(val icon: Int, val title: String, val action: () -> Unit)
+
     private fun setupDrawer() {
-        val header      = navigationView.getHeaderView(0)
-        val tvName      = header.findViewById<TextView>(R.id.tvNavName)
-        val tvEmail     = header.findViewById<TextView>(R.id.tvNavEmail)
-        val tvInitial   = header.findViewById<TextView>(R.id.tvNavInitial)
+        val header       = findViewById<View>(R.id.navHeader)
+        val tvName       = header.findViewById<TextView>(R.id.tvNavName)
+        val tvEmail      = header.findViewById<TextView>(R.id.tvNavEmail)
+        val tvInitial    = header.findViewById<TextView>(R.id.tvNavInitial)
         val ivEditPencil = header.findViewById<View>(R.id.ivNavEditPencil)
         val tvStatus     = header.findViewById<TextView>(R.id.tvNavStatus)
+        val footer       = findViewById<View>(R.id.navFooter)
 
-        // The header is drawn under the status bar; keep its content clear of it on every Android version.
+        // The drawer is drawn under the status and navigation bars; keep its content clear of them.
         header.keepClearOfSystemBars(top = true)
+        footer.keepClearOfSystemBars(top = false, bottom = true)
 
-        // Version pinned at the bottom of the drawer, clear of the navigation bar.
-        findViewById<TextView>(R.id.tvNavVersion).apply {
-            text = "NoteStack  •  Version ${appVersionLabel()}"
-            keepClearOfSystemBars(top = false, bottom = true)
-        }
+        findViewById<TextView>(R.id.tvNavVersion).text = "Version ${appVersionLabel()}"
 
-        // Status chip: mint dot when notes sync to the cloud, soft lavender when local-only.
+        // Status chip: green check when notes sync to the cloud, a soft dot when local-only.
         val guest = isGuestMode()
         tvStatus.text = if (guest) "Local only" else "Synced to cloud"
-        tvStatus.compoundDrawablesRelative[0]?.mutate()?.setTint(
-            ContextCompat.getColor(this, if (guest) R.color.colorPrimaryLight2 else R.color.colorAccent)
-        )
-        val user        = FirebaseAuth.getInstance().currentUser
+        if (guest) {
+            tvStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.bg_status_dot, 0, 0, 0)
+            tvStatus.compoundDrawablesRelative[0]?.mutate()?.setTint(
+                ContextCompat.getColor(this, R.color.colorPrimaryLight2)
+            )
+        } else {
+            tvStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_status_synced, 0, 0, 0)
+        }
+        val user = FirebaseAuth.getInstance().currentUser
 
         fun applyName(name: String) {
             tvName.text    = name
             tvInitial.text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "U"
         }
 
-        if (isGuestMode()) {
+        if (guest) {
             // Guest: no account to attach a name to, so show a fixed placeholder
             // and don't let it be edited/saved as if it were a real profile name.
             applyName("Unknown")
@@ -388,32 +392,72 @@ class MainActivity : BaseActivity() {
             // ── Tap name or avatar to edit ───────────────────────────────────
             val clickToEdit = View.OnClickListener { showEditNameDialog(tvName.text.toString(), ::applyName) }
             tvName.setOnClickListener(clickToEdit)
-            header.findViewById<View>(R.id.tvNavInitial)
-                .setOnClickListener(clickToEdit)
+            tvInitial.setOnClickListener(clickToEdit)
         }
 
-        // Guest: bottom drawer item offers to log in instead of signing out.
-        val authItem = navigationView.menu.findItem(R.id.navSignOut)
-        if (isGuestMode()) {
-            authItem.title = "Login"
-            authItem.icon  = ContextCompat.getDrawable(this, R.drawable.ic_google)
+        // Live counts in the header card.
+        viewModel.activeNotes.observe(this) { header.findViewById<TextView>(R.id.tvStatNotes).text = it.size.toString() }
+        viewModel.folders.observe(this) { header.findViewById<TextView>(R.id.tvStatFolders).text = it.size.toString() }
+        viewModel.archivedNotes.observe(this) { header.findViewById<TextView>(R.id.tvStatArchived).text = it.size.toString() }
+
+        buildDrawerMenu()
+
+        // Bottom button: Logout, or Login for a guest.
+        val authTitle = findViewById<TextView>(R.id.tvNavAuth)
+        val authIcon  = findViewById<ImageView>(R.id.ivNavAuth)
+        authTitle.text = if (guest) "Login" else "Logout"
+        if (guest) {
+            authIcon.setImageResource(R.drawable.ic_google)
+            authIcon.imageTintList = null
         } else {
-            authItem.title = "Sign Out"
-            authItem.icon  = ContextCompat.getDrawable(this, R.drawable.ic_logout)
+            authIcon.setImageResource(R.drawable.ic_logout)
+            authIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.drawer_logout_text))
         }
-
-        navigationView.setNavigationItemSelectedListener { item ->
+        findViewById<View>(R.id.btnNavAuth).setOnClickListener {
             drawerLayout.closeDrawer(GravityCompat.START)
-            when (item.itemId) {
-                R.id.navNotes   -> { /* already here */ }
-                R.id.navFolders -> startActivity(Intent(this, FoldersActivity::class.java))
-                R.id.navArchive -> startActivity(Intent(this, ArchiveActivity::class.java))
-                R.id.navBin     -> startActivity(Intent(this, BinActivity::class.java))
-                R.id.navSettings -> startActivity(Intent(this, SettingsActivity::class.java))
-                R.id.navAbout   -> startActivity(Intent(this, AboutActivity::class.java))
-                R.id.navSignOut -> if (isGuestMode()) startGoogleSignIn() else signOut()
+            if (guest) startGoogleSignIn() else signOut()
+        }
+    }
+
+    /** Notes (selected, as this is the notes screen), Folders, Archive, Bin, Settings, About. */
+    private fun buildDrawerMenu() {
+        val menu = findViewById<LinearLayout>(R.id.navMenu)
+        menu.removeAllViews()
+        val items = listOf(
+            NavItem(R.drawable.ic_notes, "Notes") { /* already here */ },
+            NavItem(R.drawable.ic_folder, "Folders") { startActivity(Intent(this, FoldersActivity::class.java)) },
+            NavItem(R.drawable.ic_archive, "Archive") { startActivity(Intent(this, ArchiveActivity::class.java)) },
+            NavItem(R.drawable.ic_delete, "Bin") { startActivity(Intent(this, BinActivity::class.java)) },
+            NavItem(R.drawable.ic_settings, "Settings") { startActivity(Intent(this, SettingsActivity::class.java)) },
+            NavItem(R.drawable.ic_info, "About") { startActivity(Intent(this, AboutActivity::class.java)) }
+        )
+        val dp = resources.displayMetrics.density
+        items.forEachIndexed { index, item ->
+            val selected = index == 0
+            val row = layoutInflater.inflate(R.layout.item_drawer_row, menu, false)
+            row.findViewById<ImageView>(R.id.rowIcon).setImageResource(item.icon)
+            row.findViewById<TextView>(R.id.rowTitle).text = item.title
+            if (selected) {
+                row.setBackgroundResource(R.drawable.bg_drawer_row_selected)
+                row.findViewById<View>(R.id.rowAccent).visibility = View.VISIBLE
             }
-            true
+            row.setOnClickListener {
+                drawerLayout.closeDrawer(GravityCompat.START)
+                item.action()
+            }
+            menu.addView(row)
+
+            // Hairline between the unselected rows, inset to start under the title.
+            if (!selected && index < items.lastIndex) {
+                menu.addView(View(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1).also {
+                        it.marginStart = (80 * dp).toInt()
+                        it.marginEnd = (32 * dp).toInt()
+                    }
+                    setBackgroundColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutlineVariant))
+                    alpha = 0.7f
+                })
+            }
         }
     }
 

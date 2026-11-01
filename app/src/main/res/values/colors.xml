@@ -114,4 +114,13 @@
     <!-- Folded corner on pinned notes -->
     <color name="colorFoldFlap">#2A000000</color>
     <color name="colorFoldEdge">#1A000000</color>
+
+    <!-- Navigation drawer -->
+    <color name="drawer_head_start">#7B4DF0</color>
+    <color name="drawer_head_end">#321070</color>
+    <color name="drawer_blob">#B089FF</color>
+    <color name="drawer_body">#F8F5FF</color>
+    <color name="drawer_row_selected">#E6DCFB</color>
+    <color name="drawer_logout_bg">#FDE3E8</color>
+    <color name="drawer_logout_text">#B3261E</color>
 </resources>
