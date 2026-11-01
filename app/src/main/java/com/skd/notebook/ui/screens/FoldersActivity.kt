@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -28,6 +29,7 @@ import com.skd.notebook.data.local.FolderEntity
 import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.FolderAdapter
 import com.skd.notebook.ui.NoteViewModel
+import com.skd.notebook.ui.applyGlassBackdrop
 import com.skd.notebook.ui.showCustomColorDialog
 import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.ui.showAppDialog
@@ -122,8 +124,8 @@ class FoldersActivity : BaseActivity() {
     // ── Create / Edit folder bottom-sheet ────────────────────────────────────
 
     private fun showFolderDialog(existing: FolderEntity?) {
-        val dialog = BottomSheetDialog(this)
-        val view   = layoutInflater.inflate(R.layout.dialog_folder, null)
+        val dialog = BottomSheetDialog(this, R.style.ThemeOverlay_NoteBook_GlassSheet).also { it.applyGlassBackdrop() }
+        val view   = LayoutInflater.from(dialog.context).inflate(R.layout.dialog_folder, null)
 
         val tvTitle   = view.findViewById<TextView>(R.id.tvFolderDialogTitle)
         val btnClose  = view.findViewById<ImageButton>(R.id.btnFolderClose)
@@ -193,8 +195,8 @@ class FoldersActivity : BaseActivity() {
         fun circle(fill: Int, selected: Boolean) = GradientDrawable().apply {
             shape = GradientDrawable.OVAL
             setColor(fill)
-            setStroke(if (selected) 5 else 2,
-                      if (selected) Color.BLACK else Color.parseColor("#55000000"))
+            setStroke(if (selected) 6 else 2,
+                      if (selected) Color.WHITE else Color.parseColor("#66FFFFFF"))
         }
 
         fun render(selected: String) {

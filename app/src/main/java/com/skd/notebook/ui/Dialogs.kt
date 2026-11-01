@@ -27,8 +27,9 @@ class ActionItem(
  * rounded bottom-sheet look already used for the note and folder editors.
  */
 fun Context.showActionSheet(title: String? = null, items: List<ActionItem>) {
-    val dialog = BottomSheetDialog(this)
-    val view   = LayoutInflater.from(this).inflate(R.layout.dialog_action_sheet, null)
+    val dialog = BottomSheetDialog(this, R.style.ThemeOverlay_NoteBook_GlassSheet)
+    dialog.applyGlassBackdrop()
+    val view   = LayoutInflater.from(dialog.context).inflate(R.layout.dialog_action_sheet, null)
 
     val tvTitle   = view.findViewById<TextView>(R.id.actionSheetTitle)
     val container = view.findViewById<LinearLayout>(R.id.actionSheetItems)
@@ -38,10 +39,10 @@ fun Context.showActionSheet(title: String? = null, items: List<ActionItem>) {
         tvTitle.visibility = View.VISIBLE
     }
 
-    val destructiveColor = ContextCompat.getColor(this, R.color.color_red_700)
+    val destructiveColor = android.graphics.Color.parseColor("#FF8A80") // light red, readable on the glass sheet
 
     items.forEach { item ->
-        val row   = LayoutInflater.from(this).inflate(R.layout.item_action_sheet_row, container, false)
+        val row   = LayoutInflater.from(dialog.context).inflate(R.layout.item_action_sheet_row, container, false)
         val icon  = row.findViewById<ImageView>(R.id.actionRowIcon)
         val label = row.findViewById<TextView>(R.id.actionRowLabel)
 

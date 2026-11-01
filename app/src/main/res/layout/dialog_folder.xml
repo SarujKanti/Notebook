@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="?attr/colorSurface">
+    android:background="@drawable/bg_glass_sheet">
 
     <!-- Drag handle -->
     <View
@@ -14,8 +14,7 @@
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="12dp"
-        android:background="#20000000"
-        android:backgroundTint="?attr/colorOnSurfaceVariant"/>
+        android:background="#66FFFFFF"/>
 
     <!-- Header row -->
     <LinearLayout
@@ -139,9 +138,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Save"
-            app:backgroundTint="@color/colorPrimary"
+            app:backgroundTint="@null"
+            android:background="@drawable/bg_glass_primary"
             android:textColor="@color/colorOnPrimary"
-            app:cornerRadius="10dp"/>
+            app:cornerRadius="24dp"
+            android:minHeight="52dp"
+            android:minWidth="110dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"/>
 
     </LinearLayout>
 
