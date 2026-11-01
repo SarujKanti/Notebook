@@ -56,6 +56,7 @@ class NoteAdapter(
         val desc: TextView         = view.findViewById(R.id.txtDesc)
         val timestamp: TextView    = view.findViewById(R.id.txtTimestamp)
         val btnPin: ImageButton    = view.findViewById(R.id.btnPin)
+        val pinFold: View          = view.findViewById(R.id.pinFold)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -107,6 +108,8 @@ class NoteAdapter(
         } else {
             holder.btnPin.visibility = View.GONE
         }
+
+        holder.pinFold.visibility = if (showPin && note.isPinned) View.VISIBLE else View.GONE
 
         holder.itemView.setOnClickListener     { onClick(note) }
         holder.itemView.setOnLongClickListener { onLongClick(note); true }

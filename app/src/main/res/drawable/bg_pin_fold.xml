@@ -1,0 +1,19 @@
+<!--
+    Dog-ear for a pinned note: the top-right corner is cut off (painted in the screen background)
+    and the folded-over flap is drawn in the opposite triangle, slightly shaded.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="18dp"
+    android:height="18dp"
+    android:viewportWidth="18"
+    android:viewportHeight="18">
+    <path
+        android:fillColor="?android:attr/colorBackground"
+        android:pathData="M0,0 L18,0 L18,18 Z"/>
+    <path
+        android:fillColor="@color/colorFoldFlap"
+        android:pathData="M0,0 L0,18 L18,18 Z"/>
+    <path
+        android:fillColor="@color/colorFoldEdge"
+        android:pathData="M0,0 L18,18 L18,17 L1,0 Z"/>
+</vector>

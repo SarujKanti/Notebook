@@ -14,4 +14,7 @@
     <color name="colorWidgetTitle">#F1ECFA</color>
     <color name="colorWidgetBody">#B4ACC8</color>
     <color name="colorWidgetDivider">#3A3150</color>
+
+    <color name="colorFoldFlap">#33FFFFFF</color>
+    <color name="colorFoldEdge">#26FFFFFF</color>
 </resources>
