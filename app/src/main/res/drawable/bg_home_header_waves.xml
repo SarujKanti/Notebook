@@ -1,7 +1,8 @@
-<!-- Soft light swooshes laid over the home header gradient. -->
+<!-- Soft light swooshes laid over the home header gradient. The size is 1dp on purpose: as a background layer
+     its intrinsic size sets the header's minimum height, and the drawing scales to fill whatever the header is. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="360dp"
-    android:height="260dp"
+    android:width="1dp"
+    android:height="1dp"
     android:viewportWidth="360"
     android:viewportHeight="260">
     <path

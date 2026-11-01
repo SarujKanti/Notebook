@@ -54,4 +54,10 @@
     <style name="Widget.NoteBook.GlassBottomSheet" parent="Widget.Material3.BottomSheet.Modal">
         <item name="backgroundTint">@android:color/transparent</item>
     </style>
+
+    <!-- Fully round (a circle on a square view), for the New Note button -->
+    <style name="ShapeAppearanceOverlay.NoteBook.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>
