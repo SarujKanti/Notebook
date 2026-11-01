@@ -15,14 +15,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Faint waves along the bottom edge -->
-        <ImageView
+        <!-- Faint waves along the bottom edge. They clip themselves to the card's bottom corners: the card stops
+             clipping its contents once a pinned note gets its cut corner, and the square wave poked out. -->
+        <com.google.android.material.imageview.ShapeableImageView
             android:layout_width="match_parent"
             android:layout_height="84dp"
             android:layout_gravity="bottom"
             android:scaleType="fitXY"
             android:src="@drawable/bg_card_wave"
-            android:importantForAccessibility="no"/>
+            android:importantForAccessibility="no"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.NoteBook.CardBottom"/>
 
         <LinearLayout
             android:layout_width="match_parent"

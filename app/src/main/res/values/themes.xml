@@ -60,4 +60,13 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <!-- Rounded only at the bottom, matching a note card: clips the wave layer to the card's bottom corners -->
+    <style name="ShapeAppearanceOverlay.NoteBook.CardBottom" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomLeft">@dimen/card_corner_radius</item>
+        <item name="cornerSizeBottomRight">@dimen/card_corner_radius</item>
+    </style>
 </resources>
