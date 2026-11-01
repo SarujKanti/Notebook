@@ -135,10 +135,15 @@ class FolderNotesActivity : AppCompatActivity() {
         }
 
         val noteId = existingNote?.id ?: UUID.randomUUID().toString()
+        // Saving stamps the note with the current time, which moves it to the top of the list,
+        // so only save when the content really changed since it was opened / last saved.
+        var lastSaved = Triple(existingNote?.title?.trim() ?: "", existingNote?.description?.trim() ?: "", selectedColor)
         val save: () -> Unit = {
             val title = etTitle.text.toString().trim()
             val desc  = etDesc.text.toString().trim()
-            if (title.isNotEmpty() || desc.isNotEmpty()) {
+            val current = Triple(title, desc, selectedColor)
+            if ((title.isNotEmpty() || desc.isNotEmpty()) && current != lastSaved) {
+                lastSaved = current
                 val note = (existingNote ?: NoteEntity(id = noteId, folderId = folderId))
                     .copy(title = title, description = desc, color = selectedColor)
                 viewModel.saveNote(note)
