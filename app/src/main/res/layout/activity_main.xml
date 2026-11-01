@@ -79,7 +79,7 @@
                     android:focusable="true"
                     android:background="@drawable/bg_glass_circle"
                     android:foreground="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="Profile">
+                    android:contentDescription="Edit profile">
 
                     <ImageView
                         android:id="@+id/ivProfileIcon"

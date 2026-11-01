@@ -435,6 +435,21 @@ class MainActivity : BaseActivity() {
         profileIcon.visibility = if (photo != null) View.GONE else View.VISIBLE
     }
 
+    private fun applyDrawerName(name: String) {
+        findViewById<TextView>(R.id.tvNavName).text = name
+        findViewById<TextView>(R.id.tvNavInitial).text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "U"
+    }
+
+    /** Edit profile for a signed-in user; a guest has no profile, so they are invited to log in. */
+    private fun openEditProfile() {
+        drawerLayout.closeDrawer(GravityCompat.START)
+        if (isGuestMode()) {
+            showGuestModeDialog()
+            return
+        }
+        showEditNameDialog(resolvedDisplayName(), ::applyDrawerName)
+    }
+
     private class NavItem(val icon: Int, val title: String, val action: () -> Unit)
 
     private fun setupDrawer() {
@@ -444,6 +459,7 @@ class MainActivity : BaseActivity() {
         val tvInitial    = header.findViewById<TextView>(R.id.tvNavInitial)
         val ivEditPencil = header.findViewById<View>(R.id.ivNavEditPencil)
         val tvStatus     = header.findViewById<TextView>(R.id.tvNavStatus)
+        val ivNavAvatar  = header.findViewById<View>(R.id.ivNavAvatar)
         val footer       = findViewById<View>(R.id.navFooter)
 
         // The drawer is drawn under the status and navigation bars; keep its content clear of them.
@@ -465,10 +481,7 @@ class MainActivity : BaseActivity() {
         }
         val user = FirebaseAuth.getInstance().currentUser
 
-        fun applyName(name: String) {
-            tvName.text    = name
-            tvInitial.text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "U"
-        }
+        fun applyName(name: String) = applyDrawerName(name)
 
         if (guest) {
             // Guest: no account to attach a name to, so show a fixed placeholder
@@ -484,9 +497,11 @@ class MainActivity : BaseActivity() {
             ivEditPencil.visibility = View.VISIBLE
 
             // ── Tap name or avatar to edit ───────────────────────────────────
-            val clickToEdit = View.OnClickListener { showEditNameDialog(tvName.text.toString(), ::applyName) }
+            val clickToEdit = View.OnClickListener { openEditProfile() }
             tvName.setOnClickListener(clickToEdit)
             tvInitial.setOnClickListener(clickToEdit)
+            ivNavAvatar.setOnClickListener(clickToEdit)   // the photo replaces the initial once one is set
+            ivEditPencil.setOnClickListener(clickToEdit)
         }
 
         // Live counts in the header card.
@@ -631,7 +646,7 @@ class MainActivity : BaseActivity() {
 
         tvSort.setOnClickListener { showSortDialog() }
         btnToggleLayout.setOnClickListener { showLayoutDialog() }
-        findViewById<View>(R.id.btnProfile).setOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
+        findViewById<View>(R.id.btnProfile).setOnClickListener { openEditProfile() }
         updateSortLabel()
     }
 
