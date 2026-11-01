@@ -110,4 +110,8 @@
 
     <!-- Route Colors -->
     <color name="color_blue_route">#0057CC</color>
+
+    <!-- Folded corner on pinned notes -->
+    <color name="colorFoldFlap">#2A000000</color>
+    <color name="colorFoldEdge">#1A000000</color>
 </resources>

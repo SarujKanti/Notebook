@@ -74,6 +74,16 @@
 
         </LinearLayout>
 
+        <!-- Folded top-right corner; only shown for pinned notes -->
+        <ImageView
+            android:id="@+id/pinFold"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="top|end"
+            android:src="@drawable/bg_pin_fold"
+            android:importantForAccessibility="no"
+            android:visibility="gone"/>
+
         <ImageButton
             android:id="@+id/btnPin"
             android:layout_width="30dp"
