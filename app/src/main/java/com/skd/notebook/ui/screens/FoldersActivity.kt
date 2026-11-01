@@ -1,12 +1,14 @@
 package com.skd.notebook.ui.screens
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +29,7 @@ import com.skd.notebook.data.local.FolderEntity
 import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.FolderAdapter
 import com.skd.notebook.ui.NoteViewModel
+import com.skd.notebook.ui.showCustomColorDialog
 import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.ui.tintPositiveButtonDestructive
 import com.skd.notebook.util.fitTopInsetAsPadding
@@ -50,7 +53,13 @@ class FoldersActivity : AppCompatActivity() {
         "#2196F3", // blue
         "#9C27B0", // purple
         "#E91E63", // pink
-        "#795548"  // brown
+        "#795548", // brown
+        "#F06292", // light pink
+        "#8BC34A", // lime green
+        "#00BCD4", // cyan
+        "#3F51B5", // indigo
+        "#607D8B", // blue grey
+        "#FF5722"  // deep orange
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -166,6 +175,10 @@ class FoldersActivity : AppCompatActivity() {
 
     // ── Colour picker ─────────────────────────────────────────────────────────
 
+    /**
+     * Preset circles, then any custom color the user added, then a "+" tile that opens the
+     * custom color dialog. Re-renders on every tap so the selection ring always follows.
+     */
     private fun buildColorPicker(
         container: LinearLayout,
         currentColor: String,
@@ -173,41 +186,56 @@ class FoldersActivity : AppCompatActivity() {
     ) {
         val sizePx   = resources.getDimensionPixelSize(R.dimen.color_circle_size)
         val marginPx = resources.getDimensionPixelSize(R.dimen.color_circle_margin)
+        val primary  = ContextCompat.getColor(this, R.color.colorPrimary)
+        val customColors = mutableListOf<String>()
+        if (currentColor.isNotEmpty() && currentColor !in folderColors) customColors += currentColor
 
-        folderColors.forEachIndexed { index, hex ->
-            val v = View(this)
-            v.layoutParams = LinearLayout.LayoutParams(sizePx, sizePx).also {
-                it.setMargins(marginPx, marginPx, marginPx, marginPx)
-            }
-
-            val fill = if (hex.isEmpty())
-                ContextCompat.getColor(this, R.color.colorPrimary)
-            else
-                runCatching { Color.parseColor(hex) }
-                    .getOrDefault(ContextCompat.getColor(this, R.color.colorPrimary))
-
-            fun makeShape(selected: Boolean) = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(fill)
-                setStroke(if (selected) 5 else 2,
-                          if (selected) Color.BLACK else Color.parseColor("#55000000"))
-            }
-
-            v.background = makeShape(hex == currentColor)
-
-            v.setOnClickListener {
-                onPick(hex)
-                for (i in 0 until container.childCount) {
-                    val child    = container.getChildAt(i)
-                    val childHex = folderColors.getOrNull(i) ?: ""
-                    (child.background as? GradientDrawable)?.setStroke(
-                        if (childHex == hex) 5 else 2,
-                        if (childHex == hex) Color.BLACK else Color.parseColor("#55000000")
-                    )
-                }
-            }
-            container.addView(v)
+        fun circle(fill: Int, selected: Boolean) = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(fill)
+            setStroke(if (selected) 5 else 2,
+                      if (selected) Color.BLACK else Color.parseColor("#55000000"))
         }
+
+        fun render(selected: String) {
+            container.removeAllViews()
+            (folderColors + customColors).forEach { hex ->
+                val fill = if (hex.isEmpty()) primary
+                           else runCatching { Color.parseColor(hex) }.getOrDefault(primary)
+                container.addView(View(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(sizePx, sizePx).also {
+                        it.setMargins(marginPx, marginPx, marginPx, marginPx)
+                    }
+                    background = circle(fill, hex == selected)
+                    setOnClickListener { onPick(hex); render(hex) }
+                })
+            }
+            container.addView(ImageView(this).apply {
+                layoutParams = LinearLayout.LayoutParams(sizePx, sizePx).also {
+                    it.setMargins(marginPx, marginPx, marginPx, marginPx)
+                }
+                setPadding(sizePx / 4, sizePx / 4, sizePx / 4, sizePx / 4)
+                setImageResource(R.drawable.ic_add)
+                imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimary))
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(Color.TRANSPARENT)
+                    setStroke(3, ContextCompat.getColor(context, R.color.colorPrimary))
+                }
+                contentDescription = "Add custom color"
+                setOnClickListener {
+                    showCustomColorDialog(
+                        runCatching { Color.parseColor(selected) }.getOrDefault(primary)
+                    ) { hex ->
+                        if (hex !in folderColors && hex !in customColors) customColors += hex
+                        onPick(hex)
+                        render(hex)
+                    }
+                }
+            })
+        }
+
+        render(currentColor)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
