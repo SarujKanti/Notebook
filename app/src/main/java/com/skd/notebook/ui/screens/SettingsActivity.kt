@@ -24,8 +24,13 @@ import com.skd.notebook.ui.AppLock
 import com.skd.notebook.ui.BaseActivity
 import com.skd.notebook.ui.showAppDialog
 import com.skd.notebook.ui.ChoiceOption
+import com.skd.notebook.ui.askArchivePin
+import com.skd.notebook.ui.changeArchivePin
+import com.skd.notebook.ui.forgotArchivePin
+import com.skd.notebook.ui.setNewArchivePin
 import com.skd.notebook.ui.showChoiceDialog
 import com.skd.notebook.util.AppSettings
+import com.skd.notebook.util.ArchivePin
 import com.skd.notebook.util.FontPrefs
 import com.skd.notebook.util.SortOrder
 import com.skd.notebook.util.ThemePrefs
@@ -104,13 +109,17 @@ class SettingsActivity : BaseActivity() {
                 isOn = { AppSettings.confirmDelete(this) },
                 onToggle = { AppSettings.setConfirmDelete(this, it) })
         )),
-        Section(R.drawable.ic_shield, "Security & privacy", listOf(
+        Section(R.drawable.ic_shield, "Security & privacy", listOf<Row?>(
             Row(R.drawable.ic_lock, "App Lock", "PIN / Fingerprint protection",
                 isOn = { AppSettings.appLock(this) }, onToggle = { setAppLock(it) }),
-            Row(R.drawable.ic_visibility_off, "Hide Archive Preview", "Hide Archive in recent apps and screenshots",
+            Row(R.drawable.ic_visibility_off, "Hide Archive Preview", "Hide Archive in recent apps and screenshots, and ask for a PIN to open it",
                 isOn = { AppSettings.hideArchivePreview(this) },
-                onToggle = { AppSettings.setHideArchivePreview(this, it) })
-        )),
+                onToggle = { setHideArchive(it) }),
+            if (AppSettings.hideArchivePreview(this) && ArchivePin.isSet(this))
+                Row(R.drawable.ic_lock, "Change Archive PIN", "Needs your current PIN",
+                    onClick = { changeArchivePin { buildScreen() } })
+            else null
+        ).filterNotNull()),
         Section(R.drawable.ic_info, "Support & information", listOf(
             Row(R.drawable.ic_feedback, "Send Feedback", onClick = { sendFeedback() }),
             Row(R.drawable.ic_star, "Rate NoteStack", onClick = { rateApp() }),
@@ -295,6 +304,39 @@ class SettingsActivity : BaseActivity() {
             AppLock.locked = false
         }
         AppSettings.setAppLock(this, on)
+    }
+
+    /**
+     * Turning it on asks for a new Archive PIN (switched back off if the dialog is dismissed);
+     * turning it off needs the current PIN (switched back on if it is not given).
+     */
+    private fun setHideArchive(on: Boolean) {
+        if (on) {
+            if (ArchivePin.isSet(this)) {
+                AppSettings.setHideArchivePreview(this, true)
+                buildScreen()
+                return
+            }
+            setNewArchivePin(
+                onCancel = { buildScreen() },
+                onDone = {
+                    AppSettings.setHideArchivePreview(this, true)
+                    buildScreen()
+                }
+            )
+        } else {
+            askArchivePin(
+                title = "Turn off Archive PIN",
+                subtitle = "Enter your PIN to stop protecting the Archive",
+                positiveText = "Turn off",
+                onForgot = { forgotArchivePin(onDone = { buildScreen() }) },
+                onCancel = { buildScreen() }
+            ) {
+                ArchivePin.clear(this)
+                AppSettings.setHideArchivePreview(this, false)
+                buildScreen()
+            }
+        }
     }
 
     // ─── Support & information ───────────────────────────────────────────────

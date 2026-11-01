@@ -61,6 +61,44 @@ open class BaseActivity : AppCompatActivity() {
         if (AppSettings.appLock(this) && AppLock.locked) promptUnlock() else removeCover()
     }
 
+    // ─── Phone screen-lock check (used to reset a forgotten Archive PIN) ─────
+
+    private var deviceLockCallback: (() -> Unit)? = null
+    private var deviceLockDenied: (() -> Unit)? = null
+    private val deviceLockLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val callback = deviceLockCallback
+        val denied = deviceLockDenied
+        deviceLockCallback = null
+        deviceLockDenied = null
+        if (result.resultCode == Activity.RESULT_OK) callback?.invoke() else denied?.invoke()
+    }
+
+    /**
+     * Asks for the phone's own PIN / pattern / password / fingerprint, then runs [onVerified];
+     * [onDenied] runs instead if it was cancelled or the phone has no screen lock.
+     */
+    fun verifyDeviceLock(onDenied: (() -> Unit)? = null, onVerified: () -> Unit) {
+        val keyguard = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        val intent = keyguard.createConfirmDeviceCredentialIntent(
+            "Reset Archive PIN", "Confirm your phone's screen lock to continue"
+        )
+        if (intent == null) {
+            showAppDialog(
+                title = "No screen lock set",
+                icon = R.drawable.ic_lock,
+                message = "The Archive PIN can only be reset after confirming your phone's screen lock, " +
+                    "and this phone has none. Set one in your phone's Settings first.",
+                positiveText = "Got it",
+                negativeText = null,
+                onPositive = { onDenied?.invoke() }
+            )
+            return
+        }
+        deviceLockCallback = onVerified
+        deviceLockDenied = onDenied
+        deviceLockLauncher.launch(intent)
+    }
+
     private fun promptUnlock() {
         addCover()
         if (prompting) return

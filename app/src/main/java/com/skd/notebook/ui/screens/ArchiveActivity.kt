@@ -16,6 +16,9 @@ import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteEditorSheet
 import com.skd.notebook.ui.NoteViewModel
+import com.skd.notebook.ui.askArchivePin
+import com.skd.notebook.ui.forgotArchivePin
+import com.skd.notebook.util.ArchivePin
 import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.util.fitTopInsetAsPadding
 
@@ -66,6 +69,43 @@ class ArchiveActivity : BaseActivity() {
             adapter.submitList(notes)
             layoutEmpty.visibility = if (notes.isEmpty()) View.VISIBLE else View.GONE
         }
+    }
+
+    // ─── Archive PIN ─────────────────────────────────────────────────────────
+
+    private var unlocked = false
+    private var pinDialog: androidx.appcompat.app.AlertDialog? = null
+
+    private fun needsPin() =
+        com.skd.notebook.util.AppSettings.hideArchivePreview(this) && ArchivePin.isSet(this)
+
+    override fun onResume() {
+        super.onResume()
+        val content = findViewById<View>(android.R.id.content)
+        if (!needsPin() || unlocked) {
+            content.visibility = View.VISIBLE
+            return
+        }
+        // The notes stay hidden until the right PIN is entered; this runs on every open of the Archive.
+        content.visibility = View.INVISIBLE
+        if (pinDialog?.isShowing == true) return
+        pinDialog = askArchivePin(
+            title = "Archive is locked",
+            subtitle = "Enter your Archive PIN",
+            positiveText = "Unlock",
+            cancelable = false,
+            onForgot = { forgotArchivePin() },
+            onCancel = { finish() }
+        ) {
+            unlocked = true
+            content.visibility = View.VISIBLE
+        }
+    }
+
+    // Leaving the screen (or the app) locks it again.
+    override fun onStop() {
+        super.onStop()
+        unlocked = false
     }
 
     // Save the open editor if the app is backgrounded or the screen closes while it is showing.

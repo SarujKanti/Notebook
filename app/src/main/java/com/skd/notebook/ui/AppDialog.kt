@@ -59,7 +59,11 @@ fun Context.showAppDialog(
     negativeText: String? = "Cancel",
     content: View? = null,
     onCancel: (() -> Unit)? = null,
-    subtitle: String? = null
+    subtitle: String? = null,
+    /** When set, the action button only closes the dialog if this returns true (used to validate input). */
+    onPositiveValidated: (() -> Boolean)? = null,
+    /** False: a tap outside does not close the dialog (back still does). */
+    cancelable: Boolean = true
 ): AlertDialog {
     val view = LayoutInflater.from(this).inflate(R.layout.dialog_app, null)
 
@@ -89,7 +93,8 @@ fun Context.showAppDialog(
     dialog.applyGlassBackdrop()
 
     // The window around the panel is see-through but still part of the dialog window: treat a tap there as "outside".
-    view.setOnClickListener { dialog.cancel() }
+    if (cancelable) view.setOnClickListener { dialog.cancel() }
+    dialog.setCanceledOnTouchOutside(cancelable)
     view.findViewById<View>(R.id.dialogPanel).isClickable = true
 
     var acted = false // set when the action button is used, so dismissing any other way counts as cancel
@@ -110,6 +115,7 @@ fun Context.showAppDialog(
         btnPositive.text = positiveText
         if (destructive) btnPositive.setBackgroundResource(R.drawable.bg_glass_danger)
         btnPositive.setOnClickListener {
+            if (onPositiveValidated != null && !onPositiveValidated()) return@setOnClickListener
             acted = true
             dialog.dismiss()
             onPositive()
