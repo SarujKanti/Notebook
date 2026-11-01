@@ -16,6 +16,14 @@ import com.skd.notebook.R
  */
 object NoteColors {
 
+    /** Colors offered in every note editor. "" = no color (plain surface). */
+    val PALETTE = listOf(
+        "",        "#FFCDD2", "#F8BBD9", "#FFE0B2", "#FFF9C4",
+        "#DCEDC8", "#B2EBF2", "#BBDEFB", "#E1BEE7", "#D7CCC8",
+        "#FFAB91", "#FFECB3", "#F0F4C3", "#C8E6C9", "#B2DFDB",
+        "#B3E5FC", "#C5CAE9", "#D1C4E9", "#F5C6E8", "#CFD8DC"
+    )
+
     fun background(context: Context, hex: String): Int {
         val surface = ContextCompat.getColor(context, R.color.colorSurface)
         if (hex.isEmpty()) return surface

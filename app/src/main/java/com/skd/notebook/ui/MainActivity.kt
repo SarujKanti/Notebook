@@ -124,10 +124,7 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
-    private val noteColors = listOf(
-        "",        "#FFCDD2", "#F8BBD9", "#FFE0B2", "#FFF9C4",
-        "#DCEDC8", "#B2EBF2", "#BBDEFB", "#E1BEE7", "#D7CCC8"
-    )
+    private val noteColors = NoteColors.PALETTE
 
     // ─── Lifecycle ───────────────────────────────────────────────────────────
 
