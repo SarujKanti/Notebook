@@ -49,6 +49,7 @@ import com.skd.notebook.ui.screens.SearchActivity
 import com.skd.notebook.util.ThemePrefs
 import com.skd.notebook.util.appVersionLabel
 import com.skd.notebook.util.keepClearOfSystemBars
+import com.skd.notebook.util.peekOnScroll
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -71,6 +72,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: NoteAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var fabAdd: ExtendedFloatingActionButton
+    private lateinit var tvSectionTitle: TextView
     private lateinit var layoutEmpty: LinearLayout
     private lateinit var btnToggleLayout: ImageButton
     private lateinit var btnMenu: ImageButton
@@ -138,6 +140,7 @@ class MainActivity : AppCompatActivity() {
         navigationView  = findViewById(R.id.navigationView)
         recyclerView    = findViewById(R.id.recyclerView)
         fabAdd          = findViewById(R.id.fabAdd)
+        tvSectionTitle  = findViewById(R.id.tvSectionTitle)
         layoutEmpty     = findViewById(R.id.layoutEmpty)
         btnToggleLayout = findViewById(R.id.btnToggleLayout)
         btnMenu         = findViewById(R.id.btnMenu)
@@ -175,6 +178,7 @@ class MainActivity : AppCompatActivity() {
         var firstNoteId: String? = null
         var lastCount = -1
         viewModel.activeNotes.observe(this) { notes ->
+            tvSectionTitle.text = if (notes.isEmpty()) getString(R.string.my_notes) else getString(R.string.my_notes_count, notes.size)
             val newFirstId = notes.firstOrNull()?.id
             val noteMovedToTop = lastCount >= 0 && notes.size >= lastCount &&
                 newFirstId != null && newFirstId != firstNoteId
@@ -193,7 +197,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.startRealtimeSync()
 
-        fabAdd.setOnClickListener          { showNoteDialog(null) }
+        fabAdd.peekOnScroll(recyclerView) { showNoteDialog(null) }
         btnToggleLayout.setOnClickListener { toggleLayout() }
         btnMenu.setOnClickListener         { drawerLayout.openDrawer(GravityCompat.START) }
 

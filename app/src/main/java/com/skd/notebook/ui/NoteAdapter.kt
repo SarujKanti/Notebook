@@ -1,6 +1,5 @@
 package com.skd.notebook.ui
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,7 +34,6 @@ class NoteAdapter(
 
     inner class NoteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val card: MaterialCardView = view.findViewById(R.id.cardNote)
-        val accent: View           = view.findViewById(R.id.viewAccent)
         val title: TextView        = view.findViewById(R.id.txtTitle)
         val desc: TextView         = view.findViewById(R.id.txtDesc)
         val timestamp: TextView    = view.findViewById(R.id.txtTimestamp)
@@ -58,24 +56,17 @@ class NoteAdapter(
         holder.timestamp.text = DATE_FORMAT.format(Date(note.timestamp))
 
         if (note.color.isNotEmpty()) {
-            // Colored note: use note color as card background, show accent stripe
+            // Colored note: the note color is the whole card background
             val cardColor = NoteColors.background(ctx, note.color)
             holder.card.setCardBackgroundColor(cardColor)
             holder.card.strokeWidth = 0
-            // Derive a slightly darker accent from the card color
-            holder.accent.setBackgroundColor(darken(cardColor, 0.75f))
-            holder.accent.visibility = View.VISIBLE
         } else {
-            // Default surface card (white in light, dark in dark): show primary color accent stripe for visual structure
+            // Default surface card (white in light, dark in dark) with a hairline outline
             holder.card.setCardBackgroundColor(
                 ContextCompat.getColor(ctx, R.color.colorSurface)
             )
             holder.card.strokeWidth = ctx.resources.getDimensionPixelSize(R.dimen.card_stroke_width)
             holder.card.strokeColor = ContextCompat.getColor(ctx, R.color.colorSurfaceVariant)
-            holder.accent.setBackgroundColor(
-                ContextCompat.getColor(ctx, R.color.colorPrimaryLight)
-            )
-            holder.accent.visibility = View.VISIBLE
         }
 
         if (showPin) {
@@ -90,13 +81,5 @@ class NoteAdapter(
         holder.itemView.setOnClickListener     { onClick(note) }
         holder.itemView.setOnLongClickListener { onLongClick(note); true }
     }
-
-    /** Darkens an ARGB color by the given factor (0.0 = black, 1.0 = no change). */
-    private fun darken(color: Int, factor: Float): Int {
-        val a = Color.alpha(color)
-        val r = (Color.red(color)   * factor).toInt().coerceIn(0, 255)
-        val g = (Color.green(color) * factor).toInt().coerceIn(0, 255)
-        val b = (Color.blue(color)  * factor).toInt().coerceIn(0, 255)
-        return Color.argb(a, r, g, b)
-    }
 }
+
