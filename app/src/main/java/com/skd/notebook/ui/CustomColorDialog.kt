@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.skd.notebook.R
 
 /**
@@ -44,7 +43,7 @@ fun Context.showCustomColorDialog(initialColor: Int, onPicked: (String) -> Unit)
 
     val content = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        setPadding((24 * dp).toInt(), (8 * dp).toInt(), (24 * dp).toInt(), 0)
+        setPadding(0, 0, 0, 0)
         addView(preview, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (56 * dp).toInt()))
         addView(slider("Color", 360, hsv[0].toInt()) { hsv[0] = it.toFloat() })
         addView(slider("Intensity", 100, (hsv[1] * 100).toInt()) { hsv[1] = it / 100f })
@@ -52,10 +51,11 @@ fun Context.showCustomColorDialog(initialColor: Int, onPicked: (String) -> Unit)
     }
     refresh()
 
-    MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Rounded)
-        .setTitle("Custom color")
-        .setView(content)
-        .setPositiveButton("Add") { _, _ -> onPicked(String.format("#%06X", 0xFFFFFF and currentColor())) }
-        .setNegativeButton("Cancel", null)
-        .show()
+    showAppDialog(
+        title = "Custom color",
+        icon = R.drawable.ic_theme,
+        positiveText = "Add",
+        onPositive = { onPicked(String.format("#%06X", 0xFFFFFF and currentColor())) },
+        content = content
+    )
 }
