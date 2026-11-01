@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.skd.notebook.R
 import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.NoteAdapter
+import com.skd.notebook.ui.NoteEditorSheet
 import com.skd.notebook.ui.NoteViewModel
 import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.util.fitTopInsetAsPadding
@@ -23,6 +24,7 @@ class ArchiveActivity : AppCompatActivity() {
     private lateinit var adapter: NoteAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var layoutEmpty: LinearLayout
+    private lateinit var noteEditor: NoteEditorSheet
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +41,9 @@ class ArchiveActivity : AppCompatActivity() {
         layoutEmpty  = findViewById(R.id.layoutEmpty)
 
         viewModel = ViewModelProvider(this)[NoteViewModel::class.java]
+        noteEditor = NoteEditorSheet(this, viewModel)
         adapter   = NoteAdapter(
-            onClick     = { /* tap to view */ },
+            onClick     = { note -> noteEditor.show(note) },
             onLongClick = { note ->
                 showActionSheet(items = listOf(
                     ActionItem("Unarchive", R.drawable.ic_archive) { viewModel.unarchive(note) },
@@ -58,6 +61,12 @@ class ArchiveActivity : AppCompatActivity() {
             adapter.submitList(notes)
             layoutEmpty.visibility = if (notes.isEmpty()) View.VISIBLE else View.GONE
         }
+    }
+
+    // Save the open editor if the app is backgrounded or the screen closes while it is showing.
+    override fun onPause() {
+        super.onPause()
+        noteEditor.saveIfOpen()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
