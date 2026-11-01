@@ -25,4 +25,7 @@
     <color name="drawer_row_selected">#352A55</color>
     <color name="drawer_logout_bg">#43202B</color>
     <color name="drawer_logout_text">#FFB4AB</color>
+
+    <color name="home_head_end">#1B0F50</color>
+    <color name="fab_home">#7C4DFF</color>
 </resources>

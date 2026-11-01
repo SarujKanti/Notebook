@@ -42,6 +42,7 @@ import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.NoteColors
+import com.skd.notebook.util.SortOrder
 import com.skd.notebook.ui.auth.LoginActivity
 import com.skd.notebook.ui.screens.AboutActivity
 import com.skd.notebook.ui.screens.ArchiveActivity
@@ -79,6 +80,16 @@ class MainActivity : BaseActivity() {
     private lateinit var btnToggleLayout: ImageButton
     private lateinit var btnMenu: ImageButton
     private lateinit var drawerLayout: DrawerLayout
+    private lateinit var tvSort: TextView
+    private lateinit var progressSync: android.widget.ProgressBar
+    private lateinit var tvEmptyTitle: TextView
+    private lateinit var tvEmptySub: TextView
+
+    /** Which notes the home list shows: everything, or only pinned ones (the pill row). */
+    private enum class HomeFilter { ALL, PINNED }
+    private var filter = HomeFilter.ALL
+    private class HomeChip(val root: View, val count: TextView)
+    private val chips = mutableMapOf<String, HomeChip>()
 
     private var isGridLayout = true
     private var latestNotes: List<NoteEntity> = emptyList()
@@ -149,22 +160,19 @@ class MainActivity : BaseActivity() {
         adapter   = NoteAdapter(
             onClick     = { note -> showNoteDialog(note) },
             onLongClick = { note -> showNoteActions(note) },
-            onPinClick  = { note -> viewModel.togglePin(note) }
+            onPinClick  = { note -> viewModel.togglePin(note) },
+            onMoreClick = { note -> showNoteActions(note) }
         )
+
+        progressSync = findViewById(R.id.progressSync)
+        tvEmptyTitle = findViewById(R.id.tvEmptyTitle)
+        tvEmptySub   = findViewById(R.id.tvEmptySub)
+        tvSort       = findViewById(R.id.tvSort)
 
         setupRecyclerView()
         setupSwipeToDelete()
         setupDrawer()
-
-        val progressSync = findViewById<android.widget.ProgressBar>(R.id.progressSync)
-
-        // Helper: always recalculate visibility from current state of both LiveDatas
-        fun refreshEmptyState() {
-            val syncing = viewModel.isSyncing.value ?: true
-            val empty   = viewModel.activeNotes.value.isNullOrEmpty()
-            progressSync.visibility = if (syncing) View.VISIBLE else View.GONE
-            layoutEmpty.visibility  = if (empty && !syncing) View.VISIBLE else View.GONE
-        }
+        setupHomeHeader()
 
         // When sync state changes (spinner on/off), recheck empty state immediately.
         // Without this, if notes list is already empty when isSyncing flips to false,
@@ -180,8 +188,9 @@ class MainActivity : BaseActivity() {
         viewModel.activeNotes.observe(this) { unsorted ->
             latestNotes = unsorted
             appliedSort = AppSettings.sortOrder(this)
-            val notes = appliedSort!!.apply(unsorted)
-            tvSectionTitle.text = if (notes.isEmpty()) getString(R.string.my_notes) else getString(R.string.my_notes_count, notes.size)
+            updateChipCounts()
+            val notes = visibleNotes()
+            updateSectionTitle(notes.size)
             val newFirstId = notes.firstOrNull()?.id
             // "Jump to top" only makes sense when the newest note is what sits at the top.
             val noteMovedToTop = appliedSort == com.skd.notebook.util.SortOrder.NEWEST &&
@@ -200,11 +209,14 @@ class MainActivity : BaseActivity() {
             refreshEmptyState()
         }
 
-        viewModel.folders.observe(this) { adapter.setFolders(it) }
+        viewModel.archivedNotes.observe(this) { setChipCount(CHIP_ARCHIVED, it.size) }
+        viewModel.folders.observe(this) {
+            adapter.setFolders(it)
+            setChipCount(CHIP_FOLDERS, it.size)
+        }
         viewModel.startRealtimeSync()
 
         fabAdd.peekOnScroll(recyclerView) { showNoteDialog(null) }
-        btnToggleLayout.setOnClickListener { toggleLayout() }
         btnMenu.setOnClickListener         { drawerLayout.openDrawer(GravityCompat.START) }
 
         // Search pill → open SearchActivity
@@ -267,8 +279,9 @@ class MainActivity : BaseActivity() {
         val sort = AppSettings.sortOrder(this)
         if (appliedSort != null && sort != appliedSort) {
             appliedSort = sort
-            adapter.submitList(sort.apply(latestNotes))
+            adapter.submitList(visibleNotes())
         }
+        updateSortLabel()
         val grid = AppSettings.gridView(this)
         if (grid != appliedGrid) setGridLayout(grid)
     }
@@ -472,16 +485,6 @@ class MainActivity : BaseActivity() {
         staggeredManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = staggeredManager
         recyclerView.adapter = adapter
-        btnToggleLayout.setImageResource(
-            if (isGridLayout) R.drawable.ic_view_module else R.drawable.ic_view_list
-        )
-    }
-
-    /** The toggle button changes the saved default view too, so it matches what Settings shows. */
-    private fun toggleLayout() {
-        val grid = !isGridLayout
-        AppSettings.setGridView(this, grid)
-        setGridLayout(grid)
     }
 
     private fun setGridLayout(grid: Boolean) {
@@ -489,9 +492,132 @@ class MainActivity : BaseActivity() {
         isGridLayout = grid
         appliedGrid = grid
         staggeredManager?.spanCount = if (grid) spanCount else 1
-        btnToggleLayout.setImageResource(
-            if (grid) R.drawable.ic_view_module else R.drawable.ic_view_list
+    }
+
+    // ─── Home header: filter pills, sort, layout ─────────────────────────────
+
+    /** Notes the list should show right now: the active notes, filtered by the chosen pill, then sorted. */
+    private fun visibleNotes(): List<NoteEntity> {
+        val base = if (filter == HomeFilter.PINNED) latestNotes.filter { it.isPinned } else latestNotes
+        return AppSettings.sortOrder(this).apply(base)
+    }
+
+    private fun updateSectionTitle(count: Int) {
+        val name = if (filter == HomeFilter.PINNED) "Pinned" else getString(R.string.my_notes)
+        tvSectionTitle.text = "$name · $count"
+    }
+
+    private fun refreshEmptyState() {
+        val syncing = viewModel.isSyncing.value ?: true
+        val empty   = visibleNotes().isEmpty()
+        progressSync.visibility = if (syncing) View.VISIBLE else View.GONE
+        layoutEmpty.visibility  = if (empty && !syncing) View.VISIBLE else View.GONE
+        if (filter == HomeFilter.PINNED && latestNotes.isNotEmpty()) {
+            tvEmptyTitle.text = "No pinned notes"
+            tvEmptySub.text   = "Tap the paperclip on a note to pin it here"
+        } else {
+            tvEmptyTitle.text = "No notes yet"
+            tvEmptySub.text   = "Tap the + button to create your first note"
+        }
+    }
+
+    private fun setupHomeHeader() {
+        val row = findViewById<LinearLayout>(R.id.chipRow)
+        row.removeAllViews()
+        chips.clear()
+
+        fun addChip(key: String, icon: Int, label: String, onClick: () -> Unit) {
+            val view = layoutInflater.inflate(R.layout.item_home_chip, row, false)
+            view.findViewById<ImageView>(R.id.chipIcon).setImageResource(icon)
+            view.findViewById<TextView>(R.id.chipLabel).text = label
+            view.setOnClickListener { onClick() }
+            row.addView(view)
+            chips[key] = HomeChip(view, view.findViewById(R.id.chipCount))
+        }
+        addChip(CHIP_ALL, R.drawable.ic_stat_notes, "All Notes") { setFilter(HomeFilter.ALL) }
+        addChip(CHIP_PINNED, R.drawable.ic_widget_pin, "Pinned") { setFilter(HomeFilter.PINNED) }
+        // Folders and Archived are their own screens, so those pills open them.
+        addChip(CHIP_FOLDERS, R.drawable.ic_stat_folder, "Folders") {
+            startActivity(Intent(this, FoldersActivity::class.java))
+        }
+        addChip(CHIP_ARCHIVED, R.drawable.ic_stat_archive, "Archived") {
+            startActivity(Intent(this, ArchiveActivity::class.java))
+        }
+        paintChips()
+
+        tvSort.setOnClickListener { showSortDialog() }
+        btnToggleLayout.setOnClickListener { showLayoutDialog() }
+        findViewById<View>(R.id.btnProfile).setOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
+        updateSortLabel()
+    }
+
+    private fun setFilter(newFilter: HomeFilter) {
+        if (filter == newFilter) return
+        filter = newFilter
+        paintChips()
+        val notes = visibleNotes()
+        updateSectionTitle(notes.size)
+        adapter.submitList(notes) { recyclerView.scrollToPosition(0) }
+        refreshEmptyState()
+    }
+
+    /** The pill for the current filter is filled purple; the others are translucent. */
+    private fun paintChips() {
+        val selected = if (filter == HomeFilter.PINNED) CHIP_PINNED else CHIP_ALL
+        chips.forEach { (key, chip) ->
+            chip.root.setBackgroundResource(
+                if (key == selected) R.drawable.bg_chip_selected else R.drawable.bg_chip_unselected
+            )
+        }
+    }
+
+    private fun setChipCount(key: String, count: Int) {
+        chips[key]?.count?.text = count.toString()
+    }
+
+    private fun updateChipCounts() {
+        setChipCount(CHIP_ALL, latestNotes.size)
+        setChipCount(CHIP_PINNED, latestNotes.count { it.isPinned })
+    }
+
+    private fun updateSortLabel() {
+        tvSort.text = "Sort: ${AppSettings.sortOrder(this).chip}"
+    }
+
+    private fun showSortDialog() {
+        val orders = SortOrder.values().toList()
+        val hints = mapOf(
+            SortOrder.NEWEST to "Latest notes on top",
+            SortOrder.OLDEST to "Oldest notes on top",
+            SortOrder.ALPHABETICAL to "A to Z, by title"
         )
+        showChoiceDialog(
+            title = "Sort Notes",
+            subtitle = "How your notes are ordered",
+            icon = R.drawable.ic_sort,
+            options = orders.map { ChoiceOption(it.label, hints[it], R.drawable.ic_sort) },
+            selectedIndex = orders.indexOf(AppSettings.sortOrder(this))
+        ) { which ->
+            AppSettings.setSortOrder(this, orders[which])
+            applySettingsChanges()
+        }
+    }
+
+    private fun showLayoutDialog() {
+        showChoiceDialog(
+            title = "Layout",
+            subtitle = "How your notes are laid out",
+            icon = R.drawable.ic_tune,
+            options = listOf(
+                ChoiceOption("Grid", "Notes side by side", R.drawable.ic_view_module),
+                ChoiceOption("List", "One note per row", R.drawable.ic_view_list)
+            ),
+            selectedIndex = if (isGridLayout) 0 else 1
+        ) { which ->
+            val grid = which == 0
+            AppSettings.setGridView(this, grid)
+            setGridLayout(grid)
+        }
     }
 
     // ─── Swipe → Bin ─────────────────────────────────────────────────────────
@@ -739,3 +865,8 @@ class MainActivity : BaseActivity() {
         }
     }
 }
+
+private const val CHIP_ALL = "all"
+private const val CHIP_PINNED = "pinned"
+private const val CHIP_FOLDERS = "folders"
+private const val CHIP_ARCHIVED = "archived"

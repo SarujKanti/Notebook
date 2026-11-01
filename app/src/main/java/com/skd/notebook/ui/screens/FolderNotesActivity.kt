@@ -74,16 +74,18 @@ class FolderNotesActivity : BaseActivity() {
         viewModel = ViewModelProvider(this)[NoteViewModel::class.java]
         viewModel.startRealtimeSync()   // keep cloud ↔ Room in sync while inside folder
 
+        val openActions: (NoteEntity) -> Unit = { note ->
+            showActionSheet(items = listOf(
+                ActionItem("Edit", R.drawable.ic_edit) { showNoteDialog(note) },
+                ActionItem("Remove from Folder", R.drawable.ic_folder) { viewModel.moveToFolder(note, "") },
+                ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) { confirmMoveToBin { viewModel.moveToBin(note) } }
+            ))
+        }
         adapter   = NoteAdapter(
             onClick     = { note -> showNoteDialog(note) },
-            onLongClick = { note ->
-                showActionSheet(items = listOf(
-                    ActionItem("Edit", R.drawable.ic_edit) { showNoteDialog(note) },
-                    ActionItem("Remove from Folder", R.drawable.ic_folder) { viewModel.moveToFolder(note, "") },
-                    ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) { confirmMoveToBin { viewModel.moveToBin(note) } }
-                ))
-            },
-            onPinClick = { note -> viewModel.togglePin(note) }
+            onLongClick = openActions,
+            onPinClick  = { note -> viewModel.togglePin(note) },
+            onMoreClick = openActions
         )
 
         val spanCount = if (AppSettings.gridView(this)) resources.getInteger(R.integer.grid_span_count) else 1

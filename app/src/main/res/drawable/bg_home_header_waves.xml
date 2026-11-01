@@ -1,0 +1,15 @@
+<!-- Soft light swooshes laid over the home header gradient. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="260dp"
+    android:viewportWidth="360"
+    android:viewportHeight="260">
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.10"
+        android:pathData="M0,0 H250 C190,34 120,40 66,88 C34,116 12,132 0,160 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.07"
+        android:pathData="M360,70 C310,110 250,150 170,168 C100,184 40,180 0,214 V260 H360 Z"/>
+</vector>
