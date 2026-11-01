@@ -86,6 +86,7 @@ class SearchActivity : BaseActivity() {
         val spanCount = resources.getInteger(R.integer.grid_span_count)
         recyclerSearch.layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerSearch.adapter = adapter
+        viewModel.folders.observe(this) { adapter.setFolders(it) }
 
         // One live query → one results stream. (Observing a fresh LiveData per keystroke used to
         // leave every old observer attached, so a slow older query could overwrite newer results.)

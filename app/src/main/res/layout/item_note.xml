@@ -56,18 +56,38 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="10dp"
-                    android:background="?attr/colorOutlineVariant"
-                    android:alpha="0.5"/>
+                    android:background="?attr/colorOutline"
+                    android:alpha="0.28"/>
 
-                <!-- Timestamp -->
+                <!-- Footer. A long folder name must never squeeze the date, so the folder pill gets
+                     its own line (full width, name cut with "…") and the date sits below it. -->
+                <TextView
+                    android:id="@+id/txtFolder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:drawablePadding="5dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:visibility="gone"/>
+
                 <TextView
                     android:id="@+id/txtTimestamp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:maxLines="1"
                     android:textSize="11sp"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:alpha="0.65"
-                    android:layout_marginTop="8dp"
                     android:gravity="end"/>
 
             </LinearLayout>
