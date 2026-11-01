@@ -13,7 +13,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import com.skd.notebook.ui.BaseActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
@@ -31,7 +31,7 @@ import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteViewModel
 import com.skd.notebook.util.fitTopInsetAsPadding
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : BaseActivity() {
 
     private companion object {
         const val PREFS_NAME = "search_prefs"

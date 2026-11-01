@@ -8,14 +8,14 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
-import androidx.appcompat.app.AppCompatActivity
+import com.skd.notebook.ui.BaseActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
 import com.skd.notebook.R
 import com.skd.notebook.util.appVersionLabel
 import com.skd.notebook.util.keepClearOfSystemBars
 
-class AboutActivity : AppCompatActivity() {
+class AboutActivity : BaseActivity() {
 
     private class Feature(@DrawableRes val icon: Int, val title: String, val description: String)
 

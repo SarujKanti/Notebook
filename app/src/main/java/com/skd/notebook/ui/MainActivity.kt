@@ -12,7 +12,6 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.WindowCompat
@@ -45,14 +44,14 @@ import com.skd.notebook.ui.screens.ArchiveActivity
 import com.skd.notebook.ui.screens.BinActivity
 import com.skd.notebook.ui.screens.FoldersActivity
 import com.skd.notebook.ui.screens.SearchActivity
-import com.skd.notebook.util.ThemePrefs
+import com.skd.notebook.ui.screens.SettingsActivity
 import com.skd.notebook.util.appVersionLabel
 import com.skd.notebook.util.keepClearOfSystemBars
 import com.skd.notebook.util.peekOnScroll
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     companion object {
         /** Set on the launch intent by the "New Note" widget. */
@@ -389,7 +388,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navFolders -> startActivity(Intent(this, FoldersActivity::class.java))
                 R.id.navArchive -> startActivity(Intent(this, ArchiveActivity::class.java))
                 R.id.navBin     -> startActivity(Intent(this, BinActivity::class.java))
-                R.id.navTheme   -> showThemeDialog()
+                R.id.navSettings -> startActivity(Intent(this, SettingsActivity::class.java))
                 R.id.navAbout   -> startActivity(Intent(this, AboutActivity::class.java))
                 R.id.navSignOut -> if (isGuestMode()) startGoogleSignIn() else signOut()
             }
@@ -517,18 +516,6 @@ class MainActivity : AppCompatActivity() {
                 ActionItem(folder.name, R.drawable.ic_folder) { viewModel.moveToFolder(note, folder.id) }
             }
         )
-    }
-
-    /** Light / Dark / System choice. Applies immediately; "System default" is the default. */
-    private fun showThemeDialog() {
-        val modes  = intArrayOf(ThemePrefs.SYSTEM, ThemePrefs.LIGHT, ThemePrefs.DARK)
-        val labels = arrayOf("System default", "Light", "Dark")
-        showChoiceDialog(
-            title = "Choose theme",
-            icon = R.drawable.ic_theme,
-            labels = labels.toList(),
-            selectedIndex = modes.indexOf(ThemePrefs.saved(this)).coerceAtLeast(0)
-        ) { which -> ThemePrefs.set(this, modes[which]) }
     }
 
     // ─── Auth ────────────────────────────────────────────────────────────────

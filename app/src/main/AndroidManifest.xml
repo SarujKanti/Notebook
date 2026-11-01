@@ -47,6 +47,11 @@
             android:exported="false"
             android:parentActivityName=".ui.MainActivity"/>
 
+        <activity
+            android:name=".ui.screens.SettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.MainActivity"/>
+
         <!-- ④ Bin -->
         <activity
             android:name=".ui.screens.BinActivity"

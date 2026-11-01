@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
+import com.skd.notebook.ui.BaseActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
@@ -29,7 +29,7 @@ import com.skd.notebook.util.fitTopInsetAsPadding
 import com.skd.notebook.util.peekOnScroll
 import java.util.UUID
 
-class FolderNotesActivity : AppCompatActivity() {
+class FolderNotesActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_FOLDER_ID   = "folder_id"

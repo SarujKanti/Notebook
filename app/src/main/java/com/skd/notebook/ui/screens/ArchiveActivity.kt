@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
+import com.skd.notebook.ui.BaseActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
@@ -18,7 +18,7 @@ import com.skd.notebook.ui.NoteViewModel
 import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.util.fitTopInsetAsPadding
 
-class ArchiveActivity : AppCompatActivity() {
+class ArchiveActivity : BaseActivity() {
 
     private lateinit var viewModel: NoteViewModel
     private lateinit var adapter: NoteAdapter
