@@ -88,6 +88,10 @@ fun Context.showAppDialog(
     dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     dialog.applyGlassBackdrop()
 
+    // The window around the panel is see-through but still part of the dialog window: treat a tap there as "outside".
+    view.setOnClickListener { dialog.cancel() }
+    view.findViewById<View>(R.id.dialogPanel).isClickable = true
+
     var acted = false // set when the action button is used, so dismissing any other way counts as cancel
 
     val btnNegative = view.findViewById<TextView>(R.id.dialogNegative)
@@ -130,8 +134,10 @@ fun Context.showAppDialog(
 }
 
 /**
- * Single-choice list in the same glass design: tap a row to select it, then Apply. Each row can
- * carry an icon and a one-line description.
+ * Single-choice list in the same glass design, with no buttons: tapping an option selects it, applies
+ * it and closes the dialog (after a very short moment so the selection can be seen); tapping outside
+ * the dialog just closes it. Choosing the option that is already selected only closes it. Each row
+ * can carry an icon and a one-line description.
  */
 fun Context.showChoiceDialog(
     title: String,
@@ -139,10 +145,11 @@ fun Context.showChoiceDialog(
     @DrawableRes icon: Int,
     options: List<ChoiceOption>,
     selectedIndex: Int,
-    applyText: String = "Apply",
     onPick: (Int) -> Unit
 ): AlertDialog {
     var selected = selectedIndex.coerceIn(0, options.lastIndex)
+    var picked = false // ignore a second tap while the dialog is closing
+    lateinit var dialog: AlertDialog
     val inflater = LayoutInflater.from(this)
     val list = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
     val rows = mutableListOf<View>()
@@ -170,20 +177,33 @@ fun Context.showChoiceDialog(
                 imageTintList = ColorStateList.valueOf(Color.WHITE)
             }
         }
-        row.setOnClickListener { selected = index; paint() }
+        row.setOnClickListener {
+            if (picked) return@setOnClickListener
+            picked = true
+            val changed = index != selected
+            selected = index
+            paint()
+            // Let the new radio mark show for a blink, then close; only a real change is applied.
+            row.postDelayed({
+                dialog.dismiss()
+                if (changed) onPick(index)
+            }, CHOICE_CLOSE_DELAY_MS)
+        }
         (row.layoutParams as LinearLayout.LayoutParams).bottomMargin = if (index < options.lastIndex) gap else 0
         rows += row
         list.addView(row)
     }
     paint()
 
-    return showAppDialog(
+    dialog = showAppDialog(
         title = title, subtitle = subtitle, icon = icon,
-        positiveText = applyText, onPositive = { onPick(selected) },
-        negativeText = "Cancel",
+        positiveText = null, negativeText = null,
         content = list
     )
+    return dialog
 }
+
+private const val CHOICE_CLOSE_DELAY_MS = 160L
 
 /**
  * Asks "Move to Bin?" first when Delete Confirmation is on in Settings; otherwise just does it.
