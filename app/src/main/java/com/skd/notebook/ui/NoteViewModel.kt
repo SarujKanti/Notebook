@@ -69,6 +69,14 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     fun moveToBin(note: NoteEntity)         = viewModelScope.launch { repo.moveToBin(note); refreshPinnedWidget() }
     fun restoreFromBin(note: NoteEntity)    = viewModelScope.launch { repo.restore(note); refreshPinnedWidget() }
     fun deletePermanently(note: NoteEntity) = viewModelScope.launch { repo.deletePermanently(note); refreshPinnedWidget() }
+    fun restoreAll(notes: List<NoteEntity>) = viewModelScope.launch {
+        notes.forEach { repo.restore(it) }
+        refreshPinnedWidget()
+    }
+    fun deleteAllPermanently(notes: List<NoteEntity>) = viewModelScope.launch {
+        notes.forEach { repo.deletePermanently(it) }
+        refreshPinnedWidget()
+    }
     fun emptyBin()                          = viewModelScope.launch { repo.emptyBin() }
     fun archive(note: NoteEntity)           = viewModelScope.launch { repo.archive(note); refreshPinnedWidget() }
     fun unarchive(note: NoteEntity)         = viewModelScope.launch { repo.unarchive(note); refreshPinnedWidget() }
