@@ -64,6 +64,7 @@ class NoteAdapter(
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val note = getItem(position)
+        val folded = showPin && note.isPinned // pinned notes get the folded corner instead of an outline
         val ctx  = holder.itemView.context
 
         val highlightColor = ColorUtils.setAlphaComponent(ContextCompat.getColor(ctx, R.color.colorAccent), 0x99)
@@ -81,11 +82,11 @@ class NoteAdapter(
             holder.card.setCardBackgroundColor(cardColor)
             holder.card.strokeWidth = 0
         } else {
-            // Default surface card (white in light, dark in dark) with a hairline outline
+            // Default surface card (white in light, dark in dark); the hairline outline is dropped on folded cards
             holder.card.setCardBackgroundColor(
                 ContextCompat.getColor(ctx, R.color.colorSurface)
             )
-            holder.card.strokeWidth = ctx.resources.getDimensionPixelSize(R.dimen.card_stroke_width)
+            holder.card.strokeWidth = if (folded) 0 else ctx.resources.getDimensionPixelSize(R.dimen.card_stroke_width)
             holder.card.strokeColor = ContextCompat.getColor(ctx, R.color.colorSurfaceVariant)
         }
 
@@ -109,7 +110,7 @@ class NoteAdapter(
             holder.btnPin.visibility = View.GONE
         }
 
-        holder.pinFold.visibility = if (showPin && note.isPinned) View.VISIBLE else View.GONE
+        holder.pinFold.visibility = if (folded) View.VISIBLE else View.GONE
 
         holder.itemView.setOnClickListener     { onClick(note) }
         holder.itemView.setOnLongClickListener { onLongClick(note); true }
