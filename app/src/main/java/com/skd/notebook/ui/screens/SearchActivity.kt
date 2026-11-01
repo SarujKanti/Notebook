@@ -147,10 +147,15 @@ class SearchActivity : AppCompatActivity() {
             applyNoteColor(dialogRoot, chosen)
         }
 
+        // Saving stamps the note with the current time, which moves it to the top of the list,
+        // so only save when the content really changed since it was opened / last saved.
+        var lastSaved = Triple(note.title.trim(), note.description.trim(), selectedColor)
         val save: () -> Unit = {
             val title = etTitle.text.toString().trim()
             val desc  = etDesc.text.toString().trim()
-            if (title.isNotEmpty() || desc.isNotEmpty()) {
+            val current = Triple(title, desc, selectedColor)
+            if ((title.isNotEmpty() || desc.isNotEmpty()) && current != lastSaved) {
+                lastSaved = current
                 viewModel.saveNote(note.copy(title = title, description = desc, color = selectedColor))
             }
         }
