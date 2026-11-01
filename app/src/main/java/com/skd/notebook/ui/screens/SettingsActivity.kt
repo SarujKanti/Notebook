@@ -98,9 +98,7 @@ class SettingsActivity : BaseActivity() {
             Row(R.drawable.ic_feedback, "Send Feedback", onClick = { sendFeedback() }),
             Row(R.drawable.ic_star, "Rate NoteStack", onClick = { rateApp() }),
             Row(R.drawable.ic_privacy, "Privacy Policy", onClick = { openLink(PRIVACY_POLICY_URL) }),
-            Row(R.drawable.ic_terms, "Terms & Conditions", onClick = { showNotAvailable("Terms & Conditions") }),
-            Row(R.drawable.ic_info, "About NoteStack",
-                onClick = { startActivity(Intent(this, AboutActivity::class.java)) })
+            Row(R.drawable.ic_terms, "Terms & Conditions", onClick = { showNotAvailable("Terms & Conditions") })
         ))
     )
 
