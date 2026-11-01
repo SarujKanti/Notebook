@@ -6,6 +6,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.graphics.Bitmap
+import android.net.Uri
+import androidx.activity.result.PickVisualMediaRequest
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -41,6 +44,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.AppSettings
+import com.skd.notebook.util.ProfilePhoto
 import com.skd.notebook.util.NoteColors
 import com.skd.notebook.util.SortOrder
 import com.skd.notebook.ui.auth.LoginActivity
@@ -319,6 +323,14 @@ class MainActivity : BaseActivity() {
             ?: user?.email?.substringBefore('@') ?: "User"
     }
 
+    // The system photo picker: it hands back only the one image the user taps, so the app needs no
+    // storage or media permission (this is what Google Play asks apps to use for one-off picks).
+    private var onPhotoPicked: ((Uri) -> Unit)? = null
+    private val photoPicker = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) onPhotoPicked?.invoke(uri)
+    }
+
+    /** Edit profile: name and picture. Nothing is saved until Save, so Cancel throws changes away. */
     private fun showEditNameDialog(currentName: String, onSaved: (String) -> Unit) {
         val dialog = BottomSheetDialog(this, R.style.ThemeOverlay_NoteBook_GlassSheet).also { it.applyGlassBackdrop() }
         val view   = LayoutInflater.from(dialog.context).inflate(R.layout.dialog_edit_name, null)
@@ -327,9 +339,53 @@ class MainActivity : BaseActivity() {
         val btnClose  = view.findViewById<ImageButton>(R.id.btnEditNameClose)
         val btnCancel = view.findViewById<MaterialButton>(R.id.btnEditNameCancel)
         val btnSave   = view.findViewById<MaterialButton>(R.id.btnEditNameSave)
+        val ivAvatar  = view.findViewById<ImageView>(R.id.ivEditAvatar)
+        val tvInitial = view.findViewById<TextView>(R.id.tvEditAvatarInitial)
+        val btnRemove = view.findViewById<View>(R.id.btnRemovePhoto)
 
         etName.setText(currentName)
         etName.setSelection(etName.text?.length ?: 0)
+
+        // Picture changes wait here until Save.
+        var pendingPhoto: Bitmap? = null
+        var removePhoto = false
+
+        fun renderAvatar() {
+            val photo = pendingPhoto ?: if (removePhoto) null else ProfilePhoto.load(this)
+            if (photo != null) {
+                ivAvatar.setImageBitmap(photo)
+                tvInitial.visibility = View.GONE
+            } else {
+                ivAvatar.setImageDrawable(null)
+                tvInitial.text = (etName.text?.toString()?.trim()?.ifEmpty { currentName } ?: currentName)
+                    .firstOrNull()?.uppercaseChar()?.toString() ?: "U"
+                tvInitial.visibility = View.VISIBLE
+            }
+            btnRemove.visibility = if (photo != null) View.VISIBLE else View.GONE
+        }
+        renderAvatar()
+
+        val choosePhoto = {
+            onPhotoPicked = { uri ->
+                val bitmap = ProfilePhoto.decode(this, uri)
+                if (bitmap == null) {
+                    Snackbar.make(view, "Couldn't open that picture", Snackbar.LENGTH_SHORT).show()
+                } else {
+                    pendingPhoto = bitmap
+                    removePhoto = false
+                    renderAvatar()
+                }
+            }
+            photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+        view.findViewById<View>(R.id.avatarBlock).setOnClickListener { choosePhoto() }
+        view.findViewById<View>(R.id.btnChangePhoto).setOnClickListener { choosePhoto() }
+        btnRemove.setOnClickListener {
+            pendingPhoto = null
+            removePhoto = true
+            renderAvatar()
+        }
+        dialog.setOnDismissListener { onPhotoPicked = null }
 
         val dismiss = { dialog.dismiss() }
         btnClose.setOnClickListener  { dismiss() }
@@ -339,7 +395,12 @@ class MainActivity : BaseActivity() {
             val newName = etName.text?.toString()?.trim()?.ifEmpty { resolvedDisplayName() } ?: resolvedDisplayName()
             getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit().putString(KEY_CUSTOM_NAME, newName).apply()
+            when {
+                pendingPhoto != null -> ProfilePhoto.save(this, pendingPhoto!!)
+                removePhoto -> ProfilePhoto.delete(this)
+            }
             onSaved(newName)
+            refreshProfilePhoto()
             dismiss()
         }
 
@@ -352,8 +413,26 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        etName.requestFocus()
         dialog.show()
+    }
+
+    /** Shows the saved picture (if any) in the drawer avatar and the dashboard's top-right button. */
+    private fun refreshProfilePhoto() {
+        val photo = if (isGuestMode()) null else ProfilePhoto.load(this)
+        val header = findViewById<View>(R.id.navHeader)
+        val navAvatar = header.findViewById<ImageView>(R.id.ivNavAvatar)
+        val navInitial = header.findViewById<View>(R.id.tvNavInitial)
+        val profilePhoto = findViewById<ImageView>(R.id.ivProfilePhoto)
+        val profileIcon = findViewById<View>(R.id.ivProfileIcon)
+
+        if (photo != null) {
+            navAvatar.setImageBitmap(photo)
+            profilePhoto.setImageBitmap(photo)
+        }
+        navAvatar.visibility = if (photo != null) View.VISIBLE else View.GONE
+        navInitial.visibility = if (photo != null) View.GONE else View.VISIBLE
+        profilePhoto.visibility = if (photo != null) View.VISIBLE else View.GONE
+        profileIcon.visibility = if (photo != null) View.GONE else View.VISIBLE
     }
 
     private class NavItem(val icon: Int, val title: String, val action: () -> Unit)
@@ -416,6 +495,7 @@ class MainActivity : BaseActivity() {
         viewModel.archivedNotes.observe(this) { header.findViewById<TextView>(R.id.tvStatArchived).text = it.size.toString() }
 
         buildDrawerMenu()
+        refreshProfilePhoto()
 
         // Bottom button: Logout, or Login for a guest.
         val authTitle = findViewById<TextView>(R.id.tvNavAuth)
@@ -749,6 +829,7 @@ class MainActivity : BaseActivity() {
 
     private fun signOut() {
         viewModel.clearLocalData()
+        ProfilePhoto.delete(this) // the picture belongs to the account that just signed out
         FirebaseAuth.getInstance().signOut()
         GoogleSignIn.getClient(this,
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
