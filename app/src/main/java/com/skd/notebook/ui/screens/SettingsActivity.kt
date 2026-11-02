@@ -33,6 +33,8 @@ import com.skd.notebook.ui.showChoiceDialog
 import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.ArchivePin
 import com.skd.notebook.util.FontPrefs
+import com.skd.notebook.util.FontStyle
+import com.skd.notebook.util.FontStyles
 import com.skd.notebook.util.SortOrder
 import com.skd.notebook.util.ThemePrefs
 
@@ -99,7 +101,9 @@ class SettingsActivity : BaseActivity() {
             Row(R.drawable.ic_theme, getString(R.string.theme), getString(R.string.theme_summary),
                 value = { themeLabel() }, onClick = { chooseTheme() }),
             Row(R.drawable.ic_font_size, getString(R.string.font_size), getString(R.string.font_size_summary),
-                value = { FontPrefs.LABELS[FontPrefs.saved(this)] }, onClick = { chooseFontSize() })
+                value = { FontPrefs.LABELS[FontPrefs.saved(this)] }, onClick = { chooseFontSize() }),
+            Row(R.drawable.ic_font_size, getString(R.string.font_style), getString(R.string.font_style_summary),
+                value = { getString(FontStyles.saved(this).label) }, onClick = { chooseFontStyle() })
         )),
         Section(R.drawable.ic_notes, getString(R.string.note_preferences), listOf(
             Row(R.drawable.ic_sort, getString(R.string.default_sorting), getString(R.string.default_sorting_summary),
@@ -225,6 +229,20 @@ class SettingsActivity : BaseActivity() {
             ),
             selectedIndex = modes.indexOf(ThemePrefs.saved(this)).coerceAtLeast(0)
         ) { which -> ThemePrefs.set(this, modes[which]) }
+    }
+
+    private fun chooseFontStyle() {
+        val styles = FontStyle.values().toList()
+        showChoiceDialog(
+            title = getString(R.string.font_style_title),
+            subtitle = getString(R.string.font_style_subtitle),
+            icon = R.drawable.ic_font_size,
+            options = styles.map { ChoiceOption(getString(it.label), getString(it.hint), labelTypeface = it.typeface(this)) },
+            selectedIndex = styles.indexOf(FontStyles.saved(this))
+        ) { which ->
+            FontStyles.set(this, styles[which])
+            recreate() // other open screens rebuild themselves when they come back (BaseActivity)
+        }
     }
 
     private fun chooseFontSize() {

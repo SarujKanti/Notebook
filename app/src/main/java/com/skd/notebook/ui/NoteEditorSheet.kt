@@ -1,5 +1,6 @@
 package com.skd.notebook.ui
 
+import com.skd.notebook.util.FontStyles
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.View
@@ -76,6 +77,7 @@ class NoteEditorSheet(
         dialog = sheet
         pendingSave = save
         sheet.show()
+        FontStyles.applyToTree(sheet.window?.decorView)
     }
 
     fun saveIfOpen() {

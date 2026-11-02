@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.view.LayoutInflater
@@ -13,10 +14,13 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.view.ViewGroup
+import android.widget.ScrollView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.skd.notebook.R
+import com.skd.notebook.util.FontStyles
 import com.skd.notebook.util.AppSettings
 
 /**
@@ -38,7 +42,9 @@ internal fun Dialog.applyGlassBackdrop() {
 class ChoiceOption(
     val label: String,
     val subtitle: String? = null,
-    @DrawableRes val icon: Int = 0
+    @DrawableRes val icon: Int = 0,
+    /** When set, the label is drawn in this typeface (used to preview font styles). */
+    val labelTypeface: Typeface? = null
 )
 
 /**
@@ -136,6 +142,7 @@ fun Context.showAppDialog(
 
     onCancel?.let { cancel -> dialog.setOnDismissListener { if (!acted) cancel() } }
     dialog.show()
+    FontStyles.applyToTree(view)
     return dialog
 }
 
@@ -201,15 +208,27 @@ fun Context.showChoiceDialog(
     }
     paint()
 
+    // A long list (the font styles) scrolls inside a window of about half the screen instead of running off it.
+    val content: View = if (options.size <= CHOICE_SCROLL_AFTER) list else ScrollView(this).apply {
+        layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (resources.displayMetrics.heightPixels * 0.5f).toInt())
+        isVerticalScrollBarEnabled = false
+        addView(list)
+    }
+
     dialog = showAppDialog(
         title = title, subtitle = subtitle, icon = icon,
         positiveText = null, negativeText = null,
-        content = list
+        content = content
     )
+    // Applied after the dialog set the chosen font on everything, so each preview keeps its own typeface.
+    options.forEachIndexed { index, option ->
+        option.labelTypeface?.let { rows[index].findViewById<TextView>(R.id.choiceLabel).setTypeface(it, Typeface.BOLD) }
+    }
     return dialog
 }
 
 private const val CHOICE_CLOSE_DELAY_MS = 160L
+private const val CHOICE_SCROLL_AFTER = 5
 
 /**
  * Asks "Move to Bin?" first when Delete Confirmation is on in Settings; otherwise just does it.

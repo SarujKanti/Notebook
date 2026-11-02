@@ -1,5 +1,6 @@
 package com.skd.notebook.ui
 
+import com.skd.notebook.util.FontStyles
 import android.content.Context
 import android.content.DialogInterface
 import android.content.res.ColorStateList
@@ -61,6 +62,7 @@ fun Context.showActionSheet(title: String? = null, items: List<ActionItem>) {
 
     dialog.setContentView(view)
     dialog.show()
+    FontStyles.applyToTree(dialog.window?.decorView)
 }
 
 /** Colors the positive button red on a confirm dialog for a destructive action (delete, empty, etc). */

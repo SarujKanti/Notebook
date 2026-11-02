@@ -1,5 +1,6 @@
 package com.skd.notebook.ui.screens
 
+import com.skd.notebook.util.FontStyles
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -173,6 +174,7 @@ class FoldersActivity : BaseActivity() {
         // Auto-focus name field
         etName.requestFocus()
         dialog.show()
+        FontStyles.applyToTree(dialog.window?.decorView)
     }
 
     // ── Colour picker ─────────────────────────────────────────────────────────

@@ -1,5 +1,6 @@
 package com.skd.notebook.ui
 
+import com.skd.notebook.util.FontStyles
 import com.skd.notebook.util.dimenPx
 import android.content.Context
 import android.content.Intent
@@ -414,6 +415,7 @@ class MainActivity : BaseActivity() {
         }
 
         dialog.show()
+        FontStyles.applyToTree(dialog.window?.decorView)
     }
 
     /** Shows the saved picture (if any) in the drawer avatar and the dashboard's top-right button. */
@@ -922,6 +924,7 @@ class MainActivity : BaseActivity() {
         activeNoteDialog = dialog
         pendingNoteSave = save
         dialog.show()
+        FontStyles.applyToTree(dialog.window?.decorView)
         etDesc.requestFocus()
     }
 
