@@ -462,8 +462,10 @@ class MainActivity : BaseActivity() {
         val footer       = findViewById<View>(R.id.navFooter)
 
         // The drawer is drawn under the status and navigation bars; keep its content clear of them.
-        header.keepClearOfSystemBars(top = true)
-        footer.keepClearOfSystemBars(top = false, bottom = true)
+        // Measured from the drawer panel itself: the header and footer move as the panel scrolls.
+        val panel = findViewById<View>(R.id.navDrawer)
+        header.keepClearOfSystemBars(top = true, anchor = panel)
+        footer.keepClearOfSystemBars(top = false, bottom = true, anchor = panel)
 
         findViewById<TextView>(R.id.tvNavVersion).text = "Version ${appVersionLabel()}"
 

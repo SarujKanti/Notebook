@@ -5,9 +5,11 @@ import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.Rect
 import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
@@ -52,11 +54,13 @@ class DrawerPanelLayout @JvmOverloads constructor(
         super.onDraw(canvas)
         val w = width.toFloat()
         val h = height.toFloat()
-        val headerBottom = findViewById<View>(R.id.navHeader)?.bottom?.toFloat() ?: 0f
+        val headerBottom = measureHeader()
 
         canvas.drawRect(0f, 0f, w, h, bodyPaint)
         drawWaves(canvas, w, h)
         if (headerBottom <= 0f) return
+        canvas.save()
+        canvas.translate(0f, headerTop)
 
         // Header: rounded bottom-right corner, notch at the bottom-left for the sheet's rounded corner.
         headPath.reset()
@@ -81,6 +85,7 @@ class DrawerPanelLayout @JvmOverloads constructor(
         blobPath.close()
         canvas.drawPath(blobPath, blobPaint)
         canvas.restore()
+        canvas.restore()
     }
 
     private fun drawWaves(canvas: Canvas, w: Float, h: Float) {
@@ -101,6 +106,32 @@ class DrawerPanelLayout @JvmOverloads constructor(
         wavePath.lineTo(0f, h)
         wavePath.close()
         canvas.drawPath(wavePath, wavePaint)
+    }
+
+    private var headerTop = 0f
+
+    /**
+     * Sets [headerTop] (the header's top in this view's own coordinates, which moves while the panel's
+     * content scrolls) and returns the header's height, or 0 if there is no header yet.
+     */
+    private fun measureHeader(): Float {
+        val header = findViewById<View>(R.id.navHeader) ?: return 0f
+        val rect = Rect(0, 0, header.width, header.height)
+        offsetDescendantRectToMyCoords(header, rect)
+        headerTop = rect.top.toFloat()
+        return header.height.toFloat()
+    }
+
+    private val repaintOnScroll = ViewTreeObserver.OnScrollChangedListener { invalidate() }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        viewTreeObserver.addOnScrollChangedListener(repaintOnScroll)
+    }
+
+    override fun onDetachedFromWindow() {
+        viewTreeObserver.removeOnScrollChangedListener(repaintOnScroll)
+        super.onDetachedFromWindow()
     }
 
     // The header's size is only known after layout; repaint then.
