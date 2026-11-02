@@ -1,5 +1,6 @@
 package com.skd.notebook.ui.screens
 
+import com.skd.notebook.util.FontStyles
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -275,6 +276,7 @@ class SearchActivity : BaseActivity() {
         activeNoteDialog = dialog
         pendingNoteSave = save
         dialog.show()
+        FontStyles.applyToTree(dialog.window?.decorView)
     }
 
     private fun applyNoteColor(root: LinearLayout, hex: String) {

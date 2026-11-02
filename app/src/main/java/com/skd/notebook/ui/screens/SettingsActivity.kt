@@ -33,6 +33,8 @@ import com.skd.notebook.ui.showChoiceDialog
 import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.ArchivePin
 import com.skd.notebook.util.FontPrefs
+import com.skd.notebook.util.FontStyle
+import com.skd.notebook.util.FontStyles
 import com.skd.notebook.util.SortOrder
 import com.skd.notebook.util.ThemePrefs
 
@@ -225,6 +227,20 @@ class SettingsActivity : BaseActivity() {
             ),
             selectedIndex = modes.indexOf(ThemePrefs.saved(this)).coerceAtLeast(0)
         ) { which -> ThemePrefs.set(this, modes[which]) }
+    }
+
+    private fun chooseFontStyle() {
+        val styles = FontStyle.values().toList()
+        showChoiceDialog(
+            title = getString(R.string.font_style_title),
+            subtitle = getString(R.string.font_style_subtitle),
+            icon = R.drawable.ic_font_size,
+            options = styles.map { ChoiceOption(getString(it.label), getString(it.hint), labelTypeface = it.typeface(this)) },
+            selectedIndex = styles.indexOf(FontStyles.saved(this))
+        ) { which ->
+            FontStyles.set(this, styles[which])
+            recreate() // other open screens rebuild themselves when they come back (BaseActivity)
+        }
     }
 
     private fun chooseFontSize() {

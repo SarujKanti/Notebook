@@ -236,6 +236,34 @@
     <string name="sort_alphabetical_first">Alphabetical (A–Z)</string>
     <string name="sort_alphabetical_chip">A–Z</string>
 
+    <!-- Font style (Settings) -->
+    <string name="font_style">Font Style</string>
+    <string name="font_style_summary">Phone font or pick a style</string>
+    <string name="font_style_title">Choose Font Style</string>
+    <string name="font_style_subtitle">Pick one to match your mood</string>
+    <string name="font_device">Phone default</string>
+    <string name="font_device_hint">Your phone\'s own font (recommended)</string>
+    <string name="font_modern">Modern</string>
+    <string name="font_modern_hint">Poppins · round and contemporary</string>
+    <string name="font_clean">Clean</string>
+    <string name="font_clean_hint">Lato · simple and easy to read</string>
+    <string name="font_friendly">Friendly</string>
+    <string name="font_friendly_hint">ABeeZee · soft and approachable</string>
+    <string name="font_classic">Classic</string>
+    <string name="font_classic_hint">PT Serif · like a printed book</string>
+    <string name="font_elegant">Elegant</string>
+    <string name="font_elegant_hint">Crimson Text · refined and calm</string>
+    <string name="font_slab">Slab</string>
+    <string name="font_slab_hint">Arvo · strong and sturdy</string>
+    <string name="font_typewriter">Typewriter</string>
+    <string name="font_typewriter_hint">Courier Prime · old-school notes</string>
+    <string name="font_handwritten">Handwritten</string>
+    <string name="font_handwritten_hint">Indie Flower · a pen on paper</string>
+    <string name="font_script">Script</string>
+    <string name="font_script_hint">Pacifico · playful brush lettering</string>
+    <string name="font_display">Display</string>
+    <string name="font_display_hint">Lobster · bold and expressive</string>
+
     <!-- Texts with values filled in (%1$s text, %1$d number) -->
     <string name="version_format">Version %1$s</string>
     <string name="section_title_format">%1$s · %2$d</string>
