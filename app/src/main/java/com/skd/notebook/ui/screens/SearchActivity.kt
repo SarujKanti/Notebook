@@ -26,6 +26,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.skd.notebook.R
+import com.skd.notebook.util.fillWidthOnTablet
+import com.skd.notebook.util.noteGridColumns
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.NoteColors
 import com.skd.notebook.ui.NoteAdapter
@@ -84,7 +86,7 @@ class SearchActivity : BaseActivity() {
             onPinClick  = { note -> viewModel.togglePin(note) }
         )
 
-        val spanCount = resources.getInteger(R.integer.grid_span_count)
+        val spanCount = noteGridColumns()
         recyclerSearch.layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerSearch.adapter = adapter
         viewModel.folders.observe(this) { adapter.setFolders(it) }
@@ -272,6 +274,7 @@ class SearchActivity : BaseActivity() {
             val behavior = BottomSheetBehavior.from(it)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.skipCollapsed = true
+            behavior.fillWidthOnTablet(this)
         }
         activeNoteDialog = dialog
         pendingNoteSave = save

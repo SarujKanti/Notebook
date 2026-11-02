@@ -43,6 +43,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.skd.notebook.R
+import com.skd.notebook.util.fillWidthOnTablet
+import com.skd.notebook.util.noteGridColumns
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.ProfilePhoto
@@ -579,14 +581,14 @@ class MainActivity : BaseActivity() {
     private fun setupRecyclerView() {
         isGridLayout = AppSettings.gridView(this)
         appliedGrid = isGridLayout
-        val spanCount = if (isGridLayout) resources.getInteger(R.integer.grid_span_count) else 1
+        val spanCount = if (isGridLayout) noteGridColumns() else 1
         staggeredManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = staggeredManager
         recyclerView.adapter = adapter
     }
 
     private fun setGridLayout(grid: Boolean) {
-        val spanCount = resources.getInteger(R.integer.grid_span_count)
+        val spanCount = noteGridColumns()
         isGridLayout = grid
         appliedGrid = grid
         staggeredManager?.spanCount = if (grid) spanCount else 1
@@ -920,6 +922,7 @@ class MainActivity : BaseActivity() {
             val behavior = BottomSheetBehavior.from(it)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.skipCollapsed = true
+            behavior.fillWidthOnTablet(this)
         }
         activeNoteDialog = dialog
         pendingNoteSave = save

@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Notes side by side on a phone -->
     <integer name="grid_span_count">2</integer>
+
+    <!-- A screen at least this wide on its shortest side counts as a tablet -->
+    <integer name="tablet_min_width_dp">600</integer>
+    <!-- Notes side by side on a tablet -->
+    <integer name="grid_span_tablet_portrait">3</integer>
+    <integer name="grid_span_tablet_landscape">4</integer>
 </resources>

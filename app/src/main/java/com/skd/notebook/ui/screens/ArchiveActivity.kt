@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.skd.notebook.R
+import com.skd.notebook.util.noteGridColumns
 import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteEditorSheet
@@ -61,7 +62,7 @@ class ArchiveActivity : BaseActivity() {
             showPin = false
         )
 
-        val spanCount = resources.getInteger(R.integer.grid_span_count)
+        val spanCount = noteGridColumns()
         recyclerView.layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.adapter = adapter
 
