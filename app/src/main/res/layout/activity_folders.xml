@@ -73,15 +73,29 @@
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <!-- Octagon "+" button, same look and tuck-away animation as the home screen's -->
+    <com.skd.notebook.ui.OctagonLayout
         android:id="@+id/fabNewFolder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
         android:layout_gravity="bottom|end"
-        android:layout_margin="20dp"
-        android:src="@drawable/ic_add"
-        app:tint="@color/colorOnAccent"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:focusable="true"
         android:contentDescription="New folder"
-        app:backgroundTint="@color/colorAccent"/>
+        android:elevation="10dp"
+        app:octColor="@color/fab_home_start"
+        app:octColorEnd="@color/fab_home_end"
+        app:octGlow="@color/fab_home_glow">
+
+        <ImageView
+            android:id="@+id/fabNewFolderIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_add"
+            android:importantForAccessibility="no"/>
+    </com.skd.notebook.ui.OctagonLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -295,21 +295,21 @@
             android:clipToPadding="false"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-        <!-- Round "+" button: a 60dp circle holding a centered icon (see peekCircleOnScroll) -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- Octagon "+" button: an octagon holding a centered icon (see peekCircleOnScroll) -->
+        <com.skd.notebook.ui.OctagonLayout
             android:id="@+id/fabAdd"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             android:layout_gravity="bottom|end"
             android:layout_marginBottom="80dp"
             android:layout_marginEnd="16dp"
             android:clickable="true"
             android:focusable="true"
             android:contentDescription="New note"
-            app:cardCornerRadius="30dp"
-            app:cardElevation="8dp"
-            app:strokeWidth="0dp"
-            app:cardBackgroundColor="@color/fab_home">
+            android:elevation="10dp"
+            app:octColor="@color/fab_home_start"
+            app:octColorEnd="@color/fab_home_end"
+            app:octGlow="@color/fab_home_glow">
 
             <ImageView
                 android:id="@+id/fabAddIcon"
@@ -318,7 +318,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_add"
                 android:importantForAccessibility="no"/>
-        </com.google.android.material.card.MaterialCardView>
+        </com.skd.notebook.ui.OctagonLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

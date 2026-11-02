@@ -127,4 +127,8 @@
     <!-- Home screen -->
     <color name="home_head_end">#3A1B8C</color>
     <color name="fab_home">#6236E0</color>
+    <!-- Octagon button gradient: lighter top-left to deeper bottom-right, and the glow under it -->
+    <color name="fab_home_start">#A77BFF</color>
+    <color name="fab_home_end">#5A2BDB</color>
+    <color name="fab_home_glow">#6236E0</color>
 </resources>

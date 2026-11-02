@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.skd.notebook.R
 import com.skd.notebook.data.local.FolderEntity
@@ -34,6 +33,7 @@ import com.skd.notebook.ui.showCustomColorDialog
 import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.ui.showAppDialog
 import com.skd.notebook.util.fitTopInsetAsPadding
+import com.skd.notebook.util.peekCircleOnScroll
 
 class FoldersActivity : BaseActivity() {
 
@@ -41,7 +41,7 @@ class FoldersActivity : BaseActivity() {
     private lateinit var adapter: FolderAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var layoutEmpty: LinearLayout
-    private lateinit var fabNewFolder: FloatingActionButton
+    private lateinit var fabNewFolder: View
 
     // Folder colour palette (hex values; empty = app primary)
     private val folderColors = listOf(
@@ -98,7 +98,7 @@ class FoldersActivity : BaseActivity() {
             layoutEmpty.visibility = if (folders.isEmpty()) View.VISIBLE else View.GONE
         }
 
-        fabNewFolder.setOnClickListener { showFolderDialog(null) }
+        fabNewFolder.peekCircleOnScroll(recyclerView, findViewById(R.id.fabNewFolderIcon)) { showFolderDialog(null) }
     }
 
     // ── Long-press action sheet ───────────────────────────────────────────────

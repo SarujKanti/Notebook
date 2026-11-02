@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- OctagonLayout: the New Note / New Folder button shape -->
+    <declare-styleable name="OctagonLayout">
+        <attr name="octColor" format="color"/>
+        <!-- Optional: when set, the fill is a diagonal gradient from octColor to this -->
+        <attr name="octColorEnd" format="color"/>
+        <!-- Optional: tint of the shadow (API 28+) -->
+        <attr name="octGlow" format="color"/>
+        <attr name="octCornerRadius" format="dimension"/>
+    </declare-styleable>
+</resources>

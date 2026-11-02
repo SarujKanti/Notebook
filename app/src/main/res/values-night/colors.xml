@@ -28,4 +28,7 @@
 
     <color name="home_head_end">#1B0F50</color>
     <color name="fab_home">#7C4DFF</color>
+    <color name="fab_home_start">#C4A2FF</color>
+    <color name="fab_home_end">#6C3BF0</color>
+    <color name="fab_home_glow">#9B6BFF</color>
 </resources>
