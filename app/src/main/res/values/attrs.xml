@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- HexagonLayout: the New Note / New Folder button shape -->
+    <declare-styleable name="HexagonLayout">
+        <attr name="hexColor" format="color"/>
+        <attr name="hexCornerRadius" format="dimension"/>
+    </declare-styleable>
+</resources>

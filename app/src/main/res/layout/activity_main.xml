@@ -295,10 +295,10 @@
             android:clipToPadding="false"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-        <!-- Round "+" button: a 60dp circle holding a centered icon (see peekCircleOnScroll) -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- Hexagon "+" button: a hexagon holding a centered icon (see peekCircleOnScroll) -->
+        <com.skd.notebook.ui.HexagonLayout
             android:id="@+id/fabAdd"
-            android:layout_width="60dp"
+            android:layout_width="68dp"
             android:layout_height="60dp"
             android:layout_gravity="bottom|end"
             android:layout_marginBottom="80dp"
@@ -306,10 +306,8 @@
             android:clickable="true"
             android:focusable="true"
             android:contentDescription="New note"
-            app:cardCornerRadius="30dp"
-            app:cardElevation="8dp"
-            app:strokeWidth="0dp"
-            app:cardBackgroundColor="@color/fab_home">
+            android:elevation="8dp"
+            app:hexColor="@color/fab_home">
 
             <ImageView
                 android:id="@+id/fabAddIcon"
@@ -318,7 +316,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_add"
                 android:importantForAccessibility="no"/>
-        </com.google.android.material.card.MaterialCardView>
+        </com.skd.notebook.ui.HexagonLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
