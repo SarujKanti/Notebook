@@ -30,8 +30,11 @@ fun View.fitTopInsetAsPadding() {
  * ended up under the clock). Instead this measures where the view really sits on screen and
  * adds only the padding needed to clear the bars — zero when the system already offsets it,
  * so it is safe on every version and never double-pads.
+ *
+ * [anchor] is the view whose screen position is measured. Pass a fixed ancestor when this view sits
+ * inside scrolling content, whose own position moves as it scrolls.
  */
-fun View.keepClearOfSystemBars(top: Boolean = true, bottom: Boolean = false) {
+fun View.keepClearOfSystemBars(top: Boolean = true, bottom: Boolean = false, anchor: View = this) {
     val baseTop = paddingTop
     val baseBottom = paddingBottom
     var appliedTop = 0
@@ -41,11 +44,11 @@ fun View.keepClearOfSystemBars(top: Boolean = true, bottom: Boolean = false) {
         val root = ViewCompat.getRootWindowInsets(this) ?: return
         val bars = root.getInsets(WindowInsetsCompat.Type.systemBars())
         val loc = IntArray(2)
-        getLocationInWindow(loc)
+        anchor.getLocationInWindow(loc)
 
         val needTop = if (top) (bars.top - loc[1]).coerceAtLeast(0) else 0
         val windowBottom = rootView.height - bars.bottom
-        val needBottom = if (bottom) (loc[1] + height - windowBottom).coerceAtLeast(0) else 0
+        val needBottom = if (bottom) (loc[1] + anchor.height - windowBottom).coerceAtLeast(0) else 0
 
         if (needTop != appliedTop || needBottom != appliedBottom) {
             appliedTop = needTop
@@ -55,6 +58,7 @@ fun View.keepClearOfSystemBars(top: Boolean = true, bottom: Boolean = false) {
     }
 
     addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> update() }
+    if (anchor !== this) anchor.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> update() }
     if (isAttachedToWindow) post { update() }
     else addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View) { v.post { update() } }
