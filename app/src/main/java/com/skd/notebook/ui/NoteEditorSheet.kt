@@ -88,10 +88,9 @@ class NoteEditorSheet(
 
         fun ring(hex: String, selected: String) = GradientDrawable().apply {
             shape = GradientDrawable.OVAL
-            setColor(if (hex.isEmpty()) Color.WHITE
-                     else runCatching { Color.parseColor(hex) }.getOrDefault(Color.WHITE))
+            setColor(NoteColors.swatch(activity, hex))
             val sel = hex == selected
-            setStroke(if (sel) 4 else 2, if (sel) Color.DKGRAY else Color.LTGRAY)
+            setStroke(if (sel) 4 else 2, NoteColors.swatchStroke(activity, sel))
         }
 
         NoteColors.PALETTE.forEachIndexed { index, hex ->

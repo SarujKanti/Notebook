@@ -942,13 +942,12 @@ class MainActivity : BaseActivity() {
             v.layoutParams = LinearLayout.LayoutParams(sizePx, sizePx).also {
                 it.setMargins(marginPx, marginPx, marginPx, marginPx)
             }
-            val fill  = if (hex.isEmpty()) Color.WHITE
-                        else runCatching { Color.parseColor(hex) }.getOrDefault(Color.WHITE)
+            val fill  = NoteColors.swatch(this, hex)
             val shape = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
                 setColor(fill)
                 val sel = hex == currentColor
-                setStroke(if (sel) 4 else 2, if (sel) Color.DKGRAY else Color.LTGRAY)
+                setStroke(if (sel) 4 else 2, NoteColors.swatchStroke(this@MainActivity, sel))
             }
             v.background = shape
             v.setOnClickListener {
@@ -958,7 +957,7 @@ class MainActivity : BaseActivity() {
                     val childHex = noteColors.getOrNull(i) ?: ""
                     val nowSel   = childHex == hex
                     (child.background as? GradientDrawable)?.setStroke(
-                        if (nowSel) 4 else 2, if (nowSel) Color.DKGRAY else Color.LTGRAY
+                        if (nowSel) 4 else 2, NoteColors.swatchStroke(this, nowSel)
                     )
                 }
             }

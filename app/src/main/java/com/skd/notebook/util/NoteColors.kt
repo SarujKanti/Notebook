@@ -59,6 +59,13 @@ object NoteColors {
         return ColorUtils.HSLToColor(hsl)
     }
 
+    /** Fill of a color-picker circle: the color the note will really show (so deep shades in dark mode). */
+    fun swatch(context: Context, hex: String): Int = background(context, hex)
+
+    /** Outline of a color-picker circle; the selected one is stronger. Visible on both light and dark sheets. */
+    fun swatchStroke(context: Context, selected: Boolean): Int =
+        if (isNight(context)) { if (selected) Color.WHITE else 0x66FFFFFF } else { if (selected) Color.DKGRAY else Color.LTGRAY }
+
     private const val NIGHT_LIGHTNESS = 0.30f
     private const val NIGHT_ACCENT_MIN_LIGHTNESS = 0.64f
 }
