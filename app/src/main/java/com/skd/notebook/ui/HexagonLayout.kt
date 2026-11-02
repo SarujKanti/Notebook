@@ -2,9 +2,12 @@ package com.skd.notebook.ui
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.LinearGradient
 import android.graphics.Outline
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.Shader
+import android.os.Build
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
@@ -26,10 +29,19 @@ class HexagonLayout @JvmOverloads constructor(
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val shape = Path()
     private val cornerRadius: Float
+    private val startColor: Int
+    private val endColor: Int
 
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.HexagonLayout)
-        fill.color = a.getColor(R.styleable.HexagonLayout_hexColor, ContextCompat.getColor(context, R.color.fab_home))
+        startColor = a.getColor(R.styleable.HexagonLayout_hexColor, ContextCompat.getColor(context, R.color.fab_home))
+        endColor = a.getColor(R.styleable.HexagonLayout_hexColorEnd, startColor)
+        fill.color = startColor
+        if (Build.VERSION.SDK_INT >= 28 && a.hasValue(R.styleable.HexagonLayout_hexGlow)) {
+            val glow = a.getColor(R.styleable.HexagonLayout_hexGlow, startColor)
+            outlineSpotShadowColor = glow
+            outlineAmbientShadowColor = glow
+        }
         cornerRadius = a.getDimension(
             R.styleable.HexagonLayout_hexCornerRadius,
             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, resources.displayMetrics)
@@ -52,6 +64,7 @@ class HexagonLayout @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         buildShape(w.toFloat(), h.toFloat())
+        fill.shader = if (endColor != startColor) LinearGradient(0f, 0f, w.toFloat(), h.toFloat(), startColor, endColor, Shader.TileMode.CLAMP) else null
         invalidateOutline()
     }
 

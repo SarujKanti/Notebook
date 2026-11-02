@@ -3,6 +3,10 @@
     <!-- HexagonLayout: the New Note / New Folder button shape -->
     <declare-styleable name="HexagonLayout">
         <attr name="hexColor" format="color"/>
+        <!-- Optional: when set, the fill is a diagonal gradient from hexColor to this -->
+        <attr name="hexColorEnd" format="color"/>
+        <!-- Optional: tint of the shadow (API 28+) -->
+        <attr name="hexGlow" format="color"/>
         <attr name="hexCornerRadius" format="dimension"/>
     </declare-styleable>
 </resources>

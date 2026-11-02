@@ -306,8 +306,10 @@
             android:clickable="true"
             android:focusable="true"
             android:contentDescription="New note"
-            android:elevation="8dp"
-            app:hexColor="@color/fab_home">
+            android:elevation="10dp"
+            app:hexColor="@color/fab_home_start"
+            app:hexColorEnd="@color/fab_home_end"
+            app:hexGlow="@color/fab_home_glow">
 
             <ImageView
                 android:id="@+id/fabAddIcon"
