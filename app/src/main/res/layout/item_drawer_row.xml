@@ -6,31 +6,31 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:minHeight="50dp"
-    android:layout_marginStart="14dp"
-    android:layout_marginEnd="16dp"
-    android:paddingStart="12dp"
-    android:paddingEnd="16dp"
+    android:minHeight="@dimen/dp_50"
+    android:layout_marginStart="@dimen/dp_14"
+    android:layout_marginEnd="@dimen/dp_16"
+    android:paddingStart="@dimen/dp_12"
+    android:paddingEnd="@dimen/dp_16"
     android:background="?attr/selectableItemBackground">
 
     <!-- Accent bar, shown on the selected row -->
     <View
         android:id="@+id/rowAccent"
-        android:layout_width="4dp"
-        android:layout_height="28dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="@dimen/dp_4"
+        android:layout_height="@dimen/dp_28"
+        android:layout_marginEnd="@dimen/dp_8"
         android:background="?attr/colorPrimary"
         android:visibility="gone"/>
 
     <FrameLayout
-        android:layout_width="38dp"
-        android:layout_height="38dp"
+        android:layout_width="@dimen/dp_38"
+        android:layout_height="@dimen/dp_38"
         android:background="@drawable/bg_setting_icon">
 
         <ImageView
             android:id="@+id/rowIcon"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="@dimen/dp_22"
+            android:layout_height="@dimen/dp_22"
             android:layout_gravity="center"
             android:importantForAccessibility="no"
             app:tint="?attr/colorPrimary"/>
@@ -41,14 +41,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginStart="16dp"
-        android:textSize="16sp"
+        android:layout_marginStart="@dimen/dp_16"
+        android:textSize="@dimen/text_subtitle"
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurface"/>
 
     <ImageView
-        android:layout_width="22dp"
-        android:layout_height="22dp"
+        android:layout_width="@dimen/dp_22"
+        android:layout_height="@dimen/dp_22"
         android:src="@drawable/ic_chevron_right"
         android:importantForAccessibility="no"
         app:tint="?attr/colorOnSurface"/>

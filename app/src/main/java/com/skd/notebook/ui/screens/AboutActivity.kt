@@ -1,5 +1,6 @@
 package com.skd.notebook.ui.screens
 
+import com.skd.notebook.util.Str
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -20,22 +21,22 @@ class AboutActivity : BaseActivity() {
     private class Feature(@DrawableRes val icon: Int, val title: String, val description: String)
 
     private val features = listOf(
-        Feature(R.drawable.ic_notes, "Notes in your colors",
-            "Write notes with a title and text, and give each one a color so it stands out."),
-        Feature(R.drawable.ic_pin, "Pin what matters",
+        Feature(R.drawable.ic_notes, Str(R.string.feature_colors_title),
+            Str(R.string.feature_colors_desc)),
+        Feature(R.drawable.ic_pin, Str(R.string.feature_pin_title),
             "Pin important notes and they show up in the Pinned Notes widget on your home screen. Tap a note in the widget and that exact note opens straight away."),
-        Feature(R.drawable.ic_folder, "Folders",
-            "Group related notes into folders with their own colors."),
-        Feature(R.drawable.ic_search, "Quick search",
-            "Find any note by its title or text as you type."),
-        Feature(R.drawable.ic_delete, "Swipe to delete",
-            "Swipe a note left or right to move it to the Bin. Tap Undo right away if it was a mistake."),
-        Feature(R.drawable.ic_archive, "Archive and Bin",
-            "Archive notes you want out of the way. Deleted notes go to the Bin, so you can restore them."),
-        Feature(R.drawable.ic_google, "Back up with Google",
-            "Sign in to sync across devices, or skip and keep everything on this device."),
-        Feature(R.drawable.ic_theme, "Light and dark",
-            "Follow your phone's theme, or choose light or dark yourself from the menu.")
+        Feature(R.drawable.ic_folder, Str(R.string.folders_title),
+            Str(R.string.feature_folders_desc)),
+        Feature(R.drawable.ic_search, Str(R.string.feature_search_title),
+            Str(R.string.feature_search_desc)),
+        Feature(R.drawable.ic_delete, Str(R.string.feature_swipe_title),
+            Str(R.string.feature_swipe_desc)),
+        Feature(R.drawable.ic_archive, Str(R.string.feature_archive_title),
+            Str(R.string.feature_archive_desc)),
+        Feature(R.drawable.ic_google, Str(R.string.feature_backup_title),
+            Str(R.string.feature_backup_desc)),
+        Feature(R.drawable.ic_theme, Str(R.string.feature_theme_title),
+            Str(R.string.feature_theme_desc))
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,10 +47,10 @@ class AboutActivity : BaseActivity() {
         findViewById<View>(R.id.appBarLayout).keepClearOfSystemBars(top = true)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "About"
+        supportActionBar?.title = Str(R.string.about)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        findViewById<TextView>(R.id.tvAboutVersion).text = "Version ${appVersionLabel()}"
+        findViewById<TextView>(R.id.tvAboutVersion).text = getString(R.string.version_format, appVersionLabel())
 
         val list = findViewById<LinearLayout>(R.id.featureList)
         features.forEach { f ->

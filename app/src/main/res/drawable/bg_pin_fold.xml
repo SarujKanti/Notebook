@@ -3,8 +3,8 @@
     NoteAdapter), so only the flap is drawn here: the triangle on the card side of the cut.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="18dp"
-    android:height="18dp"
+    android:width="@dimen/dp_18"
+    android:height="@dimen/dp_18"
     android:viewportWidth="18"
     android:viewportHeight="18">
     <path

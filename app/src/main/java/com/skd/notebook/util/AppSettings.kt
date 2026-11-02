@@ -1,13 +1,18 @@
 package com.skd.notebook.util
 
 import android.content.Context
+import androidx.annotation.StringRes
+import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 
 /** How the note lists are ordered. */
-enum class SortOrder(val key: String, val label: String, val chip: String) {
-    NEWEST("newest", "Newest first", "Newest"),
-    OLDEST("oldest", "Oldest first", "Oldest"),
-    ALPHABETICAL("alphabetical", "Alphabetical (A–Z)", "A–Z");
+enum class SortOrder(val key: String, @StringRes private val labelRes: Int, @StringRes private val chipRes: Int) {
+    NEWEST("newest", R.string.sort_newest_first, R.string.sort_newest_chip),
+    OLDEST("oldest", R.string.sort_oldest_first, R.string.sort_oldest_chip),
+    ALPHABETICAL("alphabetical", R.string.sort_alphabetical_first, R.string.sort_alphabetical_chip);
+
+    val label: String get() = Str(labelRes)
+    val chip: String get() = Str(chipRes)
 
     /** The list in this order. Notes without a title sort by their text. */
     fun apply(notes: List<NoteEntity>): List<NoteEntity> = when (this) {

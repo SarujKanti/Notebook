@@ -4,14 +4,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="14dp">
+    android:padding="@dimen/dp_14">
 
     <LinearLayout
         android:id="@+id/dialogPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="22dp"
+        android:padding="@dimen/dp_22"
         android:background="@drawable/bg_glass_panel">
 
         <!-- Title + subtitle on the left, round icon on the right -->
@@ -25,7 +25,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="12dp"
+                android:layout_marginEnd="@dimen/dp_12"
                 android:orientation="vertical">
 
                 <TextView
@@ -33,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textSize="24sp"
+                    android:textSize="@dimen/text_headline"
                     android:textStyle="bold"
                     android:textColor="#FFFFFF"/>
 
@@ -41,22 +41,22 @@
                     android:id="@+id/dialogSubtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textSize="16sp"
+                    android:layout_marginTop="@dimen/dp_4"
+                    android:textSize="@dimen/text_subtitle"
                     android:textColor="#DCD3F7"
                     android:visibility="gone"/>
             </LinearLayout>
 
             <FrameLayout
                 android:id="@+id/dialogBadge"
-                android:layout_width="62dp"
-                android:layout_height="62dp"
+                android:layout_width="@dimen/dp_62"
+                android:layout_height="@dimen/dp_62"
                 android:background="@drawable/bg_glass_circle">
 
                 <ImageView
                     android:id="@+id/dialogIcon"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="@dimen/dp_30"
+                    android:layout_height="@dimen/dp_30"
                     android:layout_gravity="center"
                     android:importantForAccessibility="no"/>
             </FrameLayout>
@@ -66,8 +66,8 @@
             android:id="@+id/dialogMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:textSize="16sp"
+            android:layout_marginTop="@dimen/dp_14"
+            android:textSize="@dimen/text_subtitle"
             android:lineSpacingMultiplier="1.25"
             android:textColor="#E9E4FA"
             android:visibility="gone"/>
@@ -76,44 +76,44 @@
             android:id="@+id/dialogContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="@dimen/dp_20"
             android:visibility="gone"/>
 
         <LinearLayout
             android:id="@+id/dialogButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="@dimen/dp_24"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/dialogNegative"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
+                android:layout_height="@dimen/dp_56"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="@dimen/dp_8"
                 android:gravity="center"
                 android:clickable="true"
                 android:focusable="true"
                 android:background="@drawable/bg_glass_button"
                 android:foreground="?attr/selectableItemBackground"
                 android:textColor="#FFFFFF"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_subtitle"
                 android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/dialogPositive"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
+                android:layout_height="@dimen/dp_56"
                 android:layout_weight="1.25"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="@dimen/dp_8"
                 android:gravity="center"
                 android:clickable="true"
                 android:focusable="true"
                 android:background="@drawable/bg_glass_primary"
                 android:foreground="?attr/selectableItemBackground"
                 android:textColor="#FFFFFF"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_subtitle"
                 android:textStyle="bold"/>
         </LinearLayout>
 

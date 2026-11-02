@@ -42,7 +42,7 @@ class ArchiveActivity : BaseActivity() {
         findViewById<View>(R.id.appBarLayout).fitTopInsetAsPadding()
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "Archive"
+        supportActionBar?.title = getString(R.string.archive_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         recyclerView = findViewById(R.id.recyclerView)
@@ -54,8 +54,8 @@ class ArchiveActivity : BaseActivity() {
             onClick     = { note -> noteEditor.show(note) },
             onLongClick = { note ->
                 showActionSheet(items = listOf(
-                    ActionItem("Unarchive", R.drawable.ic_archive) { viewModel.unarchive(note) },
-                    ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) { confirmMoveToBin { viewModel.moveToBin(note) } }
+                    ActionItem(getString(R.string.unarchive), R.drawable.ic_archive) { viewModel.unarchive(note) },
+                    ActionItem(getString(R.string.move_to_bin), R.drawable.ic_delete, destructive = true) { confirmMoveToBin { viewModel.moveToBin(note) } }
                 ))
             },
             showPin = false
@@ -90,9 +90,9 @@ class ArchiveActivity : BaseActivity() {
         content.visibility = View.INVISIBLE
         if (pinDialog?.isShowing == true) return
         pinDialog = askArchivePin(
-            title = "Archive is locked",
-            subtitle = "Enter your Archive PIN",
-            positiveText = "Unlock",
+            title = getString(R.string.archive_locked_title),
+            subtitle = getString(R.string.archive_locked_subtitle),
+            positiveText = getString(R.string.unlock),
             cancelable = false,
             onForgot = { forgotArchivePin() },
             onCancel = { finish() }

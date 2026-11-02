@@ -54,9 +54,9 @@ fun Context.showAppDialog(
     @DrawableRes icon: Int,
     message: String? = null,
     destructive: Boolean = false,
-    positiveText: String? = "OK",
+    positiveText: String? = getString(R.string.ok),
     onPositive: () -> Unit = {},
-    negativeText: String? = "Cancel",
+    negativeText: String? = getString(R.string.cancel),
     content: View? = null,
     onCancel: (() -> Unit)? = null,
     subtitle: String? = null,
@@ -221,11 +221,11 @@ fun Context.confirmMoveToBin(onCancel: () -> Unit = {}, onConfirm: () -> Unit) {
         return
     }
     showAppDialog(
-        title = "Move to Bin?",
+        title = getString(R.string.move_to_bin_title),
         icon = R.drawable.ic_delete,
-        message = "You can restore it from the Bin later.",
+        message = getString(R.string.move_to_bin_message),
         destructive = true,
-        positiveText = "Move to Bin",
+        positiveText = getString(R.string.move_to_bin),
         onPositive = onConfirm,
         onCancel = onCancel
     )

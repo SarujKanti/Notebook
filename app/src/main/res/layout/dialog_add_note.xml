@@ -6,23 +6,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:minHeight="600dp">
+    android:minHeight="@dimen/dp_600">
 
     <!-- ── Top action bar ──────────────────────────────────────────────── -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="@dimen/dp_60"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="4dp"
-        android:paddingEnd="8dp"
-        android:elevation="2dp">
+        android:paddingStart="@dimen/dp_4"
+        android:paddingEnd="@dimen/dp_8"
+        android:elevation="@dimen/dp_2">
 
         <!-- Close -->
         <ImageButton
             android:id="@+id/btnClose"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/dp_48"
+            android:layout_height="@dimen/dp_48"
             android:src="@drawable/ic_arrow_back"
             app:tint="?attr/colorOnSurface"
             android:background="?attr/selectableItemBackgroundBorderless"
@@ -33,9 +33,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="@dimen/dp_4"
             android:text="@string/hint_note"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_title"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"/>
 
@@ -44,7 +44,7 @@
     <!-- Thin divider below toolbar -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/dp_1"
         android:background="?attr/colorOutlineVariant"
         android:alpha="0.4"/>
 
@@ -54,15 +54,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/hint_title"
-        android:textSize="24sp"
+        android:textSize="@dimen/text_headline"
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurface"
         android:textColorHint="?attr/colorOnSurfaceVariant"
         android:background="@android:color/transparent"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingEnd="@dimen/dp_20"
+        android:paddingTop="@dimen/dp_16"
+        android:paddingBottom="@dimen/dp_8"
         android:inputType="textCapSentences"
         android:imeOptions="actionNext"/>
 
@@ -73,15 +73,15 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:hint="@string/hint_note"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_subtitle"
         android:lineSpacingMultiplier="1.4"
         android:textColor="?attr/colorOnSurface"
         android:textColorHint="?attr/colorOnSurfaceVariant"
         android:background="@android:color/transparent"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="12dp"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingEnd="@dimen/dp_20"
+        android:paddingTop="@dimen/dp_4"
+        android:paddingBottom="@dimen/dp_12"
         android:gravity="top|start"
         android:inputType="textCapSentences|textMultiLine"
         android:minLines="5"/>
@@ -95,7 +95,7 @@
         <!-- Divider above bottom bar -->
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="@dimen/dp_1"
             android:background="?attr/colorOutlineVariant"
             android:alpha="0.4"/>
 
@@ -105,21 +105,21 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp">
+            android:paddingStart="@dimen/dp_16"
+            android:paddingEnd="@dimen/dp_12"
+            android:paddingTop="@dimen/dp_8"
+            android:paddingBottom="@dimen/dp_8">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/color_name"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_caption"
                 android:textStyle="bold"
                 android:letterSpacing="0.06"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:alpha="0.7"
-                android:layout_marginEnd="8dp"/>
+                android:layout_marginEnd="@dimen/dp_8"/>
 
             <HorizontalScrollView
                 android:layout_width="0dp"
@@ -133,8 +133,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"/>
+                    android:paddingTop="@dimen/dp_6"
+                    android:paddingBottom="@dimen/dp_6"/>
 
             </HorizontalScrollView>
 

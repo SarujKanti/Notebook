@@ -1,16 +1,16 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="oval">
-            <size android:width="28dp" android:height="28dp"/>
+            <size android:width="@dimen/dp_28" android:height="@dimen/dp_28"/>
             <solid android:color="#5E2FD8"/>
-            <stroke android:width="2.5dp" android:color="#FFFFFF"/>
+            <stroke android:width="@dimen/dp_2_5" android:color="#FFFFFF"/>
         </shape>
     </item>
     <item
-        android:left="8dp"
-        android:top="8dp"
-        android:right="8dp"
-        android:bottom="8dp">
+        android:left="@dimen/dp_8"
+        android:top="@dimen/dp_8"
+        android:right="@dimen/dp_8"
+        android:bottom="@dimen/dp_8">
         <shape android:shape="oval">
             <solid android:color="#FFFFFF"/>
         </shape>

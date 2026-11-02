@@ -71,7 +71,7 @@ class FoldersActivity : BaseActivity() {
         findViewById<View>(R.id.appBarLayout).fitTopInsetAsPadding()
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "Folders"
+        supportActionBar?.title = getString(R.string.folders_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         recyclerView = findViewById(R.id.recyclerView)
@@ -105,18 +105,18 @@ class FoldersActivity : BaseActivity() {
 
     private fun showFolderActions(folder: FolderEntity) {
         showActionSheet(title = folder.name, items = listOf(
-            ActionItem("Edit folder", R.drawable.ic_edit) { showFolderDialog(folder) },
-            ActionItem("Delete folder", R.drawable.ic_delete, destructive = true) { confirmDelete(folder) }
+            ActionItem(getString(R.string.edit_folder), R.drawable.ic_edit) { showFolderDialog(folder) },
+            ActionItem(getString(R.string.delete_folder), R.drawable.ic_delete, destructive = true) { confirmDelete(folder) }
         ))
     }
 
     private fun confirmDelete(folder: FolderEntity) {
         showAppDialog(
-            title = "Delete \"${folder.name}\"?",
+            title = getString(R.string.delete_folder_title_format, folder.name),
             icon = R.drawable.ic_delete,
-            message = "Notes inside this folder will be moved back to your main notes.",
+            message = getString(R.string.delete_folder_message),
             destructive = true,
-            positiveText = "Delete",
+            positiveText = getString(R.string.delete),
             onPositive = { viewModel.deleteFolder(folder) }
         )
     }
@@ -134,7 +134,7 @@ class FoldersActivity : BaseActivity() {
         val btnCancel = view.findViewById<MaterialButton>(R.id.btnFolderCancel)
         val btnSave   = view.findViewById<MaterialButton>(R.id.btnFolderSave)
 
-        tvTitle.text = if (existing == null) "New Folder" else "Edit Folder"
+        tvTitle.text = if (existing == null) getString(R.string.new_folder_title) else getString(R.string.edit_folder_title)
 
         var selectedColor = existing?.color ?: ""
         existing?.let { etName.setText(it.name) }
@@ -150,7 +150,7 @@ class FoldersActivity : BaseActivity() {
             if (name.isEmpty()) {
                 view.findViewById<com.google.android.material.textfield.TextInputLayout>(
                     R.id.tilFolderName
-                ).error = "Name cannot be empty"
+                ).error = getString(R.string.folder_name_empty)
                 return@setOnClickListener
             }
             if (existing == null) {
@@ -224,7 +224,7 @@ class FoldersActivity : BaseActivity() {
                     setColor(Color.TRANSPARENT)
                     setStroke(3, ContextCompat.getColor(context, R.color.colorPrimary))
                 }
-                contentDescription = "Add custom color"
+                contentDescription = getString(R.string.add_custom_color)
                 setOnClickListener {
                     showCustomColorDialog(
                         runCatching { Color.parseColor(selected) }.getOrDefault(primary)

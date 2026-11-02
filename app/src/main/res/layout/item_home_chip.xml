@@ -4,12 +4,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/chipRoot"
     android:layout_width="wrap_content"
-    android:layout_height="48dp"
-    android:layout_marginEnd="10dp"
+    android:layout_height="@dimen/dp_48"
+    android:layout_marginEnd="@dimen/dp_10"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingStart="16dp"
-    android:paddingEnd="8dp"
+    android:paddingStart="@dimen/dp_16"
+    android:paddingEnd="@dimen/dp_8"
     android:clickable="true"
     android:focusable="true"
     android:background="@drawable/bg_chip_unselected"
@@ -17,31 +17,31 @@
 
     <ImageView
         android:id="@+id/chipIcon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="@dimen/dp_20"
+        android:layout_height="@dimen/dp_20"
         android:importantForAccessibility="no"/>
 
     <TextView
         android:id="@+id/chipLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="@dimen/dp_8"
         android:fontFamily="sans-serif-medium"
         android:textColor="#FFFFFF"
-        android:textSize="16sp"/>
+        android:textSize="@dimen/text_subtitle"/>
 
     <TextView
         android:id="@+id/chipCount"
         android:layout_width="wrap_content"
-        android:layout_height="26dp"
-        android:layout_marginStart="8dp"
-        android:minWidth="28dp"
+        android:layout_height="@dimen/dp_26"
+        android:layout_marginStart="@dimen/dp_8"
+        android:minWidth="@dimen/dp_28"
         android:gravity="center"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
+        android:paddingStart="@dimen/dp_8"
+        android:paddingEnd="@dimen/dp_8"
         android:background="@drawable/bg_chip_badge"
         android:fontFamily="sans-serif-medium"
-        android:text="0"
+        android:text="@string/zero_placeholder"
         android:textColor="#FFFFFF"
-        android:textSize="14sp"/>
+        android:textSize="@dimen/text_body"/>
 </LinearLayout>

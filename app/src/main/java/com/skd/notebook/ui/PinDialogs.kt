@@ -1,5 +1,8 @@
 package com.skd.notebook.ui
 
+import android.util.TypedValue
+import com.skd.notebook.util.dimenPx
+import com.skd.notebook.util.dimen
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +32,7 @@ fun Context.showPinDialog(
     @DrawableRes icon: Int,
     fields: List<String>,
     positiveText: String,
-    negativeText: String? = "Cancel",
+    negativeText: String? = getString(R.string.cancel),
     cancelable: Boolean = true,
     onForgot: (() -> Unit)? = null,
     onCancel: (() -> Unit)? = null,
@@ -37,7 +40,6 @@ fun Context.showPinDialog(
     validate: (List<String>) -> String?
 ): AlertDialog {
     val glass = ContextThemeWrapper(this, R.style.ThemeOverlay_NoteBook_GlassSheet)
-    val dp = resources.displayMetrics.density
 
     val column = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
     val boxes = fields.map { hint ->
@@ -51,8 +53,8 @@ fun Context.showPinDialog(
 
     val error = TextView(this).apply {
         setTextColor(0xFFFF9A93.toInt())
-        textSize = 14f
-        setPadding((4 * dp).toInt(), 0, 0, (8 * dp).toInt())
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, dimen(R.dimen.text_body))
+        setPadding(dimenPx(R.dimen.dp_4), 0, 0, dimenPx(R.dimen.dp_8))
         visibility = View.GONE
     }
     column.addView(error)
@@ -62,10 +64,10 @@ fun Context.showPinDialog(
     var leavingForForgot = false
     if (onForgot != null) {
         forgot = TextView(this).apply {
-            text = "Forgot PIN?"
-            textSize = 14f
+            text = getString(R.string.forgot_pin)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, dimen(R.dimen.text_body))
             setTextColor(0xFFCDBBFF.toInt())
-            setPadding((4 * dp).toInt(), (6 * dp).toInt(), (12 * dp).toInt(), (6 * dp).toInt())
+            setPadding(dimenPx(R.dimen.dp_4), dimenPx(R.dimen.dp_6), dimenPx(R.dimen.dp_12), dimenPx(R.dimen.dp_6))
             isClickable = true
             isFocusable = true
             setOnClickListener {

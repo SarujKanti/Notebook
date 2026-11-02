@@ -4,12 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
-    android:layout_marginTop="5dp"
-    android:layout_marginBottom="5dp"
-    app:cardElevation="2dp"
-    app:cardCornerRadius="14dp"
+    android:layout_marginStart="@dimen/dp_10"
+    android:layout_marginEnd="@dimen/dp_10"
+    android:layout_marginTop="@dimen/dp_5"
+    android:layout_marginBottom="@dimen/dp_5"
+    app:cardElevation="@dimen/dp_2"
+    app:cardCornerRadius="@dimen/dp_14"
     app:strokeWidth="0dp">
 
     <LinearLayout
@@ -17,25 +17,25 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:minHeight="64dp">
+        android:minHeight="@dimen/dp_64">
 
         <!-- Left color accent stripe -->
         <View
             android:id="@+id/viewFolderAccent"
-            android:layout_width="5dp"
+            android:layout_width="@dimen/dp_5"
             android:layout_height="match_parent"
-            android:minHeight="64dp"
+            android:minHeight="@dimen/dp_64"
             android:background="@color/colorPrimary"/>
 
         <!-- Folder icon -->
         <ImageView
             android:id="@+id/imgFolderIcon"
-            android:layout_width="34dp"
-            android:layout_height="34dp"
-            android:layout_marginStart="16dp"
+            android:layout_width="@dimen/dp_34"
+            android:layout_height="@dimen/dp_34"
+            android:layout_marginStart="@dimen/dp_16"
             android:src="@drawable/ic_folder"
             app:tint="@color/colorPrimaryLight2"
-            android:contentDescription="Folder"/>
+            android:contentDescription="@string/folder"/>
 
         <!-- Folder name -->
         <TextView
@@ -43,9 +43,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="8dp"
-            android:textSize="16sp"
+            android:layout_marginStart="@dimen/dp_12"
+            android:layout_marginEnd="@dimen/dp_8"
+            android:textSize="@dimen/text_subtitle"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"
             android:maxLines="1"
@@ -53,13 +53,13 @@
 
         <!-- Chevron -->
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginEnd="16dp"
+            android:layout_width="@dimen/dp_20"
+            android:layout_height="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_16"
             android:src="@drawable/ic_chevron_right"
             app:tint="?attr/colorOnSurfaceVariant"
             android:alpha="0.5"
-            android:contentDescription="Open folder"/>
+            android:contentDescription="@string/open_folder"/>
 
     </LinearLayout>
 

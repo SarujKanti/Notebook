@@ -1,5 +1,8 @@
 package com.skd.notebook.ui
 
+import android.util.TypedValue
+import com.skd.notebook.util.dimenPx
+import com.skd.notebook.util.dimen
 import android.content.Context
 import android.graphics.Color
 import android.view.View
@@ -13,7 +16,6 @@ import com.skd.notebook.R
  * hands it back as "#RRGGBB".
  */
 fun Context.showCustomColorDialog(initialColor: Int, onPicked: (String) -> Unit) {
-    val dp = resources.displayMetrics.density
     val hsv = FloatArray(3).also { Color.colorToHSV(initialColor, it) }
 
     val preview = View(this)
@@ -24,9 +26,9 @@ fun Context.showCustomColorDialog(initialColor: Int, onPicked: (String) -> Unit)
         val row = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         row.addView(TextView(this).apply {
             text = label
-            textSize = 14f
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, dimen(R.dimen.text_body))
             setTextColor(0xFFE9E4FA.toInt())
-            setPadding(0, (12 * dp).toInt(), 0, 0)
+            setPadding(0, dimenPx(R.dimen.dp_12), 0, 0)
         })
         row.addView(SeekBar(this).apply {
             this.max = max
@@ -45,17 +47,17 @@ fun Context.showCustomColorDialog(initialColor: Int, onPicked: (String) -> Unit)
     val content = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
         setPadding(0, 0, 0, 0)
-        addView(preview, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (56 * dp).toInt()))
-        addView(slider("Color", 360, hsv[0].toInt()) { hsv[0] = it.toFloat() })
-        addView(slider("Intensity", 100, (hsv[1] * 100).toInt()) { hsv[1] = it / 100f })
-        addView(slider("Brightness", 100, (hsv[2] * 100).toInt()) { hsv[2] = it / 100f })
+        addView(preview, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dimenPx(R.dimen.dp_56)))
+        addView(slider(getString(R.string.color_name), 360, hsv[0].toInt()) { hsv[0] = it.toFloat() })
+        addView(slider(getString(R.string.intensity), 100, (hsv[1] * 100).toInt()) { hsv[1] = it / 100f })
+        addView(slider(getString(R.string.brightness), 100, (hsv[2] * 100).toInt()) { hsv[2] = it / 100f })
     }
     refresh()
 
     showAppDialog(
-        title = "Custom color",
+        title = getString(R.string.custom_color),
         icon = R.drawable.ic_theme,
-        positiveText = "Add",
+        positiveText = getString(R.string.add),
         onPositive = { onPicked(String.format("#%06X", 0xFFFFFF and currentColor())) },
         content = content
     )

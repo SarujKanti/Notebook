@@ -1,5 +1,7 @@
 package com.skd.notebook.ui
 
+import com.skd.notebook.util.dimenPx
+import com.skd.notebook.util.dimen
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -62,7 +64,6 @@ class NoteAdapter(
             override fun areContentsTheSame(a: NoteEntity, b: NoteEntity) = a == b
         }
         private val DATE_FORMAT = SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
-        private const val FOLD_SIZE_DP = 18f // matches bg_pin_fold
     }
 
     inner class NoteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -88,18 +89,17 @@ class NoteAdapter(
             return
         }
         val ctx = chip.context
-        val dp = ctx.resources.displayMetrics.density
         val accent = NoteColors.folderAccent(ctx, folder.color)
 
         chip.text = folder.name
         chip.visibility = View.VISIBLE
         chip.background = GradientDrawable().apply {
-            cornerRadius = 12 * dp
+            cornerRadius = ctx.dimen(R.dimen.dp_12)
             setColor(ColorUtils.setAlphaComponent(accent, 0x2E))
         }
         ContextCompat.getDrawable(ctx, R.drawable.ic_folder)?.mutate()?.let { icon ->
             icon.setTint(accent)
-            val size = (14 * dp).toInt()
+            val size = ctx.dimenPx(R.dimen.dp_14)
             icon.setBounds(0, 0, size, size)
             chip.setCompoundDrawablesRelative(icon, null, null, null)
         }
@@ -139,7 +139,7 @@ class NoteAdapter(
             val selected = note.id in selectedIds
             holder.btnPin.visibility = View.VISIBLE
             holder.btnPin.setImageResource(if (selected) R.drawable.ic_check_circle else R.drawable.ic_circle_outline)
-            holder.btnPin.contentDescription = if (selected) "Selected" else "Not selected"
+            holder.btnPin.contentDescription = if (selected) ctx.getString(R.string.selected) else ctx.getString(R.string.not_selected)
             holder.btnPin.setOnClickListener(null)
             holder.btnPin.isClickable = false
             if (selected) {
@@ -157,11 +157,10 @@ class NoteAdapter(
 
         // A folded note really has its top-right corner cut off (not painted over), so no card
         // edge or shadow is left showing around the missing corner. Others keep the round corner.
-        val density = ctx.resources.displayMetrics.density
         holder.card.shapeAppearanceModel = holder.card.shapeAppearanceModel.toBuilder()
             .setTopRightCorner(
                 if (folded) CornerFamily.CUT else CornerFamily.ROUNDED,
-                if (folded) FOLD_SIZE_DP * density else ctx.resources.getDimension(R.dimen.card_corner_radius)
+                if (folded) ctx.dimen(R.dimen.dp_18) else ctx.resources.getDimension(R.dimen.card_corner_radius)
             )
             .build()
         holder.pinFold.visibility = if (folded) View.VISIBLE else View.GONE

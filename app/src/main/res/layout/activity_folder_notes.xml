@@ -35,29 +35,29 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ImageView
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="@dimen/dp_96"
+            android:layout_height="@dimen/dp_96"
             android:src="@drawable/ic_notes_empty"
             android:alpha="0.25"
-            android:contentDescription="No notes"/>
+            android:contentDescription="@string/no_notes_icon"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No notes in this folder"
-            android:textSize="20sp"
+            android:text="@string/empty_folder_notes_title"
+            android:textSize="@dimen/text_title"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"
             android:alpha="0.4"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="@dimen/dp_16"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tap + to add a note here"
-            android:textSize="14sp"
+            android:text="@string/empty_folder_notes_hint"
+            android:textSize="@dimen/text_body"
             android:textColor="?attr/colorOnSurfaceVariant"
-            android:layout_marginTop="6dp"/>
+            android:layout_marginTop="@dimen/dp_6"/>
 
     </LinearLayout>
 
@@ -65,10 +65,10 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="4dp"
-        android:paddingBottom="20dp"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
+        android:paddingTop="@dimen/dp_4"
+        android:paddingBottom="@dimen/dp_20"
+        android:paddingStart="@dimen/dp_4"
+        android:paddingEnd="@dimen/dp_4"
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
@@ -77,16 +77,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="80dp"
-        android:layout_marginEnd="16dp"
-        android:text="New Note"
+        android:layout_marginBottom="@dimen/dp_80"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:text="@string/new_note_label"
         android:textColor="@color/colorOnAccent"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_subtitle"
         android:textStyle="bold"
         app:icon="@drawable/ic_add"
         app:iconTint="@color/colorOnAccent"
         app:backgroundTint="@color/colorAccent"
-        app:elevation="6dp"
-        app:cornerRadius="28dp"/>
+        app:elevation="@dimen/dp_6"
+        app:cornerRadius="@dimen/dp_28"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

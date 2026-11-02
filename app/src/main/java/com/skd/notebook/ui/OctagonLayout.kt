@@ -44,7 +44,7 @@ class OctagonLayout @JvmOverloads constructor(
         }
         cornerRadius = a.getDimension(
             R.styleable.OctagonLayout_octCornerRadius,
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, resources.displayMetrics)
+            resources.getDimension(R.dimen.dp_8)
         )
         a.recycle()
 

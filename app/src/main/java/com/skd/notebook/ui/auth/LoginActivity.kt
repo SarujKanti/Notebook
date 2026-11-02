@@ -89,13 +89,13 @@ class LoginActivity : BaseActivity() {
                     }
                     .addOnFailureListener { e ->
                         setLoading(false)
-                        tvError.text       = e.localizedMessage ?: "Sign in failed"
+                        tvError.text       = e.localizedMessage ?: getString(R.string.sign_in_failed)
                         tvError.visibility = View.VISIBLE
                     }
             } catch (e: ApiException) {
                 setLoading(false)
                 if (e.statusCode != 0) {          // 0 = user cancelled — silent fail
-                    tvError.text       = "Sign in failed (${e.statusCode})"
+                    tvError.text       = getString(R.string.sign_in_failed_code_format, e.statusCode)
                     tvError.visibility = View.VISIBLE
                 }
             }

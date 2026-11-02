@@ -2,6 +2,7 @@ package com.skd.notebook.util
 
 import android.content.Context
 import android.content.res.Configuration
+import com.skd.notebook.R
 
 /**
  * Small / Default / Large text size for the whole app, saved on the device.
@@ -18,7 +19,7 @@ object FontPrefs {
     const val MEDIUM = 1
     const val LARGE = 2
 
-    val LABELS = listOf("Small", "Default", "Large")
+    val LABELS: List<String> get() = listOf(Str(R.string.small), Str(R.string.default_label), Str(R.string.large))
     private val FACTORS = floatArrayOf(0.88f, 1f, 1.18f)
 
     fun saved(context: Context): Int =
