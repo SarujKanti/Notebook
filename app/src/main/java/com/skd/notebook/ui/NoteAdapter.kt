@@ -89,8 +89,7 @@ class NoteAdapter(
         }
         val ctx = chip.context
         val dp = ctx.resources.displayMetrics.density
-        val accent = runCatching { Color.parseColor(folder.color) }
-            .getOrDefault(ContextCompat.getColor(ctx, R.color.colorPrimary))
+        val accent = NoteColors.folderAccent(ctx, folder.color)
 
         chip.text = folder.name
         chip.visibility = View.VISIBLE
