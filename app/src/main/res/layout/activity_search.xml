@@ -32,11 +32,11 @@
         <!-- Search input pill -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            android:layout_height="52dp"
+            android:layout_height="48dp"
             android:layout_weight="1"
             android:layout_marginStart="6dp"
             app:cardElevation="4dp"
-            app:cardCornerRadius="26dp"
+            app:cardCornerRadius="24dp"
             app:strokeWidth="0dp"
             app:cardBackgroundColor="?attr/colorSurface">
 
@@ -49,8 +49,8 @@
                 android:paddingEnd="4dp">
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/ic_search"
                     android:tint="@color/colorPrimary"
                     android:contentDescription="Search"/>
@@ -74,8 +74,8 @@
                 <!-- Clear button -->
                 <ImageButton
                     android:id="@+id/btnClear"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:src="@drawable/ic_close"
                     android:tint="?attr/colorOnSurfaceVariant"
                     android:background="?attr/selectableItemBackgroundBorderless"
