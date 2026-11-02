@@ -97,7 +97,7 @@ class SettingsActivity : BaseActivity() {
         Section(R.drawable.ic_person_filled, "Personalization", listOf(
             Row(R.drawable.ic_theme, "Theme", "Light / Dark / System Default",
                 value = { themeLabel() }, onClick = { chooseTheme() }),
-            Row(R.drawable.ic_font_size, "Font Size", "Small / Medium / Large",
+            Row(R.drawable.ic_font_size, "Font Size", "Phone default / Small / Large",
                 value = { FontPrefs.LABELS[FontPrefs.saved(this)] }, onClick = { chooseFontSize() })
         )),
         Section(R.drawable.ic_notes, "Note preferences", listOf(
@@ -230,11 +230,11 @@ class SettingsActivity : BaseActivity() {
     private fun chooseFontSize() {
         showChoiceDialog(
             title = "Font Size",
-            subtitle = "Make text smaller or larger",
+            subtitle = "Based on your phone's font size, or make it smaller or larger",
             icon = R.drawable.ic_font_size,
             options = listOf(
                 ChoiceOption("Small", "Compact text, fits more on screen", R.drawable.ic_font_size),
-                ChoiceOption("Medium", "The default size", R.drawable.ic_font_size),
+                ChoiceOption("Default", "Follows your phone's font size setting", R.drawable.ic_font_size),
                 ChoiceOption("Large", "Bigger text that is easier to read", R.drawable.ic_font_size)
             ),
             selectedIndex = FontPrefs.saved(this)

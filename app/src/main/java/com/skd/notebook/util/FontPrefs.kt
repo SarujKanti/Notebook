@@ -4,7 +4,8 @@ import android.content.Context
 import android.content.res.Configuration
 
 /**
- * Small / Medium / Large text size for the whole app, saved on the device.
+ * Small / Default / Large text size for the whole app, saved on the device.
+ * Default (the starting choice) uses the phone's own font size setting as it is.
  *
  * It scales on top of the phone's own font size setting rather than replacing it, so someone who
  * already uses a large system font still gets a bigger "Large" than a "Medium".
@@ -17,7 +18,7 @@ object FontPrefs {
     const val MEDIUM = 1
     const val LARGE = 2
 
-    val LABELS = listOf("Small", "Medium", "Large")
+    val LABELS = listOf("Small", "Default", "Large")
     private val FACTORS = floatArrayOf(0.88f, 1f, 1.18f)
 
     fun saved(context: Context): Int =
@@ -28,7 +29,7 @@ object FontPrefs {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putInt(KEY_FONT_SIZE, size).apply()
     }
 
-    /** Context whose text sizes (sp) follow the saved choice. Medium leaves the context untouched. */
+    /** Context whose text sizes (sp) follow the saved choice. Default leaves the context untouched, so the phone's font size applies. */
     fun wrap(base: Context): Context {
         val factor = FACTORS[saved(base)]
         if (factor == 1f) return base

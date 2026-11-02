@@ -68,7 +68,7 @@
                         android:layout_height="wrap_content"
                         android:text="Keep · Write · Organize"
                         android:textColor="#E3DBFF"
-                        android:textSize="13sp"/>
+                        android:textSize="14sp"/>
                 </LinearLayout>
 
                 <FrameLayout
@@ -223,7 +223,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
-                    android:textSize="13sp"
+                    android:textSize="14sp"
                     android:textColor="?attr/colorOnSurface"/>
             </LinearLayout>
 
@@ -262,7 +262,7 @@
                 android:id="@+id/tvEmptyTitle"
                 android:text="No notes yet"
                 android:gravity="center"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"
                 android:alpha="0.4"

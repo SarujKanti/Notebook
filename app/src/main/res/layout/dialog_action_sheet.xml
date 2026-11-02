@@ -11,7 +11,7 @@
         android:id="@+id/actionSheetTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="13sp"
+        android:textSize="14sp"
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurfaceVariant"
         android:letterSpacing="0.04"
