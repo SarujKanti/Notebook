@@ -1,7 +1,7 @@
 package com.skd.notebook.ui
 
 import android.content.res.ColorStateList
-import android.graphics.Color
+import com.skd.notebook.util.NoteColors
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,11 +45,7 @@ class FolderAdapter(
         holder.name.text = folder.name
 
         // Resolve the folder's accent colour
-        val accentColor = if (folder.color.isNotEmpty())
-            runCatching { Color.parseColor(folder.color) }
-                .getOrDefault(ContextCompat.getColor(context, R.color.colorPrimary))
-        else
-            ContextCompat.getColor(context, R.color.colorPrimary)
+        val accentColor = NoteColors.folderAccent(context, folder.color)
 
         // Apply colour to left stripe and folder icon tint
         holder.accent.setBackgroundColor(accentColor)
