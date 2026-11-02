@@ -17,11 +17,11 @@ import androidx.core.content.ContextCompat
 import com.skd.notebook.R
 
 /**
- * A flat-topped hexagon with softly rounded corners that holds its children (the floating "+" buttons).
- * It fills itself with [R.styleable.HexagonLayout_hexColor], casts a shadow in its own shape, and
- * clips touch ripples to it. Size it with a width of about 1.15 x its height for a regular hexagon.
+ * A regular octagon with softly rounded corners that holds its children (the floating "+" buttons).
+ * It fills itself with [R.styleable.OctagonLayout_octColor], casts a shadow in its own shape, and
+ * clips touch ripples to it. Give it a square size for a regular octagon.
  */
-class HexagonLayout @JvmOverloads constructor(
+class OctagonLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
@@ -33,17 +33,17 @@ class HexagonLayout @JvmOverloads constructor(
     private val endColor: Int
 
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.HexagonLayout)
-        startColor = a.getColor(R.styleable.HexagonLayout_hexColor, ContextCompat.getColor(context, R.color.fab_home))
-        endColor = a.getColor(R.styleable.HexagonLayout_hexColorEnd, startColor)
+        val a = context.obtainStyledAttributes(attrs, R.styleable.OctagonLayout)
+        startColor = a.getColor(R.styleable.OctagonLayout_octColor, ContextCompat.getColor(context, R.color.fab_home))
+        endColor = a.getColor(R.styleable.OctagonLayout_octColorEnd, startColor)
         fill.color = startColor
-        if (Build.VERSION.SDK_INT >= 28 && a.hasValue(R.styleable.HexagonLayout_hexGlow)) {
-            val glow = a.getColor(R.styleable.HexagonLayout_hexGlow, startColor)
+        if (Build.VERSION.SDK_INT >= 28 && a.hasValue(R.styleable.OctagonLayout_octGlow)) {
+            val glow = a.getColor(R.styleable.OctagonLayout_octGlow, startColor)
             outlineSpotShadowColor = glow
             outlineAmbientShadowColor = glow
         }
         cornerRadius = a.getDimension(
-            R.styleable.HexagonLayout_hexCornerRadius,
+            R.styleable.OctagonLayout_octCornerRadius,
             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, resources.displayMetrics)
         )
         a.recycle()
@@ -68,11 +68,11 @@ class HexagonLayout @JvmOverloads constructor(
         invalidateOutline()
     }
 
-    /** Six corners (left and right points, flat top and bottom), each rounded with a small curve. */
+    /** Eight corners (flat top, bottom, left and right sides), each rounded with a small curve. */
     private fun buildShape(w: Float, h: Float) {
         val corners = listOf(
-            w * 0.25f to 0f, w * 0.75f to 0f, w to h / 2f,
-            w * 0.75f to h, w * 0.25f to h, 0f to h / 2f
+            w * INSET to 0f, w * (1f - INSET) to 0f, w to h * INSET, w to h * (1f - INSET),
+            w * (1f - INSET) to h, w * INSET to h, 0f to h * (1f - INSET), 0f to h * INSET
         )
         shape.reset()
         corners.forEachIndexed { i, (x, y) ->
@@ -98,3 +98,6 @@ class HexagonLayout @JvmOverloads constructor(
         canvas.drawPath(shape, fill)
     }
 }
+
+/** How far in from each corner of the bounding box an octagon's corners sit: 1 / (2 + sqrt 2). */
+private const val INSET = 0.2929f
