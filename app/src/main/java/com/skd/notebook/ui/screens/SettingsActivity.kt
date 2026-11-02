@@ -101,7 +101,9 @@ class SettingsActivity : BaseActivity() {
             Row(R.drawable.ic_theme, getString(R.string.theme), getString(R.string.theme_summary),
                 value = { themeLabel() }, onClick = { chooseTheme() }),
             Row(R.drawable.ic_font_size, getString(R.string.font_size), getString(R.string.font_size_summary),
-                value = { FontPrefs.LABELS[FontPrefs.saved(this)] }, onClick = { chooseFontSize() })
+                value = { FontPrefs.LABELS[FontPrefs.saved(this)] }, onClick = { chooseFontSize() }),
+            Row(R.drawable.ic_font_size, getString(R.string.font_style), getString(R.string.font_style_summary),
+                value = { getString(FontStyles.saved(this).label) }, onClick = { chooseFontStyle() })
         )),
         Section(R.drawable.ic_notes, getString(R.string.note_preferences), listOf(
             Row(R.drawable.ic_sort, getString(R.string.default_sorting), getString(R.string.default_sorting_summary),
