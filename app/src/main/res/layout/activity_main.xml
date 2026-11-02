@@ -331,30 +331,33 @@
         android:clickable="true"
         android:focusable="true">
 
-        <LinearLayout
+        <!-- The whole panel scrolls as one, so in landscape the menu is reachable instead of squeezed to nothing.
+             When it all fits, the footer still sits at the bottom. -->
+        <ScrollView
+            android:id="@+id/navScroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:fillViewport="true"
+            android:overScrollMode="never">
 
-            <include layout="@layout/drawer_header"/>
-
-            <ScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:fillViewport="true"
-                android:overScrollMode="never">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/drawer_header"/>
 
                 <LinearLayout
                     android:id="@+id/navMenu"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
                     android:orientation="vertical"
                     android:paddingTop="10dp"/>
-            </ScrollView>
 
-            <include layout="@layout/drawer_footer"/>
-        </LinearLayout>
+                <include layout="@layout/drawer_footer"/>
+            </LinearLayout>
+        </ScrollView>
 
     </com.skd.notebook.ui.DrawerPanelLayout>
 
