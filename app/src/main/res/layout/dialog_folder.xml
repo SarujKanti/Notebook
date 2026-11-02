@@ -10,10 +10,10 @@
 
     <!-- Drag handle -->
     <View
-        android:layout_width="36dp"
-        android:layout_height="4dp"
+        android:layout_width="@dimen/dp_36"
+        android:layout_height="@dimen/dp_4"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="@dimen/dp_12"
         android:background="#66FFFFFF"/>
 
     <!-- Header row -->
@@ -22,36 +22,36 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="8dp"
-        android:paddingTop="14dp"
-        android:paddingBottom="10dp">
+        android:paddingStart="@dimen/dp_20"
+        android:paddingEnd="@dimen/dp_8"
+        android:paddingTop="@dimen/dp_14"
+        android:paddingBottom="@dimen/dp_10">
 
         <TextView
             android:id="@+id/tvFolderDialogTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Folder"
-            android:textSize="20sp"
+            android:text="@string/new_folder_title"
+            android:textSize="@dimen/text_title"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"/>
 
         <ImageButton
             android:id="@+id/btnFolderClose"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="@dimen/dp_44"
+            android:layout_height="@dimen/dp_44"
             android:src="@drawable/ic_close"
             android:tint="?attr/colorOnSurfaceVariant"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Close"/>
+            android:contentDescription="@string/close"/>
 
     </LinearLayout>
 
     <!-- Thin divider -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/dp_1"
         android:background="?attr/colorOutlineVariant"
         android:alpha="0.4"/>
 
@@ -61,14 +61,14 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="20dp"
-        android:hint="Folder name"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp">
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        android:hint="@string/folder_name"
+        app:boxCornerRadiusTopStart="@dimen/dp_12"
+        app:boxCornerRadiusTopEnd="@dimen/dp_12"
+        app:boxCornerRadiusBottomStart="@dimen/dp_12"
+        app:boxCornerRadiusBottomEnd="@dimen/dp_12">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etFolderName"
@@ -77,7 +77,7 @@
             android:inputType="textCapSentences"
             android:maxLines="1"
             android:imeOptions="actionDone"
-            android:textSize="16sp"
+            android:textSize="@dimen/text_subtitle"
             android:textColor="#FFFFFF"
             android:textColorHint="#CDBBFF"/>
 
@@ -87,23 +87,23 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="FOLDER COLOUR"
-        android:textSize="12sp"
+        android:text="@string/folder_colour_label"
+        android:textSize="@dimen/text_caption"
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurfaceVariant"
         android:letterSpacing="0.10"
-        android:paddingStart="20dp"
-        android:paddingTop="22dp"
-        android:paddingBottom="10dp"/>
+        android:paddingStart="@dimen/dp_20"
+        android:paddingTop="@dimen/dp_22"
+        android:paddingBottom="@dimen/dp_10"/>
 
     <!-- Colour swatches -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="none"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="4dp"
+        android:paddingStart="@dimen/dp_12"
+        android:paddingEnd="@dimen/dp_12"
+        android:paddingBottom="@dimen/dp_4"
         android:clipToPadding="false">
 
         <LinearLayout
@@ -121,31 +121,31 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="end"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="24dp">
+        android:paddingStart="@dimen/dp_20"
+        android:paddingEnd="@dimen/dp_20"
+        android:paddingTop="@dimen/dp_16"
+        android:paddingBottom="@dimen/dp_24">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFolderCancel"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="Cancel"
+            android:layout_marginEnd="@dimen/dp_8"
+            android:text="@string/cancel"
             android:textColor="?attr/colorOnSurfaceVariant"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFolderSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Save"
+            android:text="@string/save"
             app:backgroundTint="@null"
             android:background="@drawable/bg_glass_primary"
             android:textColor="@color/colorOnPrimary"
-            app:cornerRadius="24dp"
-            android:minHeight="52dp"
-            android:minWidth="110dp"
+            app:cornerRadius="@dimen/dp_24"
+            android:minHeight="@dimen/dp_52"
+            android:minWidth="@dimen/dp_110"
             android:insetTop="0dp"
             android:insetBottom="0dp"/>
 

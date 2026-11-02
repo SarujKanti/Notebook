@@ -1,7 +1,7 @@
 <!-- Small illustration for the drawer header: a notepad with a pen, a sticky note and sparkles. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="132dp"
-    android:height="132dp"
+    android:width="@dimen/dp_132"
+    android:height="@dimen/dp_132"
     android:viewportWidth="132"
     android:viewportHeight="132">
 

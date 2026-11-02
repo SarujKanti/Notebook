@@ -6,8 +6,8 @@
     android:background="@drawable/bg_widget">
 
     <ImageView
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="@dimen/dp_28"
+        android:layout_height="@dimen/dp_28"
         android:layout_gravity="center"
         android:src="@drawable/ic_add"
         android:tint="@color/colorOnPrimary"

@@ -80,15 +80,14 @@ open class BaseActivity : AppCompatActivity() {
     fun verifyDeviceLock(onDenied: (() -> Unit)? = null, onVerified: () -> Unit) {
         val keyguard = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         val intent = keyguard.createConfirmDeviceCredentialIntent(
-            "Reset Archive PIN", "Confirm your phone's screen lock to continue"
+            getString(R.string.reset_archive_pin), getString(R.string.confirm_screen_lock)
         )
         if (intent == null) {
             showAppDialog(
-                title = "No screen lock set",
+                title = getString(R.string.no_screen_lock_title),
                 icon = R.drawable.ic_lock,
-                message = "The Archive PIN can only be reset after confirming your phone's screen lock, " +
-                    "and this phone has none. Set one in your phone's Settings first.",
-                positiveText = "Got it",
+                message = getString(R.string.no_screen_lock_message),
+                positiveText = getString(R.string.got_it),
                 negativeText = null,
                 onPositive = { onDenied?.invoke() }
             )
@@ -103,7 +102,7 @@ open class BaseActivity : AppCompatActivity() {
         addCover()
         if (prompting) return
         val keyguard = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-        val intent = keyguard.createConfirmDeviceCredentialIntent("NoteStack is locked", "Unlock to see your notes")
+        val intent = keyguard.createConfirmDeviceCredentialIntent(getString(R.string.lock_notestack_title), getString(R.string.unlock_to_see_notes))
         if (intent == null) {
             // The phone's screen lock was removed since App Lock was turned on: nothing to ask for.
             AppSettings.setAppLock(this, false)

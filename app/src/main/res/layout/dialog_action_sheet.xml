@@ -4,22 +4,22 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="8dp"
+    android:paddingBottom="@dimen/dp_8"
     android:background="@drawable/bg_glass_sheet">
 
     <TextView
         android:id="@+id/actionSheetTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
+        android:textSize="@dimen/text_body"
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurfaceVariant"
         android:letterSpacing="0.04"
         android:alpha="0.6"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingEnd="@dimen/dp_20"
+        android:paddingTop="@dimen/dp_16"
+        android:paddingBottom="@dimen/dp_8"
         android:maxLines="1"
         android:ellipsize="end"
         android:visibility="gone"/>

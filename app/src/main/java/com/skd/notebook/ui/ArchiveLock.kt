@@ -10,7 +10,7 @@ import com.skd.notebook.util.ArchivePin
  * and reset it when it is forgotten. They live here so Settings and the Archive screen share them.
  */
 
-private fun tooManyTries(seconds: Int) = "Too many wrong tries. Try again in $seconds seconds."
+private fun BaseActivity.tooManyTries(seconds: Int) = getString(R.string.too_many_tries_format, seconds)
 
 /** Asks for the current PIN and calls [onOk] once a right one is entered. */
 fun BaseActivity.askArchivePin(
@@ -24,7 +24,7 @@ fun BaseActivity.askArchivePin(
 ): AlertDialog {
     return showPinDialog(
         title = title, subtitle = subtitle, icon = R.drawable.ic_lock,
-        fields = listOf("PIN"), positiveText = positiveText,
+        fields = listOf(getString(R.string.pin)), positiveText = positiveText,
         cancelable = cancelable, onForgot = onForgot, onCancel = onCancel, onAccepted = onOk
     ) { values ->
         val wait = ArchivePin.lockedSeconds()
@@ -32,26 +32,26 @@ fun BaseActivity.askArchivePin(
             wait > 0 -> tooManyTries(wait)
             ArchivePin.check(this, values[0]) -> null
             ArchivePin.lockedSeconds() > 0 -> tooManyTries(ArchivePin.lockedSeconds())
-            else -> "Wrong PIN. Try again."
+            else -> getString(R.string.wrong_pin)
         }
     }
 }
 
 /** Sets a brand-new PIN (type it twice). */
 fun BaseActivity.setNewArchivePin(
-    title: String = "Set Archive PIN",
-    subtitle: String? = "You will need it every time you open the Archive",
+    title: String = getString(R.string.set_archive_pin),
+    subtitle: String? = getString(R.string.set_archive_pin_subtitle),
     onCancel: () -> Unit,
     onDone: () -> Unit
 ) {
     showPinDialog(
         title = title, subtitle = subtitle, icon = R.drawable.ic_lock,
-        fields = listOf("New PIN (4 to 6 digits)", "Confirm PIN"),
-        positiveText = "Set PIN", onCancel = onCancel, onAccepted = onDone
+        fields = listOf(getString(R.string.new_pin_hint), getString(R.string.confirm_pin)),
+        positiveText = getString(R.string.set_pin), onCancel = onCancel, onAccepted = onDone
     ) { values ->
         when {
-            !ArchivePin.isValidFormat(values[0]) -> "The PIN must be 4 to 6 digits."
-            values[0] != values[1] -> "The two PINs do not match."
+            !ArchivePin.isValidFormat(values[0]) -> getString(R.string.pin_format_error)
+            values[0] != values[1] -> getString(R.string.pins_do_not_match)
             else -> { ArchivePin.set(this, values[0]); null }
         }
     }
@@ -60,10 +60,10 @@ fun BaseActivity.setNewArchivePin(
 /** Replaces the PIN: the current one is needed first. */
 fun BaseActivity.changeArchivePin(onChanged: () -> Unit) {
     showPinDialog(
-        title = "Change Archive PIN", subtitle = "Enter your current PIN, then a new one",
+        title = getString(R.string.change_archive_pin), subtitle = getString(R.string.change_archive_pin_subtitle),
         icon = R.drawable.ic_lock,
-        fields = listOf("Current PIN", "New PIN (4 to 6 digits)", "Confirm new PIN"),
-        positiveText = "Change PIN",
+        fields = listOf(getString(R.string.current_pin), getString(R.string.new_pin_hint), getString(R.string.confirm_new_pin)),
+        positiveText = getString(R.string.change_pin),
         onForgot = { forgotArchivePin(onDone = onChanged) { setNewArchivePin(onCancel = onChanged, onDone = onChanged) } },
         onAccepted = onChanged
     ) { values ->
@@ -71,9 +71,9 @@ fun BaseActivity.changeArchivePin(onChanged: () -> Unit) {
         when {
             wait > 0 -> tooManyTries(wait)
             !ArchivePin.check(this, values[0]) ->
-                if (ArchivePin.lockedSeconds() > 0) tooManyTries(ArchivePin.lockedSeconds()) else "The current PIN is wrong."
-            !ArchivePin.isValidFormat(values[1]) -> "The new PIN must be 4 to 6 digits."
-            values[1] != values[2] -> "The two new PINs do not match."
+                if (ArchivePin.lockedSeconds() > 0) tooManyTries(ArchivePin.lockedSeconds()) else getString(R.string.current_pin_wrong)
+            !ArchivePin.isValidFormat(values[1]) -> getString(R.string.new_pin_format_error)
+            values[1] != values[2] -> getString(R.string.new_pins_do_not_match)
             else -> { ArchivePin.set(this, values[1]); null }
         }
     }

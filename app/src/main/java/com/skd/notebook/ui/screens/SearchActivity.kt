@@ -206,7 +206,7 @@ class SearchActivity : BaseActivity() {
             recyclerSearch.visibility = View.GONE
             tvResultCount.visibility  = View.GONE
             layoutHint.visibility     = View.VISIBLE
-            tvHintMessage.text        = "No notes found for \"$q\""
+            tvHintMessage.text        = getString(R.string.no_notes_found_format, q)
             return
         }
         layoutHint.visibility     = View.GONE

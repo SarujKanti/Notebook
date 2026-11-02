@@ -1,5 +1,6 @@
 package com.skd.notebook.ui.screens
 
+import com.skd.notebook.util.dimenPx
 import android.app.KeyguardManager
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -66,7 +67,7 @@ class SettingsActivity : BaseActivity() {
         applySystemBarInsets()
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "Settings"
+        supportActionBar?.title = getString(R.string.settings)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         buildScreen()
@@ -94,37 +95,37 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun sections() = listOf(
-        Section(R.drawable.ic_person_filled, "Personalization", listOf(
-            Row(R.drawable.ic_theme, "Theme", "Light / Dark / System Default",
+        Section(R.drawable.ic_person_filled, getString(R.string.personalization), listOf(
+            Row(R.drawable.ic_theme, getString(R.string.theme), getString(R.string.theme_summary),
                 value = { themeLabel() }, onClick = { chooseTheme() }),
-            Row(R.drawable.ic_font_size, "Font Size", "Phone default / Small / Large",
+            Row(R.drawable.ic_font_size, getString(R.string.font_size), getString(R.string.font_size_summary),
                 value = { FontPrefs.LABELS[FontPrefs.saved(this)] }, onClick = { chooseFontSize() })
         )),
-        Section(R.drawable.ic_notes, "Note preferences", listOf(
-            Row(R.drawable.ic_sort, "Default Sorting", "Newest / Oldest / Alphabetical",
+        Section(R.drawable.ic_notes, getString(R.string.note_preferences), listOf(
+            Row(R.drawable.ic_sort, getString(R.string.default_sorting), getString(R.string.default_sorting_summary),
                 value = { AppSettings.sortOrder(this).chip }, onClick = { chooseSorting() }),
-            Row(R.drawable.ic_view_module, "Default View", "Grid / List",
-                value = { if (AppSettings.gridView(this)) "Grid" else "List" }, onClick = { chooseView() }),
-            Row(R.drawable.ic_delete, "Delete Confirmation", "Confirm before deleting notes",
+            Row(R.drawable.ic_view_module, getString(R.string.default_view), getString(R.string.default_view_summary),
+                value = { if (AppSettings.gridView(this)) getString(R.string.grid) else getString(R.string.list) }, onClick = { chooseView() }),
+            Row(R.drawable.ic_delete, getString(R.string.delete_confirmation), getString(R.string.delete_confirmation_summary),
                 isOn = { AppSettings.confirmDelete(this) },
                 onToggle = { AppSettings.setConfirmDelete(this, it) })
         )),
-        Section(R.drawable.ic_shield, "Security & privacy", listOf<Row?>(
-            Row(R.drawable.ic_lock, "App Lock", "PIN / Fingerprint protection",
+        Section(R.drawable.ic_shield, getString(R.string.security_privacy), listOf<Row?>(
+            Row(R.drawable.ic_lock, getString(R.string.app_lock), getString(R.string.app_lock_summary),
                 isOn = { AppSettings.appLock(this) }, onToggle = { setAppLock(it) }),
-            Row(R.drawable.ic_visibility_off, "Hide Archive Preview", "Hide Archive in recent apps and screenshots, and ask for a PIN to open it",
+            Row(R.drawable.ic_visibility_off, getString(R.string.hide_archive_preview), getString(R.string.hide_archive_preview_summary),
                 isOn = { AppSettings.hideArchivePreview(this) },
                 onToggle = { setHideArchive(it) }),
             if (AppSettings.hideArchivePreview(this) && ArchivePin.isSet(this))
-                Row(R.drawable.ic_lock, "Change Archive PIN", "Needs your current PIN",
+                Row(R.drawable.ic_lock, getString(R.string.change_archive_pin), getString(R.string.needs_current_pin),
                     onClick = { changeArchivePin { buildScreen() } })
             else null
         ).filterNotNull()),
-        Section(R.drawable.ic_info, "Support & information", listOf(
-            Row(R.drawable.ic_feedback, "Send Feedback", onClick = { sendFeedback() }),
-            Row(R.drawable.ic_star, "Rate NoteStack", onClick = { rateApp() }),
-            Row(R.drawable.ic_privacy, "Privacy Policy", onClick = { openLink(PRIVACY_POLICY_URL) }),
-            Row(R.drawable.ic_terms, "Terms & Conditions", onClick = { showNotAvailable("Terms & Conditions") })
+        Section(R.drawable.ic_info, getString(R.string.support_information), listOf(
+            Row(R.drawable.ic_feedback, getString(R.string.send_feedback), onClick = { sendFeedback() }),
+            Row(R.drawable.ic_star, getString(R.string.rate_app), onClick = { rateApp() }),
+            Row(R.drawable.ic_privacy, getString(R.string.privacy_policy), onClick = { openLink(PRIVACY_POLICY_URL) }),
+            Row(R.drawable.ic_terms, getString(R.string.terms_conditions), onClick = { showNotAvailable(getString(R.string.terms_conditions)) })
         ))
     )
 
@@ -194,10 +195,9 @@ class SettingsActivity : BaseActivity() {
         switches.forEach { (switch, row) -> bindSwitch(switch, row) }
     }
     private fun divider() = View(this).apply {
-        val dp = resources.displayMetrics.density
         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1).also {
-            it.marginStart = (76 * dp).toInt()
-            it.marginEnd = (16 * dp).toInt()
+            it.marginStart = dimenPx(R.dimen.dp_76)
+            it.marginEnd = dimenPx(R.dimen.dp_16)
         }
         setBackgroundColor(com.google.android.material.color.MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutlineVariant))
         alpha = 0.6f
@@ -206,22 +206,22 @@ class SettingsActivity : BaseActivity() {
     // ─── Personalization ─────────────────────────────────────────────────────
 
     private fun themeLabel() = when (ThemePrefs.saved(this)) {
-        ThemePrefs.LIGHT -> "Light"
-        ThemePrefs.DARK -> "Dark"
-        else -> "System"
+        ThemePrefs.LIGHT -> getString(R.string.light)
+        ThemePrefs.DARK -> getString(R.string.dark)
+        else -> getString(R.string.system)
     }
 
     /** Light / Dark / System default. Changing the theme recreates this screen. */
     private fun chooseTheme() {
         val modes = intArrayOf(ThemePrefs.SYSTEM, ThemePrefs.LIGHT, ThemePrefs.DARK)
         showChoiceDialog(
-            title = "Choose Theme",
-            subtitle = "Customize the app appearance",
+            title = getString(R.string.choose_theme_title),
+            subtitle = getString(R.string.choose_theme_subtitle),
             icon = R.drawable.ic_theme,
             options = listOf(
-                ChoiceOption("System default", "Follow your device theme (recommended)", R.drawable.ic_choice_phone),
-                ChoiceOption("Light", "Use light theme", R.drawable.ic_choice_sun),
-                ChoiceOption("Dark", "Use dark theme", R.drawable.ic_choice_moon)
+                ChoiceOption(getString(R.string.system_default), getString(R.string.system_default_hint), R.drawable.ic_choice_phone),
+                ChoiceOption(getString(R.string.light), getString(R.string.light_hint), R.drawable.ic_choice_sun),
+                ChoiceOption(getString(R.string.dark), getString(R.string.dark_hint), R.drawable.ic_choice_moon)
             ),
             selectedIndex = modes.indexOf(ThemePrefs.saved(this)).coerceAtLeast(0)
         ) { which -> ThemePrefs.set(this, modes[which]) }
@@ -229,13 +229,13 @@ class SettingsActivity : BaseActivity() {
 
     private fun chooseFontSize() {
         showChoiceDialog(
-            title = "Font Size",
-            subtitle = "Based on your phone's font size, or make it smaller or larger",
+            title = getString(R.string.font_size),
+            subtitle = getString(R.string.font_size_subtitle),
             icon = R.drawable.ic_font_size,
             options = listOf(
-                ChoiceOption("Small", "Compact text, fits more on screen", R.drawable.ic_font_size),
-                ChoiceOption("Default", "Follows your phone's font size setting", R.drawable.ic_font_size),
-                ChoiceOption("Large", "Bigger text that is easier to read", R.drawable.ic_font_size)
+                ChoiceOption(getString(R.string.small), getString(R.string.small_hint), R.drawable.ic_font_size),
+                ChoiceOption(getString(R.string.default_label), getString(R.string.default_hint), R.drawable.ic_font_size),
+                ChoiceOption(getString(R.string.large), getString(R.string.large_hint), R.drawable.ic_font_size)
             ),
             selectedIndex = FontPrefs.saved(this)
         ) { which ->
@@ -249,13 +249,13 @@ class SettingsActivity : BaseActivity() {
     private fun chooseSorting() {
         val orders = SortOrder.values().toList()
         val hints = mapOf(
-            SortOrder.NEWEST to "Latest notes on top",
-            SortOrder.OLDEST to "Oldest notes on top",
-            SortOrder.ALPHABETICAL to "A to Z, by title"
+            SortOrder.NEWEST to getString(R.string.sort_newest_hint),
+            SortOrder.OLDEST to getString(R.string.sort_oldest_hint),
+            SortOrder.ALPHABETICAL to getString(R.string.sort_alphabetical_hint)
         )
         showChoiceDialog(
-            title = "Default Sorting",
-            subtitle = "How your notes are ordered",
+            title = getString(R.string.default_sorting),
+            subtitle = getString(R.string.sort_notes_subtitle),
             icon = R.drawable.ic_sort,
             options = orders.map { ChoiceOption(it.label, hints[it], R.drawable.ic_sort) },
             selectedIndex = orders.indexOf(AppSettings.sortOrder(this))
@@ -267,12 +267,12 @@ class SettingsActivity : BaseActivity() {
 
     private fun chooseView() {
         showChoiceDialog(
-            title = "Default View",
-            subtitle = "How your notes are laid out",
+            title = getString(R.string.default_view),
+            subtitle = getString(R.string.layout_subtitle),
             icon = R.drawable.ic_view_module,
             options = listOf(
-                ChoiceOption("Grid", "Notes side by side", R.drawable.ic_view_module),
-                ChoiceOption("List", "One note per row", R.drawable.ic_view_list)
+                ChoiceOption(getString(R.string.grid), getString(R.string.grid_hint), R.drawable.ic_view_module),
+                ChoiceOption(getString(R.string.list), getString(R.string.list_hint), R.drawable.ic_view_list)
             ),
             selectedIndex = if (AppSettings.gridView(this)) 0 else 1
         ) { which ->
@@ -290,11 +290,10 @@ class SettingsActivity : BaseActivity() {
             if (!keyguard.isDeviceSecure) {
                 AppSettings.setAppLock(this, false)
                 showAppDialog(
-                    title = "Set a screen lock first",
+                    title = getString(R.string.set_screen_lock_title),
                     icon = R.drawable.ic_lock,
-                    message = "App Lock uses your phone's PIN, pattern, password or fingerprint. " +
-                        "Set one up in your phone's Settings, then turn App Lock on again.",
-                    positiveText = "Got it",
+                    message = getString(R.string.set_screen_lock_message),
+                    positiveText = getString(R.string.got_it),
                     negativeText = null
                 )
                 buildScreen()
@@ -326,9 +325,9 @@ class SettingsActivity : BaseActivity() {
             )
         } else {
             askArchivePin(
-                title = "Turn off Archive PIN",
-                subtitle = "Enter your PIN to stop protecting the Archive",
-                positiveText = "Turn off",
+                title = getString(R.string.turn_off_archive_pin),
+                subtitle = getString(R.string.turn_off_archive_pin_subtitle),
+                positiveText = getString(R.string.turn_off),
                 onForgot = { forgotArchivePin(onDone = { buildScreen() }) },
                 onCancel = { buildScreen() }
             ) {
@@ -345,16 +344,16 @@ class SettingsActivity : BaseActivity() {
         val intent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:")
             putExtra(Intent.EXTRA_EMAIL, arrayOf(FEEDBACK_EMAIL))
-            putExtra(Intent.EXTRA_SUBJECT, "NoteStack feedback")
+            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.feedback_subject))
         }
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             showAppDialog(
-                title = "No email app found",
+                title = getString(R.string.no_email_app_title),
                 icon = R.drawable.ic_feedback,
-                message = "You can write to us at $FEEDBACK_EMAIL.",
-                positiveText = "OK",
+                message = getString(R.string.no_email_app_message, FEEDBACK_EMAIL),
+                positiveText = getString(R.string.ok),
                 negativeText = null
             )
         }
@@ -372,16 +371,16 @@ class SettingsActivity : BaseActivity() {
         try {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         } catch (e: ActivityNotFoundException) {
-            showNotAvailable("This page")
+            showNotAvailable(getString(R.string.this_page))
         }
     }
 
     private fun showNotAvailable(what: String) {
         showAppDialog(
-            title = "Not available yet",
+            title = getString(R.string.not_available_title),
             icon = R.drawable.ic_info,
-            message = "$what will be available in a future update.",
-            positiveText = "OK",
+            message = getString(R.string.not_available_message, what),
+            positiveText = getString(R.string.ok),
             negativeText = null
         )
     }

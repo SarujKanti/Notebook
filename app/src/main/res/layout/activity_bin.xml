@@ -19,7 +19,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:title="Bin"
+            android:title="@string/bin_title"
             android:background="@color/colorAppBar"
             app:navigationIcon="@drawable/ic_arrow_back_white"
             app:titleTextColor="@color/colorOnPrimary"/>
@@ -36,28 +36,28 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ImageView
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="@dimen/dp_96"
+            android:layout_height="@dimen/dp_96"
             android:src="@drawable/ic_delete"
             android:alpha="0.25"
-            android:contentDescription="Empty bin"/>
+            android:contentDescription="@string/empty_bin_icon"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bin is empty"
-            android:textSize="16sp"
+            android:text="@string/empty_bin_title"
+            android:textSize="@dimen/text_subtitle"
             android:textColor="?attr/colorOnSurface"
             android:alpha="0.45"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="@dimen/dp_16"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Notes in Bin are deleted after 30 days"
-            android:textSize="14sp"
+            android:text="@string/bin_retention_note"
+            android:textSize="@dimen/text_body"
             android:textColor="?attr/colorOnSurfaceVariant"
-            android:layout_marginTop="6dp"/>
+            android:layout_marginTop="@dimen/dp_6"/>
 
     </LinearLayout>
 
@@ -65,10 +65,10 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="4dp"
-        android:paddingBottom="16dp"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
+        android:paddingTop="@dimen/dp_4"
+        android:paddingBottom="@dimen/dp_16"
+        android:paddingStart="@dimen/dp_4"
+        android:paddingEnd="@dimen/dp_4"
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 

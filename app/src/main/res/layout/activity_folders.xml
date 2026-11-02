@@ -19,7 +19,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:title="Folders"
+            android:title="@string/folders_title"
             android:background="@color/colorAppBar"
             app:navigationIcon="@drawable/ic_arrow_back_white"
             app:titleTextColor="@color/colorOnPrimary"/>
@@ -36,29 +36,29 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ImageView
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="@dimen/dp_96"
+            android:layout_height="@dimen/dp_96"
             android:src="@drawable/ic_folder"
             android:alpha="0.25"
-            android:contentDescription="No folders"
+            android:contentDescription="@string/no_folders_icon"
             app:tint="@color/colorPrimary"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No folders yet"
-            android:textSize="16sp"
+            android:text="@string/empty_folders_title"
+            android:textSize="@dimen/text_subtitle"
             android:textColor="?attr/colorOnSurface"
             android:alpha="0.45"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="@dimen/dp_16"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tap + to create a folder"
-            android:textSize="14sp"
+            android:text="@string/empty_folders_hint"
+            android:textSize="@dimen/text_body"
             android:textColor="?attr/colorOnSurfaceVariant"
-            android:layout_marginTop="6dp"/>
+            android:layout_marginTop="@dimen/dp_6"/>
 
     </LinearLayout>
 
@@ -66,33 +66,33 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="8dp"
-        android:paddingBottom="96dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
+        android:paddingTop="@dimen/dp_8"
+        android:paddingBottom="@dimen/dp_96"
+        android:paddingStart="@dimen/dp_8"
+        android:paddingEnd="@dimen/dp_8"
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <!-- Octagon "+" button, same look and tuck-away animation as the home screen's -->
     <com.skd.notebook.ui.OctagonLayout
         android:id="@+id/fabNewFolder"
-        android:layout_width="62dp"
-        android:layout_height="62dp"
+        android:layout_width="@dimen/dp_62"
+        android:layout_height="@dimen/dp_62"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="24dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="@dimen/dp_24"
+        android:layout_marginEnd="@dimen/dp_16"
         android:clickable="true"
         android:focusable="true"
-        android:contentDescription="New folder"
-        android:elevation="10dp"
+        android:contentDescription="@string/new_folder_button_description"
+        android:elevation="@dimen/dp_10"
         app:octColor="@color/fab_home_start"
         app:octColorEnd="@color/fab_home_end"
         app:octGlow="@color/fab_home_glow">
 
         <ImageView
             android:id="@+id/fabNewFolderIcon"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="@dimen/dp_30"
             android:layout_gravity="center"
             android:src="@drawable/ic_add"
             android:importantForAccessibility="no"/>

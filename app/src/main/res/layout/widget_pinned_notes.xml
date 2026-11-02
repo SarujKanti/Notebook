@@ -11,14 +11,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="14dp"
-        android:paddingEnd="8dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="6dp">
+        android:paddingStart="@dimen/dp_14"
+        android:paddingEnd="@dimen/dp_8"
+        android:paddingTop="@dimen/dp_10"
+        android:paddingBottom="@dimen/dp_6">
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="@dimen/dp_16"
+            android:layout_height="@dimen/dp_16"
             android:src="@drawable/ic_widget_pin"
             android:tint="@color/colorOnPrimary"
             android:contentDescription="@null"/>
@@ -27,17 +27,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/dp_8"
             android:text="@string/widget_pinned_notes_title"
             android:textColor="@color/colorOnPrimary"
             android:textStyle="bold"
-            android:textSize="14sp"/>
+            android:textSize="@dimen/text_body"/>
 
         <ImageView
             android:id="@+id/widgetAddButton"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:padding="6dp"
+            android:layout_width="@dimen/dp_32"
+            android:layout_height="@dimen/dp_32"
+            android:padding="@dimen/dp_6"
             android:src="@drawable/ic_add"
             android:tint="@color/colorOnPrimary"
             android:contentDescription="@string/widget_new_note"/>
@@ -56,17 +56,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@color/colorWidgetDivider"
-            android:dividerHeight="1dp"/>
+            android:dividerHeight="@dimen/dp_1"/>
 
         <TextView
             android:id="@+id/widgetEmptyView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:padding="20dp"
+            android:padding="@dimen/dp_20"
             android:text="@string/widget_no_pinned_notes"
             android:textColor="@color/colorWidgetBody"
-            android:textSize="14sp"/>
+            android:textSize="@dimen/text_body"/>
 
     </FrameLayout>
 

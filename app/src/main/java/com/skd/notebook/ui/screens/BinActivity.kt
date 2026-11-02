@@ -112,7 +112,7 @@ class BinActivity : BaseActivity() {
 
     private fun refreshSelectionUi() {
         adapter.setSelection(selectionMode, selectedIds.toSet())
-        supportActionBar?.title = if (selectionMode) "${selectedIds.size} selected" else "Bin"
+        supportActionBar?.title = if (selectionMode) getString(R.string.selected_count_format, selectedIds.size) else getString(R.string.bin_title)
         toolbar.setNavigationIcon(if (selectionMode) R.drawable.ic_close_white else R.drawable.ic_arrow_back_white)
         invalidateOptionsMenu()
     }
@@ -123,18 +123,18 @@ class BinActivity : BaseActivity() {
         menu.clear()
         val allSelected = binNotes.isNotEmpty() && selectedIds.size == binNotes.size
         if (selectionMode) {
-            menu.add(Menu.NONE, MENU_RESTORE, 1, "Restore")
+            menu.add(Menu.NONE, MENU_RESTORE, 1, getString(R.string.restore))
                 .setIcon(R.drawable.ic_restore_white).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-            menu.add(Menu.NONE, MENU_DELETE, 2, "Delete forever")
+            menu.add(Menu.NONE, MENU_DELETE, 2, getString(R.string.delete_forever))
                 .setIcon(R.drawable.ic_delete_white).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             if (!allSelected) {
-                menu.add(Menu.NONE, MENU_SELECT_ALL, 3, "Select all")
+                menu.add(Menu.NONE, MENU_SELECT_ALL, 3, getString(R.string.select_all))
                     .setIcon(R.drawable.ic_select_all_white).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             }
         } else if (binNotes.isNotEmpty()) {
-            menu.add(Menu.NONE, MENU_SELECT_ALL, 1, "Select all")
+            menu.add(Menu.NONE, MENU_SELECT_ALL, 1, getString(R.string.select_all))
                 .setIcon(R.drawable.ic_select_all_white).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-            menu.add(Menu.NONE, MENU_EMPTY, 2, "Empty Bin").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+            menu.add(Menu.NONE, MENU_EMPTY, 2, getString(R.string.empty_bin_action)).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
         }
         return true
     }
@@ -157,7 +157,7 @@ class BinActivity : BaseActivity() {
         stopSelecting()
         Snackbar.make(
             recyclerView,
-            if (notes.size == 1) "Note restored" else "${notes.size} notes restored",
+            if (notes.size == 1) getString(R.string.note_restored) else getString(R.string.notes_restored_format, notes.size),
             Snackbar.LENGTH_SHORT
         ).show()
     }
@@ -165,13 +165,13 @@ class BinActivity : BaseActivity() {
     private fun confirmDeleteSelected() {
         val notes = selectedNotes()
         if (notes.isEmpty()) return
-        val what = if (notes.size == 1) "This note" else "These ${notes.size} notes"
+        val what = if (notes.size == 1) getString(R.string.this_note) else getString(R.string.these_notes_format, notes.size)
         showAppDialog(
-            title = "Delete permanently?",
+            title = getString(R.string.delete_permanently_title),
             icon = R.drawable.ic_delete,
-            message = "$what will be deleted forever. This cannot be undone.",
+            message = getString(R.string.delete_permanently_message, what),
             destructive = true,
-            positiveText = "Delete",
+            positiveText = getString(R.string.delete),
             onPositive = {
                 viewModel.deleteAllPermanently(notes)
                 stopSelecting()
@@ -181,11 +181,11 @@ class BinActivity : BaseActivity() {
 
     private fun confirmEmptyBin() {
         showAppDialog(
-            title = "Empty Bin?",
+            title = getString(R.string.empty_bin_confirm_title),
             icon = R.drawable.ic_delete,
-            message = "All notes in the Bin will be permanently deleted. This cannot be undone.",
+            message = getString(R.string.empty_bin_message),
             destructive = true,
-            positiveText = "Empty Bin",
+            positiveText = getString(R.string.empty_bin_action),
             onPositive = { viewModel.emptyBin() }
         )
     }

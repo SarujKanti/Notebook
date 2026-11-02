@@ -5,19 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginBottom="8dp">
+    android:layout_marginBottom="@dimen/dp_8">
 
     <!-- Small label above the card -->
     <TextView
         android:id="@+id/sectionTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp"
+        android:paddingStart="@dimen/dp_12"
+        android:paddingEnd="@dimen/dp_12"
+        android:paddingTop="@dimen/dp_16"
+        android:paddingBottom="@dimen/dp_8"
         android:textAllCaps="true"
-        android:textSize="12sp"
+        android:textSize="@dimen/text_caption"
         android:textStyle="bold"
         android:letterSpacing="0.12"
         android:textColor="?attr/colorPrimary"/>
@@ -25,9 +25,9 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="22dp"
+        app:cardCornerRadius="@dimen/dp_22"
         app:cardElevation="0dp"
-        app:strokeWidth="1dp"
+        app:strokeWidth="@dimen/dp_1"
         app:strokeColor="?attr/colorOutlineVariant"
         app:cardBackgroundColor="?attr/colorSurface">
 

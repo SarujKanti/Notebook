@@ -1,7 +1,7 @@
 <!-- Faint light waves along the bottom of a note card. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="200dp"
-    android:height="80dp"
+    android:width="@dimen/dp_200"
+    android:height="@dimen/dp_80"
     android:viewportWidth="200"
     android:viewportHeight="80">
     <path

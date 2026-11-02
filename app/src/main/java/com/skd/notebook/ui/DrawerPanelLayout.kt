@@ -1,5 +1,6 @@
 package com.skd.notebook.ui
 
+import com.skd.notebook.util.dimen
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.LinearGradient
@@ -29,8 +30,7 @@ class DrawerPanelLayout @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
-    private val density = resources.displayMetrics.density
-    private val corner = 40 * density
+    private val corner = context.dimen(R.dimen.dp_40)
 
     private val bodyPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val headPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -91,8 +91,8 @@ class DrawerPanelLayout @JvmOverloads constructor(
     private fun drawWaves(canvas: Canvas, w: Float, h: Float) {
         wavePaint.alpha = 22
         wavePath.reset()
-        wavePath.moveTo(0f, h - 250 * density)
-        wavePath.cubicTo(w * 0.30f, h - 310 * density, w * 0.62f, h - 190 * density, w, h - 262 * density)
+        wavePath.moveTo(0f, h - context.dimen(R.dimen.dp_250))
+        wavePath.cubicTo(w * 0.30f, h - context.dimen(R.dimen.dp_310), w * 0.62f, h - context.dimen(R.dimen.dp_190), w, h - context.dimen(R.dimen.dp_262))
         wavePath.lineTo(w, h)
         wavePath.lineTo(0f, h)
         wavePath.close()
@@ -100,8 +100,8 @@ class DrawerPanelLayout @JvmOverloads constructor(
 
         wavePaint.alpha = 34
         wavePath.reset()
-        wavePath.moveTo(0f, h - 200 * density)
-        wavePath.cubicTo(w * 0.28f, h - 150 * density, w * 0.66f, h - 255 * density, w, h - 175 * density)
+        wavePath.moveTo(0f, h - context.dimen(R.dimen.dp_200))
+        wavePath.cubicTo(w * 0.28f, h - context.dimen(R.dimen.dp_150), w * 0.66f, h - context.dimen(R.dimen.dp_255), w, h - context.dimen(R.dimen.dp_175))
         wavePath.lineTo(w, h)
         wavePath.lineTo(0f, h)
         wavePath.close()

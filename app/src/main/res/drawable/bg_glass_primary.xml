@@ -4,6 +4,6 @@
         android:angle="270"
         android:startColor="#9A6EFF"
         android:endColor="#5E2FD8"/>
-    <stroke android:width="1dp" android:color="#80FFFFFF"/>
-    <corners android:radius="24dp"/>
+    <stroke android:width="@dimen/dp_1" android:color="#80FFFFFF"/>
+    <corners android:radius="@dimen/dp_24"/>
 </shape>

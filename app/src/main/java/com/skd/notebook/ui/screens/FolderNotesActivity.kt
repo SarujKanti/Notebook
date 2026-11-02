@@ -59,7 +59,7 @@ class FolderNotesActivity : BaseActivity() {
         setContentView(R.layout.activity_folder_notes)
 
         folderId = intent.getStringExtra(EXTRA_FOLDER_ID) ?: run { finish(); return }
-        val folderName = intent.getStringExtra(EXTRA_FOLDER_NAME) ?: "Folder"
+        val folderName = intent.getStringExtra(EXTRA_FOLDER_NAME) ?: getString(R.string.folder)
 
         findViewById<View>(R.id.appBarLayout).fitTopInsetAsPadding()
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -76,9 +76,9 @@ class FolderNotesActivity : BaseActivity() {
 
         val openActions: (NoteEntity) -> Unit = { note ->
             showActionSheet(items = listOf(
-                ActionItem("Edit", R.drawable.ic_edit) { showNoteDialog(note) },
-                ActionItem("Remove from Folder", R.drawable.ic_folder) { viewModel.moveToFolder(note, "") },
-                ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) { confirmMoveToBin { viewModel.moveToBin(note) } }
+                ActionItem(getString(R.string.edit), R.drawable.ic_edit) { showNoteDialog(note) },
+                ActionItem(getString(R.string.remove_from_folder), R.drawable.ic_folder) { viewModel.moveToFolder(note, "") },
+                ActionItem(getString(R.string.move_to_bin), R.drawable.ic_delete, destructive = true) { confirmMoveToBin { viewModel.moveToBin(note) } }
             ))
         }
         adapter   = NoteAdapter(

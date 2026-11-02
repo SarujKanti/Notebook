@@ -7,35 +7,35 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    android:paddingTop="6dp"
-    android:paddingBottom="12dp">
+    android:paddingTop="@dimen/dp_6"
+    android:paddingBottom="@dimen/dp_12">
 
     <!-- Brand -->
     <ImageView
-        android:layout_width="26dp"
-        android:layout_height="26dp"
+        android:layout_width="@dimen/dp_26"
+        android:layout_height="@dimen/dp_26"
         android:src="@drawable/ic_brand_feather"
         android:importantForAccessibility="no"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="@dimen/dp_2"
         android:text="@string/app_name"
         android:textColor="?attr/colorPrimary"
-        android:textSize="20sp"
+        android:textSize="@dimen/text_title"
         android:textStyle="bold"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="@dimen/dp_4"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
         <View
-            android:layout_width="44dp"
-            android:layout_height="1dp"
+            android:layout_width="@dimen/dp_44"
+            android:layout_height="@dimen/dp_1"
             android:background="?attr/colorPrimary"
             android:alpha="0.45"/>
 
@@ -43,14 +43,14 @@
             android:id="@+id/tvNavVersion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginStart="@dimen/dp_12"
+            android:layout_marginEnd="@dimen/dp_12"
             android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="14sp"/>
+            android:textSize="@dimen/text_body"/>
 
         <View
-            android:layout_width="44dp"
-            android:layout_height="1dp"
+            android:layout_width="@dimen/dp_44"
+            android:layout_height="@dimen/dp_1"
             android:background="?attr/colorPrimary"
             android:alpha="0.45"/>
     </LinearLayout>
@@ -59,10 +59,10 @@
     <LinearLayout
         android:id="@+id/btnNavAuth"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginEnd="18dp"
-        android:layout_marginTop="12dp"
+        android:layout_height="@dimen/dp_50"
+        android:layout_marginStart="@dimen/dp_18"
+        android:layout_marginEnd="@dimen/dp_18"
+        android:layout_marginTop="@dimen/dp_12"
         android:orientation="horizontal"
         android:gravity="center"
         android:clickable="true"
@@ -72,16 +72,16 @@
 
         <ImageView
             android:id="@+id/ivNavAuth"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="@dimen/dp_26"
+            android:layout_height="@dimen/dp_26"
             android:importantForAccessibility="no"/>
 
         <TextView
             android:id="@+id/tvNavAuth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:textSize="16sp"
+            android:layout_marginStart="@dimen/dp_14"
+            android:textSize="@dimen/text_subtitle"
             android:textStyle="bold"
             android:textColor="@color/drawer_logout_text"/>
     </LinearLayout>

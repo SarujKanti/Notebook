@@ -5,15 +5,15 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@color/colorWidgetSurface"
-    android:paddingStart="12dp"
-    android:paddingEnd="12dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingStart="@dimen/dp_12"
+    android:paddingEnd="@dimen/dp_12"
+    android:paddingTop="@dimen/dp_10"
+    android:paddingBottom="@dimen/dp_10">
 
     <ImageView
         android:id="@+id/itemAccent"
         android:importantForAccessibility="no"
-        android:layout_width="4dp"
+        android:layout_width="@dimen/dp_4"
         android:layout_height="match_parent"
         android:background="@color/colorPrimaryLight"/>
 
@@ -21,7 +21,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="@dimen/dp_10"
         android:orientation="vertical">
 
         <TextView
@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_body"
             android:textColor="@color/colorWidgetTitle"
             android:maxLines="1"
             android:ellipsize="end"/>
@@ -38,11 +38,11 @@
             android:id="@+id/itemDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_caption"
             android:textColor="@color/colorWidgetBody"
             android:maxLines="2"
             android:ellipsize="end"
-            android:layout_marginTop="2dp"/>
+            android:layout_marginTop="@dimen/dp_2"/>
 
     </LinearLayout>
 

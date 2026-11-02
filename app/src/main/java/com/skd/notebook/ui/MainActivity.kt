@@ -1,5 +1,6 @@
 package com.skd.notebook.ui
 
+import com.skd.notebook.util.dimenPx
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
@@ -115,11 +116,11 @@ class MainActivity : BaseActivity() {
             FirebaseAuth.getInstance().signInWithCredential(credential)
                 .addOnSuccessListener { onGuestSignedIn() }
                 .addOnFailureListener { e ->
-                    Snackbar.make(recyclerView, e.localizedMessage ?: "Sign in failed", Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(recyclerView, e.localizedMessage ?: getString(R.string.sign_in_failed), Snackbar.LENGTH_LONG).show()
                 }
         } catch (e: ApiException) {
             if (e.statusCode != 0) {   // 0 = user cancelled — silent
-                Snackbar.make(recyclerView, "Sign in failed (${e.statusCode})", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(recyclerView, getString(R.string.sign_in_failed_code_format, e.statusCode), Snackbar.LENGTH_LONG).show()
             }
         }
     }
@@ -319,7 +320,7 @@ class MainActivity : BaseActivity() {
         if (!custom.isNullOrEmpty()) return custom
         val user = FirebaseAuth.getInstance().currentUser
         return user?.displayName?.takeIf { it.isNotEmpty() }
-            ?: user?.email?.substringBefore('@') ?: "User"
+            ?: user?.email?.substringBefore('@') ?: getString(R.string.user_placeholder)
     }
 
     // The system photo picker: it hands back only the one image the user taps, so the app needs no
@@ -368,7 +369,7 @@ class MainActivity : BaseActivity() {
             onPhotoPicked = { uri ->
                 val bitmap = ProfilePhoto.decode(this, uri)
                 if (bitmap == null) {
-                    Snackbar.make(view, "Couldn't open that picture", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(view, getString(R.string.picture_open_failed), Snackbar.LENGTH_SHORT).show()
                 } else {
                     pendingPhoto = bitmap
                     removePhoto = false
@@ -467,11 +468,11 @@ class MainActivity : BaseActivity() {
         header.keepClearOfSystemBars(top = true, anchor = panel)
         footer.keepClearOfSystemBars(top = false, bottom = true, anchor = panel)
 
-        findViewById<TextView>(R.id.tvNavVersion).text = "Version ${appVersionLabel()}"
+        findViewById<TextView>(R.id.tvNavVersion).text = getString(R.string.version_format, appVersionLabel())
 
         // Status chip: green check when notes sync to the cloud, a soft dot when local-only.
         val guest = isGuestMode()
-        tvStatus.text = if (guest) "Local only" else "Synced to cloud"
+        tvStatus.text = if (guest) getString(R.string.local_only) else getString(R.string.synced_to_cloud)
         if (guest) {
             tvStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.bg_status_dot, 0, 0, 0)
             tvStatus.compoundDrawablesRelative[0]?.mutate()?.setTint(
@@ -487,7 +488,7 @@ class MainActivity : BaseActivity() {
         if (guest) {
             // Guest: no account to attach a name to, so show a fixed placeholder
             // and don't let it be edited/saved as if it were a real profile name.
-            applyName("Unknown")
+            applyName(getString(R.string.unknown_user))
             tvEmail.text = ""
             ivEditPencil.visibility = View.GONE
             tvName.isClickable    = false
@@ -516,7 +517,7 @@ class MainActivity : BaseActivity() {
         // Bottom button: Logout, or Login for a guest.
         val authTitle = findViewById<TextView>(R.id.tvNavAuth)
         val authIcon  = findViewById<ImageView>(R.id.ivNavAuth)
-        authTitle.text = if (guest) "Login" else "Logout"
+        authTitle.text = if (guest) getString(R.string.login) else getString(R.string.logout)
         if (guest) {
             authIcon.setImageResource(R.drawable.ic_google)
             authIcon.imageTintList = null
@@ -535,14 +536,13 @@ class MainActivity : BaseActivity() {
         val menu = findViewById<LinearLayout>(R.id.navMenu)
         menu.removeAllViews()
         val items = listOf(
-            NavItem(R.drawable.ic_notes, "Notes") { /* already here */ },
-            NavItem(R.drawable.ic_folder, "Folders") { startActivity(Intent(this, FoldersActivity::class.java)) },
-            NavItem(R.drawable.ic_archive, "Archive") { startActivity(Intent(this, ArchiveActivity::class.java)) },
-            NavItem(R.drawable.ic_delete, "Bin") { startActivity(Intent(this, BinActivity::class.java)) },
-            NavItem(R.drawable.ic_settings, "Settings") { startActivity(Intent(this, SettingsActivity::class.java)) },
-            NavItem(R.drawable.ic_info, "About") { startActivity(Intent(this, AboutActivity::class.java)) }
+            NavItem(R.drawable.ic_notes, getString(R.string.notes)) { /* already here */ },
+            NavItem(R.drawable.ic_folder, getString(R.string.folders_title)) { startActivity(Intent(this, FoldersActivity::class.java)) },
+            NavItem(R.drawable.ic_archive, getString(R.string.archive_title)) { startActivity(Intent(this, ArchiveActivity::class.java)) },
+            NavItem(R.drawable.ic_delete, getString(R.string.bin_title)) { startActivity(Intent(this, BinActivity::class.java)) },
+            NavItem(R.drawable.ic_settings, getString(R.string.settings)) { startActivity(Intent(this, SettingsActivity::class.java)) },
+            NavItem(R.drawable.ic_info, getString(R.string.about)) { startActivity(Intent(this, AboutActivity::class.java)) }
         )
-        val dp = resources.displayMetrics.density
         items.forEachIndexed { index, item ->
             val selected = index == 0
             val row = layoutInflater.inflate(R.layout.item_drawer_row, menu, false)
@@ -562,8 +562,8 @@ class MainActivity : BaseActivity() {
             if (!selected && index < items.lastIndex) {
                 menu.addView(View(this).apply {
                     layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1).also {
-                        it.marginStart = (80 * dp).toInt()
-                        it.marginEnd = (32 * dp).toInt()
+                        it.marginStart = dimenPx(R.dimen.dp_80)
+                        it.marginEnd = dimenPx(R.dimen.dp_32)
                     }
                     setBackgroundColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutlineVariant))
                     alpha = 0.7f
@@ -599,8 +599,8 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateSectionTitle(count: Int) {
-        val name = if (filter == HomeFilter.PINNED) "Pinned" else getString(R.string.my_notes)
-        tvSectionTitle.text = "$name · $count"
+        val name = if (filter == HomeFilter.PINNED) getString(R.string.pinned) else getString(R.string.my_notes)
+        tvSectionTitle.text = getString(R.string.section_title_format, name, count)
     }
 
     private fun refreshEmptyState() {
@@ -609,11 +609,11 @@ class MainActivity : BaseActivity() {
         progressSync.visibility = if (syncing) View.VISIBLE else View.GONE
         layoutEmpty.visibility  = if (empty && !syncing) View.VISIBLE else View.GONE
         if (filter == HomeFilter.PINNED && latestNotes.isNotEmpty()) {
-            tvEmptyTitle.text = "No pinned notes"
-            tvEmptySub.text   = "Tap the paperclip on a note to pin it here"
+            tvEmptyTitle.text = getString(R.string.empty_pinned_title)
+            tvEmptySub.text   = getString(R.string.empty_pinned_hint)
         } else {
-            tvEmptyTitle.text = "No notes yet"
-            tvEmptySub.text   = "Tap the + button to create your first note"
+            tvEmptyTitle.text = getString(R.string.empty_notes_title)
+            tvEmptySub.text   = getString(R.string.empty_notes_hint)
         }
     }
 
@@ -633,13 +633,13 @@ class MainActivity : BaseActivity() {
             row.addView(view)
             chips[key] = HomeChip(view, view.findViewById(R.id.chipCount))
         }
-        addChip(CHIP_ALL, R.drawable.ic_stat_notes, "All Notes") { setFilter(HomeFilter.ALL) }
-        addChip(CHIP_PINNED, R.drawable.ic_widget_pin, "Pinned") { setFilter(HomeFilter.PINNED) }
+        addChip(CHIP_ALL, R.drawable.ic_stat_notes, getString(R.string.all_notes)) { setFilter(HomeFilter.ALL) }
+        addChip(CHIP_PINNED, R.drawable.ic_widget_pin, getString(R.string.pinned)) { setFilter(HomeFilter.PINNED) }
         // Folders and Archived are their own screens, so those pills open them.
-        addChip(CHIP_FOLDERS, R.drawable.ic_stat_folder, "Folders") {
+        addChip(CHIP_FOLDERS, R.drawable.ic_stat_folder, getString(R.string.folders_title)) {
             startActivity(Intent(this, FoldersActivity::class.java))
         }
-        addChip(CHIP_ARCHIVED, R.drawable.ic_stat_archive, "Archived") {
+        addChip(CHIP_ARCHIVED, R.drawable.ic_stat_archive, getString(R.string.archived)) {
             startActivity(Intent(this, ArchiveActivity::class.java))
         }
         paintChips()
@@ -681,19 +681,19 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateSortLabel() {
-        tvSort.text = "Sort: ${AppSettings.sortOrder(this).chip}"
+        tvSort.text = getString(R.string.sort_label_format, AppSettings.sortOrder(this).chip)
     }
 
     private fun showSortDialog() {
         val orders = SortOrder.values().toList()
         val hints = mapOf(
-            SortOrder.NEWEST to "Latest notes on top",
-            SortOrder.OLDEST to "Oldest notes on top",
-            SortOrder.ALPHABETICAL to "A to Z, by title"
+            SortOrder.NEWEST to getString(R.string.sort_newest_hint),
+            SortOrder.OLDEST to getString(R.string.sort_oldest_hint),
+            SortOrder.ALPHABETICAL to getString(R.string.sort_alphabetical_hint)
         )
         showChoiceDialog(
-            title = "Sort Notes",
-            subtitle = "How your notes are ordered",
+            title = getString(R.string.sort_notes_title),
+            subtitle = getString(R.string.sort_notes_subtitle),
             icon = R.drawable.ic_sort,
             options = orders.map { ChoiceOption(it.label, hints[it], R.drawable.ic_sort) },
             selectedIndex = orders.indexOf(AppSettings.sortOrder(this))
@@ -705,12 +705,12 @@ class MainActivity : BaseActivity() {
 
     private fun showLayoutDialog() {
         showChoiceDialog(
-            title = "Layout",
-            subtitle = "How your notes are laid out",
+            title = getString(R.string.layout_title),
+            subtitle = getString(R.string.layout_subtitle),
             icon = R.drawable.ic_tune,
             options = listOf(
-                ChoiceOption("Grid", "Notes side by side", R.drawable.ic_view_module),
-                ChoiceOption("List", "One note per row", R.drawable.ic_view_list)
+                ChoiceOption(getString(R.string.grid), getString(R.string.grid_hint), R.drawable.ic_view_module),
+                ChoiceOption(getString(R.string.list), getString(R.string.list_hint), R.drawable.ic_view_list)
             ),
             selectedIndex = if (isGridLayout) 0 else 1
         ) { which ->
@@ -749,8 +749,8 @@ class MainActivity : BaseActivity() {
                 }
                 confirmMoveToBin(onCancel = { adapter.notifyItemChanged(position) }) {
                     viewModel.moveToBin(note)
-                    Snackbar.make(recyclerView, "Moved to Bin", Snackbar.LENGTH_LONG)
-                        .setAction("UNDO") { viewModel.restoreFromBin(note) }
+                    Snackbar.make(recyclerView, getString(R.string.moved_to_bin), Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.undo)) { viewModel.restoreFromBin(note) }
                         .show()
                 }
             }
@@ -789,19 +789,19 @@ class MainActivity : BaseActivity() {
 
     private fun showNoteActions(note: NoteEntity) {
         showActionSheet(items = listOf(
-            ActionItem("Edit", R.drawable.ic_edit) { showNoteDialog(note) },
-            ActionItem("Archive", R.drawable.ic_archive) {
+            ActionItem(getString(R.string.edit), R.drawable.ic_edit) { showNoteDialog(note) },
+            ActionItem(getString(R.string.archive_title), R.drawable.ic_archive) {
                 viewModel.archive(note)
-                Snackbar.make(recyclerView, "Note archived", Snackbar.LENGTH_SHORT)
-                    .setAction("UNDO") { viewModel.unarchive(note) }
+                Snackbar.make(recyclerView, getString(R.string.note_archived), Snackbar.LENGTH_SHORT)
+                    .setAction(getString(R.string.undo)) { viewModel.unarchive(note) }
                     .show()
             },
-            ActionItem("Move to Folder", R.drawable.ic_folder) { showMoveFolderDialog(note) },
-            ActionItem("Move to Bin", R.drawable.ic_delete, destructive = true) {
+            ActionItem(getString(R.string.move_to_folder_action), R.drawable.ic_folder) { showMoveFolderDialog(note) },
+            ActionItem(getString(R.string.move_to_bin), R.drawable.ic_delete, destructive = true) {
                 confirmMoveToBin {
                     viewModel.moveToBin(note)
-                    Snackbar.make(recyclerView, "Moved to Bin", Snackbar.LENGTH_LONG)
-                        .setAction("UNDO") { viewModel.restoreFromBin(note) }
+                    Snackbar.make(recyclerView, getString(R.string.moved_to_bin), Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.undo)) { viewModel.restoreFromBin(note) }
                         .show()
                 }
             }
@@ -812,16 +812,16 @@ class MainActivity : BaseActivity() {
         val folders = viewModel.folders.value.orEmpty()
         if (folders.isEmpty()) {
             showAppDialog(
-                title = "No folders yet",
+                title = getString(R.string.empty_folders_title),
                 icon = R.drawable.ic_folder,
-                message = "Create a folder first from Menu → Folders, then move notes into it.",
-                positiveText = "Got it",
+                message = getString(R.string.no_folders_for_move_message),
+                positiveText = getString(R.string.got_it),
                 negativeText = null
             )
             return
         }
         showActionSheet(
-            title = "Move to folder",
+            title = getString(R.string.move_to_folder_title),
             items = folders.map { folder ->
                 ActionItem(folder.name, R.drawable.ic_folder) { viewModel.moveToFolder(note, folder.id) }
             }
@@ -833,12 +833,10 @@ class MainActivity : BaseActivity() {
     /** Shown once, right after arriving here via the login screen's Skip button. */
     private fun showGuestModeDialog() {
         showAppDialog(
-            title = "You're browsing as a guest",
+            title = getString(R.string.guest_title),
             icon = R.drawable.ic_account,
-            message = "You can create notes, folders and files, but they'll only be stored on " +
-                "this device. Log in with your Google account to back everything up and " +
-                "sync it to the cloud.",
-            positiveText = "Login",
+            message = getString(R.string.guest_message),
+            positiveText = getString(R.string.login),
             onPositive = { startGoogleSignIn() }
         )
     }
