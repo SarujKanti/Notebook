@@ -33,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textSize="25sp"
+                    android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="#FFFFFF"/>
 
@@ -42,7 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:textSize="15sp"
+                    android:textSize="16sp"
                     android:textColor="#DCD3F7"
                     android:visibility="gone"/>
             </LinearLayout>
@@ -67,7 +67,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:textSize="15sp"
+            android:textSize="16sp"
             android:lineSpacingMultiplier="1.25"
             android:textColor="#E9E4FA"
             android:visibility="gone"/>
@@ -98,7 +98,7 @@
                 android:background="@drawable/bg_glass_button"
                 android:foreground="?attr/selectableItemBackground"
                 android:textColor="#FFFFFF"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textStyle="bold"/>
 
             <TextView
@@ -113,7 +113,7 @@
                 android:background="@drawable/bg_glass_primary"
                 android:foreground="?attr/selectableItemBackground"
                 android:textColor="#FFFFFF"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textStyle="bold"/>
         </LinearLayout>
 

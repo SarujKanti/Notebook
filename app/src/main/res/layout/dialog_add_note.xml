@@ -35,7 +35,7 @@
             android:layout_weight="1"
             android:layout_marginStart="4dp"
             android:text="@string/hint_note"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"/>
 
@@ -54,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/hint_title"
-        android:textSize="22sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurface"
         android:textColorHint="?attr/colorOnSurfaceVariant"
