@@ -4,53 +4,75 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:minHeight="@dimen/dp_50"
-    android:layout_marginStart="@dimen/dp_14"
-    android:layout_marginEnd="@dimen/dp_16"
-    android:paddingStart="@dimen/dp_12"
-    android:paddingEnd="@dimen/dp_16"
-    android:background="?attr/selectableItemBackground">
+    android:orientation="vertical"
+    android:layout_marginStart="@dimen/dp_16"
+    android:layout_marginEnd="@dimen/dp_16">
 
-    <!-- Accent bar, shown on the selected row -->
-    <View
-        android:id="@+id/rowAccent"
-        android:layout_width="@dimen/dp_4"
-        android:layout_height="@dimen/dp_28"
-        android:layout_marginEnd="@dimen/dp_8"
-        android:background="?attr/colorPrimary"
-        android:visibility="gone"/>
+    <!-- Icon tile, title, count badge, chevron -->
+    <LinearLayout
+        android:id="@+id/rowContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/dp_52"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="@dimen/dp_6"
+        android:paddingBottom="@dimen/dp_6"
+        android:paddingEnd="@dimen/dp_4"
+        android:background="?attr/selectableItemBackground">
 
-    <FrameLayout
-        android:layout_width="@dimen/dp_38"
-        android:layout_height="@dimen/dp_38"
-        android:background="@drawable/bg_setting_icon">
+        <FrameLayout
+            android:id="@+id/rowTile"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:background="@drawable/bg_setting_icon">
+
+            <ImageView
+                android:id="@+id/rowIcon"
+                android:layout_width="@dimen/dp_22"
+                android:layout_height="@dimen/dp_22"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                app:tint="?attr/colorPrimary"/>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/rowTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/dp_16"
+            android:textSize="@dimen/text_subtitle"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="?attr/colorOnSurface"/>
+
+        <!-- How many items are in this section; hidden for Settings and About -->
+        <TextView
+            android:id="@+id/rowCount"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_32"
+            android:minWidth="@dimen/dp_36"
+            android:layout_marginEnd="@dimen/dp_12"
+            android:gravity="center"
+            android:paddingStart="@dimen/dp_10"
+            android:paddingEnd="@dimen/dp_10"
+            android:textSize="@dimen/text_body"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"
+            android:background="@drawable/bg_drawer_badge"
+            android:visibility="gone"/>
 
         <ImageView
-            android:id="@+id/rowIcon"
             android:layout_width="@dimen/dp_22"
             android:layout_height="@dimen/dp_22"
-            android:layout_gravity="center"
+            android:src="@drawable/ic_chevron_right"
             android:importantForAccessibility="no"
-            app:tint="?attr/colorPrimary"/>
-    </FrameLayout>
+            app:tint="?attr/colorOnSurface"/>
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/rowTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="@dimen/dp_16"
-        android:textSize="@dimen/text_subtitle"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface"/>
-
-    <ImageView
-        android:layout_width="@dimen/dp_22"
-        android:layout_height="@dimen/dp_22"
-        android:src="@drawable/ic_chevron_right"
-        android:importantForAccessibility="no"
-        app:tint="?attr/colorOnSurface"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:background="@color/drawer_divider"/>
 
 </LinearLayout>

@@ -8,22 +8,23 @@
     android:orientation="vertical"
     android:gravity="center_horizontal"
     android:paddingTop="@dimen/dp_6"
-    android:paddingBottom="@dimen/dp_12">
+    android:paddingBottom="@dimen/dp_14">
 
-    <!-- Brand -->
+    <!-- Brand: "Note" in the text color, "Stack" in purple (set in code) -->
     <ImageView
-        android:layout_width="@dimen/dp_26"
-        android:layout_height="@dimen/dp_26"
+        android:layout_width="@dimen/dp_34"
+        android:layout_height="@dimen/dp_34"
         android:src="@drawable/ic_brand_feather"
         android:importantForAccessibility="no"/>
 
     <TextView
+        android:id="@+id/tvNavBrand"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_2"
         android:text="@string/app_name"
-        android:textColor="?attr/colorPrimary"
-        android:textSize="@dimen/text_title"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="@dimen/text_headline"
         android:textStyle="bold"/>
 
     <LinearLayout
@@ -36,8 +37,8 @@
         <View
             android:layout_width="@dimen/dp_44"
             android:layout_height="@dimen/dp_1"
-            android:background="?attr/colorPrimary"
-            android:alpha="0.45"/>
+            android:background="?attr/colorOnSurface"
+            android:alpha="0.25"/>
 
         <TextView
             android:id="@+id/tvNavVersion"
@@ -51,18 +52,18 @@
         <View
             android:layout_width="@dimen/dp_44"
             android:layout_height="@dimen/dp_1"
-            android:background="?attr/colorPrimary"
-            android:alpha="0.45"/>
+            android:background="?attr/colorOnSurface"
+            android:alpha="0.25"/>
     </LinearLayout>
 
-    <!-- Logout (Login for guests) -->
+    <!-- Logout (Login for guests): an outlined pill -->
     <LinearLayout
         android:id="@+id/btnNavAuth"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50"
-        android:layout_marginStart="@dimen/dp_18"
-        android:layout_marginEnd="@dimen/dp_18"
-        android:layout_marginTop="@dimen/dp_12"
+        android:layout_height="@dimen/dp_48"
+        android:layout_marginStart="@dimen/dp_22"
+        android:layout_marginEnd="@dimen/dp_22"
+        android:layout_marginTop="@dimen/dp_22"
         android:orientation="horizontal"
         android:gravity="center"
         android:clickable="true"

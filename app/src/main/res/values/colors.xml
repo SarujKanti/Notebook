@@ -116,13 +116,20 @@
     <color name="colorFoldEdge">#1A000000</color>
 
     <!-- Navigation drawer -->
-    <color name="drawer_head_start">#7B4DF0</color>
-    <color name="drawer_head_end">#321070</color>
-    <color name="drawer_blob">#B089FF</color>
     <color name="drawer_body">#F8F5FF</color>
-    <color name="drawer_row_selected">#E6DCFB</color>
-    <color name="drawer_logout_bg">#FDE3E8</color>
     <color name="drawer_logout_text">#B3261E</color>
+    <color name="drawer_divider">#1F1B0F3A</color>
+    <color name="drawer_badge_bg">#E9E4F7</color>
+    <color name="drawer_tile_selected">#DCCFFA</color>
+    <color name="drawer_wave_edge">#8E63F0</color>
+    <!-- The sunset scene behind the drawer's header (the same in light and dark) -->
+    <color name="drawer_scene_sky_top">#0C0928</color>
+    <color name="drawer_scene_sky_mid">#2B1665</color>
+    <color name="drawer_scene_sky_glow">#B8428C</color>
+    <color name="drawer_scene_horizon">#F59A6C</color>
+    <color name="drawer_scene_mountain_far">#3A2475</color>
+    <color name="drawer_scene_mountain_near">#1C1248</color>
+    <color name="drawer_scene_mountain_front">#0F0A2B</color>
 
     <!-- Home screen -->
     <color name="home_head_end">#3A1B8C</color>
