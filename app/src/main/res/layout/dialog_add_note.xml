@@ -51,12 +51,12 @@
 
     </LinearLayout>
 
-    <!-- Thin divider below toolbar -->
+    <!-- Line between the toolbar and the title: dark enough to show on every note color -->
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_1"
-        android:background="?attr/colorOutlineVariant"
-        android:alpha="0.4"/>
+        android:background="?attr/colorOnSurface"
+        android:alpha="0.22"/>
 
     <!-- ── Title field ─────────────────────────────────────────────────── -->
     <EditText
