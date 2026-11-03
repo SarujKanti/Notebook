@@ -25,6 +25,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.WindowCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -455,7 +459,13 @@ class MainActivity : BaseActivity() {
         showEditNameDialog(resolvedDisplayName(), ::applyDrawerName)
     }
 
-    private class NavItem(val icon: Int, val title: String, val action: () -> Unit)
+    /** One menu row. [items] is what its count badge counts (null: no badge). */
+    private class NavItem(
+        val icon: Int,
+        val title: String,
+        val items: LiveData<out List<*>>? = null,
+        val action: () -> Unit
+    )
 
     private fun setupDrawer() {
         val header       = findViewById<View>(R.id.navHeader)
@@ -463,7 +473,6 @@ class MainActivity : BaseActivity() {
         val tvEmail      = header.findViewById<TextView>(R.id.tvNavEmail)
         val tvInitial    = header.findViewById<TextView>(R.id.tvNavInitial)
         val ivEditPencil = header.findViewById<View>(R.id.ivNavEditPencil)
-        val tvStatus     = header.findViewById<TextView>(R.id.tvNavStatus)
         val ivNavAvatar  = header.findViewById<View>(R.id.ivNavAvatar)
         val footer       = findViewById<View>(R.id.navFooter)
 
@@ -475,17 +484,7 @@ class MainActivity : BaseActivity() {
 
         findViewById<TextView>(R.id.tvNavVersion).text = getString(R.string.version_format, appVersionLabel())
 
-        // Status chip: green check when notes sync to the cloud, a soft dot when local-only.
         val guest = isGuestMode()
-        tvStatus.text = if (guest) getString(R.string.local_only) else getString(R.string.synced_to_cloud)
-        if (guest) {
-            tvStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.bg_status_dot, 0, 0, 0)
-            tvStatus.compoundDrawablesRelative[0]?.mutate()?.setTint(
-                ContextCompat.getColor(this, R.color.colorPrimaryLight2)
-            )
-        } else {
-            tvStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_status_synced, 0, 0, 0)
-        }
         val user = FirebaseAuth.getInstance().currentUser
 
         fun applyName(name: String) = applyDrawerName(name)
@@ -511,10 +510,13 @@ class MainActivity : BaseActivity() {
             ivEditPencil.setOnClickListener(clickToEdit)
         }
 
-        // Live counts in the header card.
-        viewModel.activeNotes.observe(this) { header.findViewById<TextView>(R.id.tvStatNotes).text = it.size.toString() }
-        viewModel.folders.observe(this) { header.findViewById<TextView>(R.id.tvStatFolders).text = it.size.toString() }
-        viewModel.archivedNotes.observe(this) { header.findViewById<TextView>(R.id.tvStatArchived).text = it.size.toString() }
+        // "Note" in the text color, "Stack" in the app purple.
+        val brand = findViewById<TextView>(R.id.tvNavBrand)
+        val brandName = getString(R.string.app_name)
+        brand.text = SpannableString(brandName).apply {
+            val purple = MaterialColors.getColor(brand, androidx.appcompat.R.attr.colorPrimary)
+            setSpan(ForegroundColorSpan(purple), 4, brandName.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
 
         buildDrawerMenu()
         refreshProfilePhoto()
@@ -542,44 +544,54 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    /** Notes (selected, as this is the notes screen), Folders, Archive, Bin, Settings, About. */
+    /**
+     * Notes (selected, as this is the notes screen), Folders, Archived and Bin, each with a live count,
+     * then Settings and About, all with the same spacing.
+     */
     private fun buildDrawerMenu() {
         val menu = findViewById<LinearLayout>(R.id.navMenu)
         menu.removeAllViews()
         val items = listOf(
-            NavItem(R.drawable.ic_notes, getString(R.string.notes)) { /* already here */ },
-            NavItem(R.drawable.ic_folder, getString(R.string.folders_title)) { startActivity(Intent(this, FoldersActivity::class.java)) },
-            NavItem(R.drawable.ic_archive, getString(R.string.archive_title)) { startActivity(Intent(this, ArchiveActivity::class.java)) },
-            NavItem(R.drawable.ic_delete, getString(R.string.bin_title)) { startActivity(Intent(this, BinActivity::class.java)) },
-            NavItem(R.drawable.ic_settings, getString(R.string.settings)) { startActivity(Intent(this, SettingsActivity::class.java)) },
-            NavItem(R.drawable.ic_info, getString(R.string.about)) { startActivity(Intent(this, AboutActivity::class.java)) }
+            NavItem(R.drawable.ic_notes, getString(R.string.notes), viewModel.activeNotes) { /* already here */ },
+            NavItem(R.drawable.ic_folder, getString(R.string.folders_title), viewModel.folders) {
+                startActivity(Intent(this, FoldersActivity::class.java))
+            },
+            NavItem(R.drawable.ic_archive, getString(R.string.archived), viewModel.archivedNotes) {
+                startActivity(Intent(this, ArchiveActivity::class.java))
+            },
+            NavItem(R.drawable.ic_delete, getString(R.string.bin_title), viewModel.binNotes) {
+                startActivity(Intent(this, BinActivity::class.java))
+            },
+            NavItem(R.drawable.ic_settings, getString(R.string.settings)) {
+                startActivity(Intent(this, SettingsActivity::class.java))
+            },
+            NavItem(R.drawable.ic_info, getString(R.string.about)) {
+                startActivity(Intent(this, AboutActivity::class.java))
+            }
         )
         items.forEachIndexed { index, item ->
             val selected = index == 0
             val row = layoutInflater.inflate(R.layout.item_drawer_row, menu, false)
             row.findViewById<ImageView>(R.id.rowIcon).setImageResource(item.icon)
             row.findViewById<TextView>(R.id.rowTitle).text = item.title
-            if (selected) {
-                row.setBackgroundResource(R.drawable.bg_drawer_row_selected)
-                row.findViewById<View>(R.id.rowAccent).visibility = View.VISIBLE
+
+            // The count badge follows the notes, folders, archive and bin as they change.
+            val badge = row.findViewById<TextView>(R.id.rowCount)
+            item.items?.let { source ->
+                badge.visibility = View.VISIBLE
+                source.observe(this) { badge.text = it.size.toString() }
             }
-            row.setOnClickListener {
+
+            if (selected) {
+                row.findViewById<View>(R.id.rowTile).setBackgroundResource(R.drawable.bg_drawer_tile_selected)
+                badge.setBackgroundResource(R.drawable.bg_drawer_badge_selected)
+                badge.setTextColor(ContextCompat.getColor(this, R.color.colorOnPrimary))
+            }
+            row.findViewById<View>(R.id.rowContent).setOnClickListener {
                 drawerLayout.closeDrawer(GravityCompat.START)
                 item.action()
             }
             menu.addView(row)
-
-            // Hairline between the unselected rows, inset to start under the title.
-            if (!selected && index < items.lastIndex) {
-                menu.addView(View(this).apply {
-                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1).also {
-                        it.marginStart = dimenPx(R.dimen.dp_80)
-                        it.marginEnd = dimenPx(R.dimen.dp_32)
-                    }
-                    setBackgroundColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutlineVariant))
-                    alpha = 0.7f
-                })
-            }
         }
     }
 

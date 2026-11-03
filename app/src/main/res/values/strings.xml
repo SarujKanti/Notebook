@@ -117,8 +117,6 @@ Tap here to log in.</string>
     <string name="custom_color">Custom color</string>
     <string name="add">Add</string>
     <string name="picture_open_failed">Couldn\'t open that picture</string>
-    <string name="local_only">Local only</string>
-    <string name="synced_to_cloud">Synced to cloud</string>
     <string name="unknown_user">Unknown</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>

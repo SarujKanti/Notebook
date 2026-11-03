@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- The sunset picture and the wavy bottom edge behind this are drawn by DrawerPanelLayout. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,261 +9,78 @@
     android:orientation="vertical"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:paddingStart="@dimen/dp_20"
+    android:paddingStart="@dimen/dp_22"
     android:paddingEnd="@dimen/dp_20"
     android:paddingTop="@dimen/dp_16"
-    android:paddingBottom="@dimen/dp_18">
+    android:paddingBottom="@dimen/dp_34">
 
-    <!-- Avatar (tap to edit the name) and the sync status chip -->
+    <!-- Avatar (tap to edit the name) -->
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipChildren="false">
+        android:layout_width="@dimen/dp_76"
+        android:layout_height="@dimen/dp_76"
+        android:background="@drawable/bg_drawer_avatar">
 
-        <FrameLayout
-            android:layout_width="@dimen/dp_64"
-            android:layout_height="@dimen/dp_64"
-            android:layout_gravity="start"
-            android:background="@drawable/bg_drawer_avatar">
-
-            <!-- The user's own photo, when they set one; the initial below is shown otherwise -->
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/ivNavAvatar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="@dimen/dp_3"
-                android:scaleType="centerCrop"
-                android:visibility="gone"
-                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.NoteBook.Circle"/>
-
-            <TextView
-                android:id="@+id/tvNavInitial"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/initial_placeholder"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/text_display"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-medium"/>
-        </FrameLayout>
+        <!-- The user's own photo, when they set one; the initial below is shown otherwise -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivNavAvatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/dp_3"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.NoteBook.Circle"/>
 
         <TextView
-            android:id="@+id/tvNavStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|top"
-            android:layout_marginTop="@dimen/dp_6"
-            android:background="@drawable/bg_drawer_chip"
-            android:drawablePadding="@dimen/dp_8"
-            android:gravity="center_vertical"
-            android:paddingStart="@dimen/dp_8"
-            android:paddingEnd="@dimen/dp_14"
-            android:paddingTop="@dimen/dp_8"
-            android:paddingBottom="@dimen/dp_8"
+            android:id="@+id/tvNavInitial"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/initial_placeholder"
             android:textColor="#FFFFFF"
-            android:textSize="@dimen/text_body"
+            android:textSize="@dimen/text_hero"
+            android:textStyle="bold"
             android:fontFamily="sans-serif-medium"/>
     </FrameLayout>
 
-    <!-- Name + email on the left, small illustration on the right -->
-    <FrameLayout
-        android:layout_width="match_parent"
+    <!-- Name and its edit pencil, then the email -->
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_8"
-        android:clipChildren="false">
+        android:layout_marginTop="@dimen/dp_10"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvNavName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="start|bottom"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/tvNavName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:maxWidth="@dimen/dp_170"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:textSize="@dimen/text_headline"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:text="@string/user_placeholder"/>
-
-                <ImageView
-                    android:id="@+id/ivNavEditPencil"
-                    android:layout_width="@dimen/dp_18"
-                    android:layout_height="@dimen/dp_18"
-                    android:layout_marginStart="@dimen/dp_10"
-                    android:src="@drawable/ic_edit"
-                    android:alpha="0.85"
-                    android:importantForAccessibility="no"
-                    app:tint="#FFFFFF"/>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvNavEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_2"
-                android:maxWidth="@dimen/dp_190"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textSize="@dimen/text_body"
-                android:textColor="#E0D8FF"/>
-        </LinearLayout>
+            android:maxWidth="@dimen/dp_200"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="@dimen/text_headline"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:text="@string/user_placeholder"/>
 
         <ImageView
-            android:layout_width="@dimen/dp_104"
-            android:layout_height="@dimen/dp_104"
-            android:layout_gravity="end|bottom"
-            android:layout_marginEnd="@dimen/dp_neg_2"
-            android:layout_marginBottom="@dimen/dp_neg_4"
-            android:src="@drawable/ic_drawer_notebook"
-            android:importantForAccessibility="no"/>
-    </FrameLayout>
-
-    <!-- Counts: notes, folders, archived -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_14"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingTop="@dimen/dp_10"
-        android:paddingBottom="@dimen/dp_10"
-        android:background="@drawable/bg_drawer_stats">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <ImageView
-                android:layout_width="@dimen/dp_26"
-                android:layout_height="@dimen/dp_26"
-                android:src="@drawable/ic_stat_notes"
-                android:importantForAccessibility="no"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_8"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvStatNotes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/zero_placeholder"
-                    android:textColor="#FFFFFF"
-                    android:textSize="@dimen/text_title"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/notes"
-                    android:textColor="#E0D8FF"
-                    android:textSize="@dimen/text_caption"
-                    android:maxLines="1"/>
-            </LinearLayout>
-        </LinearLayout>
-
-        <View
-            android:layout_width="@dimen/dp_1"
-            android:layout_height="@dimen/dp_34"
-            android:background="#33FFFFFF"/>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <ImageView
-                android:layout_width="@dimen/dp_26"
-                android:layout_height="@dimen/dp_26"
-                android:src="@drawable/ic_stat_folder"
-                android:importantForAccessibility="no"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_8"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvStatFolders"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/zero_placeholder"
-                    android:textColor="#FFFFFF"
-                    android:textSize="@dimen/text_title"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/folders_title"
-                    android:textColor="#E0D8FF"
-                    android:textSize="@dimen/text_caption"
-                    android:maxLines="1"/>
-            </LinearLayout>
-        </LinearLayout>
-
-        <View
-            android:layout_width="@dimen/dp_1"
-            android:layout_height="@dimen/dp_34"
-            android:background="#33FFFFFF"/>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <ImageView
-                android:layout_width="@dimen/dp_26"
-                android:layout_height="@dimen/dp_26"
-                android:src="@drawable/ic_stat_archive"
-                android:importantForAccessibility="no"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_8"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvStatArchived"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/zero_placeholder"
-                    android:textColor="#FFFFFF"
-                    android:textSize="@dimen/text_title"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/archived"
-                    android:textColor="#E0D8FF"
-                    android:textSize="@dimen/text_caption"
-                    android:maxLines="1"/>
-            </LinearLayout>
-        </LinearLayout>
+            android:id="@+id/ivNavEditPencil"
+            android:layout_width="@dimen/dp_20"
+            android:layout_height="@dimen/dp_20"
+            android:layout_marginStart="@dimen/dp_12"
+            android:src="@drawable/ic_edit"
+            android:importantForAccessibility="no"
+            app:tint="#FFFFFF"/>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvNavEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_2"
+        android:maxWidth="@dimen/dp_250"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="@dimen/text_body"
+        android:textColor="#E0D8FF"/>
 
 </LinearLayout>
