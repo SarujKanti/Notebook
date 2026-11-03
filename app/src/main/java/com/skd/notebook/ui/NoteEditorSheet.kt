@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.skd.notebook.R
@@ -23,7 +22,7 @@ import com.skd.notebook.util.NoteColors
  * the note to the top of its list.
  */
 class NoteEditorSheet(
-    private val activity: AppCompatActivity,
+    private val activity: BaseActivity,
     private val viewModel: NoteViewModel
 ) {
     private var dialog: BottomSheetDialog? = null
@@ -38,6 +37,7 @@ class NoteEditorSheet(
         val etDesc     = view.findViewById<EditText>(R.id.etDesc)
         val btnClose   = view.findViewById<ImageButton>(R.id.btnClose)
         val colorRow   = view.findViewById<LinearLayout>(R.id.colorPickerRow)
+        activity.attachDictation(view.findViewById(R.id.btnMic), etTitle, etDesc)
 
         var selectedColor = note.color
         etTitle.setText(note.title)

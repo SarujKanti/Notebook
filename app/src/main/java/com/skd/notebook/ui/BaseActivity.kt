@@ -2,18 +2,23 @@ package com.skd.notebook.ui
 
 import android.app.Activity
 import android.app.KeyguardManager
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.speech.RecognizerIntent
 import android.os.SystemClock
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.LayoutInflaterCompat
+import com.google.android.material.snackbar.Snackbar
 import com.skd.notebook.R
 import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.FontPrefs
@@ -107,6 +112,61 @@ open class BaseActivity : AppCompatActivity() {
         })
     }
 
+    // ─── Voice typing in the note editor (English only) ──────────────────────
+
+    private var dictationTarget: EditText? = null
+    private val dictationLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val target = dictationTarget
+        dictationTarget = null
+        val spoken = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()
+        if (result.resultCode == Activity.RESULT_OK && target != null && !spoken.isNullOrBlank()) {
+            insertSpokenText(target, spoken.trim())
+        }
+    }
+
+    /** Makes [mic] speak into the title if it has the cursor, otherwise into the note text. */
+    fun attachDictation(mic: View, title: EditText, note: EditText) {
+        mic.setOnClickListener { dictateInto(if (title.hasFocus()) title else note) }
+    }
+
+    /**
+     * Opens the phone's speech recognizer, asked for English only, and types the result into [target].
+     * The recognizer shows its own microphone screen, so the app needs no microphone permission.
+     */
+    private fun dictateInto(target: EditText) {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, ENGLISH)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, ENGLISH)
+            putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, true)
+            putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.speak_now_english))
+            putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+        }
+        dictationTarget = target
+        try {
+            dictationLauncher.launch(intent)
+        } catch (_: ActivityNotFoundException) {
+            dictationTarget = null
+            Snackbar.make(target, R.string.voice_input_unavailable, Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    /** Puts [spoken] where the cursor is (replacing any selection), with a space before it and a capital letter at a sentence start. */
+    private fun insertSpokenText(target: EditText, spoken: String) {
+        val text = target.text
+        val start = if (target.selectionStart >= 0) minOf(target.selectionStart, target.selectionEnd) else text.length
+        val end = if (target.selectionEnd >= 0) maxOf(target.selectionStart, target.selectionEnd) else text.length
+
+        val before = text.substring(0, start).trimEnd()
+        val startsSentence = before.isEmpty() || before.last() in ".!?\n"
+        val piece = if (startsSentence) spoken.replaceFirstChar { it.uppercaseChar() } else spoken
+        val needsSpace = start > 0 && !text[start - 1].isWhitespace()
+        val inserted = if (needsSpace) " $piece" else piece
+
+        text.replace(start, end, inserted)
+        target.setSelection(start + inserted.length)
+    }
+
     // ─── Phone screen-lock check (used to reset a forgotten Archive PIN) ─────
 
     private var deviceLockCallback: (() -> Unit)? = null
@@ -178,6 +238,8 @@ open class BaseActivity : AppCompatActivity() {
         cover = null
     }
 }
+
+private const val ENGLISH = "en-US"
 
 /** Process-wide App Lock state: locked on a cold start and after the app was away too long. */
 object AppLock {

@@ -124,6 +124,7 @@ class FolderNotesActivity : BaseActivity() {
         val etDesc     = view.findViewById<EditText>(R.id.etDesc)
         val btnClose   = view.findViewById<ImageButton>(R.id.btnClose)
         val colorRow   = view.findViewById<LinearLayout>(R.id.colorPickerRow)
+        attachDictation(view.findViewById(R.id.btnMic), etTitle, etDesc)
 
         var selectedColor = existingNote?.color ?: ""
 

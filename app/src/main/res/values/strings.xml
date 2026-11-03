@@ -8,6 +8,9 @@
     <string name="no_notes">No notes yet\nTap + to create one</string>
     <string name="toggle_layout">Toggle layout</string>
     <string name="close">Close</string>
+    <string name="speak_note">Speak a note</string>
+    <string name="speak_now_english">Speak now (English)</string>
+    <string name="voice_input_unavailable">Voice typing is not available on this device.</string>
     <string name="sign_out">Sign Out</string>
     <string name="color_name">Color</string>
     <string name="tagline">Your personal notebook</string>
