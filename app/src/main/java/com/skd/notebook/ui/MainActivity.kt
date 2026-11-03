@@ -401,7 +401,7 @@ class MainActivity : BaseActivity() {
                 .edit().putString(KEY_CUSTOM_NAME, newName).apply()
             when {
                 pendingPhoto != null -> ProfilePhoto.save(this, pendingPhoto!!)
-                removePhoto -> ProfilePhoto.delete(this)
+                removePhoto -> ProfilePhoto.remove(this)
             }
             onSaved(newName)
             refreshProfilePhoto()
@@ -518,6 +518,12 @@ class MainActivity : BaseActivity() {
 
         buildDrawerMenu()
         refreshProfilePhoto()
+        if (!guest) {
+            // After logging in again the picture is on the account, not on this device yet.
+            lifecycleScope.launch {
+                if (ProfilePhoto.restoreFromCloud(this@MainActivity) != null) refreshProfilePhoto()
+            }
+        }
 
         // Bottom button: Logout, or Login for a guest.
         val authTitle = findViewById<TextView>(R.id.tvNavAuth)
