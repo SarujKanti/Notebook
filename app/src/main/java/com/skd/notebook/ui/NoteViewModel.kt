@@ -13,6 +13,9 @@ import com.skd.notebook.util.escapeLike
 import com.skd.notebook.data.remote.FirebaseService
 import com.skd.notebook.data.repository.NoteRepository
 import com.skd.notebook.widget.WidgetUpdater
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -129,7 +132,17 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun clearLocalData() = viewModelScope.launch { repo.clearLocalData() }
+    /** Signing out closes the screen, which would cancel viewModelScope half-way, so this uses a scope of its own. */
+    fun clearLocalData() {
+        appScope.launch {
+            repo.clearLocalData()
+            refreshPinnedWidget()
+        }
+    }
+
+    private companion object {
+        val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    }
 
     override fun onCleared() {
         notesListener?.remove()

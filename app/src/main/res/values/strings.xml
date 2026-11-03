@@ -30,6 +30,8 @@
     <string name="widget_pinned_notes_title">Pinned Notes</string>
     <string name="widget_pinned_notes_description">Shows your pinned notes and lets you open or add one</string>
     <string name="widget_no_pinned_notes">No pinned notes yet.\nTap the pin icon on a note to add it here.</string>
+    <string name="widget_login_required">Log in to NoteStack to see your pinned notes.
+Tap here to log in.</string>
 
     <!-- Screens and dialogs -->
     <string name="about_label">ABOUT</string>
