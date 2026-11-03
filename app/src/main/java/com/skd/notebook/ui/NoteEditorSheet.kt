@@ -74,6 +74,7 @@ class NoteEditorSheet(
                 state = BottomSheetBehavior.STATE_EXPANDED
                 skipCollapsed = true
                 fillWidthOnTablet(activity)
+                isDraggable = false // swiping down in a long note must scroll it, not close the sheet
             }
         }
         dialog = sheet

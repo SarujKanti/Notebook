@@ -174,6 +174,7 @@ class FolderNotesActivity : BaseActivity() {
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.skipCollapsed = true
             behavior.fillWidthOnTablet(this)
+            behavior.isDraggable = false // swiping down in a long note must scroll it, not close the sheet
         }
         activeNoteDialog = dialog
         pendingNoteSave = save
