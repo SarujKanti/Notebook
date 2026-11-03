@@ -26,6 +26,8 @@ import com.skd.notebook.util.noteGridColumns
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.NoteColors
+import com.skd.notebook.util.NoteImages
+import com.skd.notebook.ui.NoteBody
 import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.NoteAdapter
 import com.skd.notebook.ui.NoteViewModel
@@ -121,16 +123,15 @@ class FolderNotesActivity : BaseActivity() {
 
         val dialogRoot = view.findViewById<LinearLayout>(R.id.dialogRoot)
         val etTitle    = view.findViewById<EditText>(R.id.etTitle)
-        val etDesc     = view.findViewById<EditText>(R.id.etDesc)
         val btnClose   = view.findViewById<ImageButton>(R.id.btnClose)
         val colorRow   = view.findViewById<LinearLayout>(R.id.colorPickerRow)
-        attachDictation(view.findViewById(R.id.btnMic), etTitle, etDesc)
+        val body       = NoteBody(this, view, etTitle)
 
         var selectedColor = existingNote?.color ?: ""
 
         existingNote?.let {
             etTitle.setText(it.title)
-            etDesc.setText(it.description)
+            body.load(it.description, NoteImages.parse(it.imageIds))
             applyNoteColor(dialogRoot, it.color)
         }
 
@@ -142,15 +143,20 @@ class FolderNotesActivity : BaseActivity() {
         val noteId = existingNote?.id ?: UUID.randomUUID().toString()
         // Saving stamps the note with the current time, which moves it to the top of the list,
         // so only save when the content really changed since it was opened / last saved.
-        var lastSaved = Triple(existingNote?.title?.trim() ?: "", existingNote?.description?.trim() ?: "", selectedColor)
+        // The note as it stands: title, text, color, and the photos with their places and heights.
+        fun noteState(): List<Any> {
+            val page = body.snapshot()
+            return listOf(etTitle.text.toString().trim(), page.description, selectedColor, page.images)
+        }
+        var lastSaved = noteState()
         val save: () -> Unit = {
             val title = etTitle.text.toString().trim()
-            val desc  = etDesc.text.toString().trim()
-            val current = Triple(title, desc, selectedColor)
-            if ((title.isNotEmpty() || desc.isNotEmpty()) && current != lastSaved) {
+            val page  = body.snapshot()
+            val current = noteState()
+            if ((title.isNotEmpty() || page.description.isNotEmpty() || page.images.isNotEmpty()) && current != lastSaved) {
                 lastSaved = current
                 val note = (existingNote ?: NoteEntity(id = noteId, folderId = folderId))
-                    .copy(title = title, description = desc, color = selectedColor)
+                    .copy(title = title, description = page.description, color = selectedColor, imageIds = NoteImages.format(page.images))
                 viewModel.saveNote(note)
             }
         }
@@ -180,7 +186,7 @@ class FolderNotesActivity : BaseActivity() {
         pendingNoteSave = save
         dialog.show()
         FontStyles.applyToTree(dialog.window?.decorView)
-        etDesc.requestFocus()
+        body.focusEnd()
     }
 
     private fun applyNoteColor(root: LinearLayout, hex: String) {

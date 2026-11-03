@@ -10,6 +10,7 @@ import com.skd.notebook.data.local.FolderEntity
 import com.skd.notebook.data.local.NoteDatabase
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.escapeLike
+import com.skd.notebook.util.NoteImages
 import com.skd.notebook.data.remote.FirebaseService
 import com.skd.notebook.data.repository.NoteRepository
 import com.skd.notebook.widget.WidgetUpdater
@@ -71,16 +72,30 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     fun moveToBin(note: NoteEntity)         = viewModelScope.launch { repo.moveToBin(note); refreshPinnedWidget() }
     fun restoreFromBin(note: NoteEntity)    = viewModelScope.launch { repo.restore(note); refreshPinnedWidget() }
-    fun deletePermanently(note: NoteEntity) = viewModelScope.launch { repo.deletePermanently(note); refreshPinnedWidget() }
+    fun deletePermanently(note: NoteEntity) = viewModelScope.launch {
+        repo.deletePermanently(note)
+        deletePhotosOf(listOf(note))
+        refreshPinnedWidget()
+    }
     fun restoreAll(notes: List<NoteEntity>) = viewModelScope.launch {
         notes.forEach { repo.restore(it) }
         refreshPinnedWidget()
     }
     fun deleteAllPermanently(notes: List<NoteEntity>) = viewModelScope.launch {
         notes.forEach { repo.deletePermanently(it) }
+        deletePhotosOf(notes)
         refreshPinnedWidget()
     }
-    fun emptyBin()                          = viewModelScope.launch { repo.emptyBin() }
+    fun emptyBin() = viewModelScope.launch {
+        val binned = db.noteDao().getBinNotesList()
+        repo.emptyBin()
+        deletePhotosOf(binned)
+    }
+
+    /** A note that is gone for good takes its photos with it (from this device and from the account). */
+    private fun deletePhotosOf(notes: List<NoteEntity>) {
+        NoteImages.delete(getApplication(), notes.flatMap { NoteImages.ids(it.imageIds) })
+    }
     fun archive(note: NoteEntity)           = viewModelScope.launch { repo.archive(note); refreshPinnedWidget() }
     fun unarchive(note: NoteEntity)         = viewModelScope.launch { repo.unarchive(note); refreshPinnedWidget() }
     fun moveToFolder(note: NoteEntity, folderId: String) = viewModelScope.launch { repo.moveToFolder(note, folderId) }
@@ -136,6 +151,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     fun clearLocalData() {
         appScope.launch {
             repo.clearLocalData()
+            NoteImages.clearLocal(getApplication())
             refreshPinnedWidget()
         }
     }

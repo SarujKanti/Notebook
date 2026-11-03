@@ -5,6 +5,7 @@ import android.app.KeyguardManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.os.SystemClock
@@ -14,9 +15,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.FrameLayout
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.LayoutInflaterCompat
 import com.google.android.material.snackbar.Snackbar
 import com.skd.notebook.R
@@ -24,6 +27,7 @@ import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.FontPrefs
 import com.skd.notebook.util.FontStyle
 import com.skd.notebook.util.FontStyles
+import java.io.File
 
 /**
  * Base for every screen:
@@ -124,16 +128,11 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    /** Makes [mic] speak into the title if it has the cursor, otherwise into the note text. */
-    fun attachDictation(mic: View, title: EditText, note: EditText) {
-        mic.setOnClickListener { dictateInto(if (title.hasFocus()) title else note) }
-    }
-
     /**
      * Opens the phone's speech recognizer, asked for English only, and types the result into [target].
      * The recognizer shows its own microphone screen, so the app needs no microphone permission.
      */
-    private fun dictateInto(target: EditText) {
+    fun dictateInto(target: EditText) {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, ENGLISH)
@@ -165,6 +164,49 @@ open class BaseActivity : AppCompatActivity() {
 
         text.replace(start, end, inserted)
         target.setSelection(start + inserted.length)
+    }
+
+    // ─── Photos for a note: from the gallery or the camera ───────────────────
+
+    private var onPhotoReady: ((Uri) -> Unit)? = null
+    private var cameraFile: File? = null
+
+    // The system photo picker hands over only the photo that is tapped, so no storage permission is needed.
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        val callback = onPhotoReady
+        onPhotoReady = null
+        if (uri != null) callback?.invoke(uri)
+    }
+
+    // The camera app writes the photo into a file of ours, shared through a FileProvider; no camera permission is needed.
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { taken ->
+        val callback = onPhotoReady
+        val file = cameraFile
+        onPhotoReady = null
+        cameraFile = null
+        if (taken && file != null) callback?.invoke(Uri.fromFile(file)) else file?.delete()
+    }
+
+    /** Lets the user pick one photo from the gallery; [onPicked] gets its Uri. */
+    fun pickPhoto(onPicked: (Uri) -> Unit) {
+        onPhotoReady = onPicked
+        galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    /** Opens the camera app; [onTaken] gets the Uri of the photo (a file in the app's cache) once it is taken. */
+    fun takePhoto(anchor: View, onTaken: (Uri) -> Unit) {
+        val file = File.createTempFile("shot_", ".jpg", File(cacheDir, "camera").apply { mkdirs() })
+        val shared = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+        onPhotoReady = onTaken
+        cameraFile = file
+        try {
+            cameraLauncher.launch(shared)
+        } catch (_: ActivityNotFoundException) {
+            onPhotoReady = null
+            cameraFile = null
+            file.delete()
+            Snackbar.make(anchor, R.string.camera_unavailable, Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     // ─── Phone screen-lock check (used to reset a forgotten Archive PIN) ─────

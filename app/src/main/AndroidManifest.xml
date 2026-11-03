@@ -84,6 +84,17 @@
             android:windowSoftInputMode="stateVisible|adjustResize"
             android:parentActivityName=".ui.MainActivity"/>
 
+        <!-- Lets the camera app save a photo straight into the app -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+
         <!-- ⑨ Home screen widgets -->
         <receiver
             android:name=".widget.NewNoteWidgetProvider"

@@ -45,6 +45,23 @@ class FirebaseService {
         profilePhotoRef().delete().await()
     }
 
+    /** Photos attached to notes: one small JPEG per document, kept apart from the notes so the notes list stays light. */
+    private fun noteImagesRef(): CollectionReference =
+        firestore.collection("users")
+            .document(uid() ?: throw IllegalStateException("No authenticated user"))
+            .collection("noteImages")
+
+    suspend fun saveNoteImage(id: String, jpeg: ByteArray) {
+        noteImagesRef().document(id).set(mapOf("data" to Blob.fromBytes(jpeg), "updatedAt" to System.currentTimeMillis())).await()
+    }
+
+    suspend fun getNoteImage(id: String): ByteArray? =
+        noteImagesRef().document(id).get().await().getBlob("data")?.toBytes()
+
+    suspend fun deleteNoteImage(id: String) {
+        noteImagesRef().document(id).delete().await()
+    }
+
     // ─── One-shot writes ─────────────────────────────────────────────────────
 
     suspend fun saveNote(note: NoteEntity) {
