@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.skd.notebook.R
 import com.skd.notebook.ui.MainActivity
+import com.skd.notebook.widget.WidgetUpdater
 
 class LoginActivity : BaseActivity() {
 
@@ -52,6 +53,7 @@ class LoginActivity : BaseActivity() {
         btnSkip.setOnClickListener {
             getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE)
                 .edit().putBoolean(MainActivity.KEY_GUEST_MODE, true).apply()
+            WidgetUpdater.refreshPinnedWidget(this)
             startActivity(Intent(this, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 putExtra(MainActivity.EXTRA_SHOW_GUEST_DIALOG, true)
@@ -108,6 +110,7 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun goToMain() {
+        WidgetUpdater.refreshPinnedWidget(this)
         startActivity(Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         })

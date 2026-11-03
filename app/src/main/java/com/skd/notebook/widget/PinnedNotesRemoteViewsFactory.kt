@@ -24,7 +24,8 @@ class PinnedNotesRemoteViewsFactory(
     /** Called on a background thread by the widget host whenever the list needs a refresh. */
     override fun onDataSetChanged() {
         notes = try {
-            runBlocking { NoteDatabase.getDatabase(context).noteDao().getPinnedNotesList() }
+            if (!WidgetUpdater.hasSession(context)) emptyList() // logged out: show nothing
+            else runBlocking { NoteDatabase.getDatabase(context).noteDao().getPinnedNotesList() }
         } catch (e: Exception) {
             Log.e(TAG, "onDataSetChanged failed — showing empty list instead of crashing", e)
             emptyList()

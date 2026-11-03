@@ -59,6 +59,7 @@ import com.skd.notebook.ui.screens.SearchActivity
 import com.skd.notebook.ui.screens.SettingsActivity
 import com.skd.notebook.util.appVersionLabel
 import com.skd.notebook.util.keepClearOfSystemBars
+import com.skd.notebook.widget.WidgetUpdater
 import com.skd.notebook.util.peekCircleOnScroll
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -853,6 +854,7 @@ class MainActivity : BaseActivity() {
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
         ).signOut()
         getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_GUEST_MODE, false).apply()
+        WidgetUpdater.refreshPinnedWidget(this) // widgets empty out as soon as the session ends
         goToLogin()
     }
 
