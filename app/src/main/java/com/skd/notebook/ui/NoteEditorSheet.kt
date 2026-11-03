@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.skd.notebook.R
+import com.skd.notebook.util.fillWidthOnTablet
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.NoteColors
 
@@ -72,6 +73,7 @@ class NoteEditorSheet(
             BottomSheetBehavior.from(it).apply {
                 state = BottomSheetBehavior.STATE_EXPANDED
                 skipCollapsed = true
+                fillWidthOnTablet(activity)
             }
         }
         dialog = sheet

@@ -21,6 +21,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.skd.notebook.R
+import com.skd.notebook.util.fillWidthOnTablet
+import com.skd.notebook.util.noteGridColumns
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.NoteColors
@@ -89,7 +91,7 @@ class FolderNotesActivity : BaseActivity() {
             onMoreClick = openActions
         )
 
-        val spanCount = if (AppSettings.gridView(this)) resources.getInteger(R.integer.grid_span_count) else 1
+        val spanCount = if (AppSettings.gridView(this)) noteGridColumns() else 1
         recyclerView.layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.adapter = adapter
 
@@ -170,6 +172,7 @@ class FolderNotesActivity : BaseActivity() {
             val behavior = BottomSheetBehavior.from(it)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.skipCollapsed = true
+            behavior.fillWidthOnTablet(this)
         }
         activeNoteDialog = dialog
         pendingNoteSave = save
