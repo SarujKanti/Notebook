@@ -2,6 +2,7 @@ package com.skd.notebook.data.remote
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.Blob
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -25,6 +26,24 @@ class FirebaseService {
         firestore.collection("users")
             .document(uid() ?: throw IllegalStateException("No authenticated user"))
             .collection("folders")
+
+    /** The profile picture: one small JPEG kept in the user's own area, so it follows the account to any device. */
+    private fun profilePhotoRef() =
+        firestore.collection("users")
+            .document(uid() ?: throw IllegalStateException("No authenticated user"))
+            .collection("profile")
+            .document("photo")
+
+    suspend fun saveProfilePhoto(jpeg: ByteArray) {
+        profilePhotoRef().set(mapOf("data" to Blob.fromBytes(jpeg), "updatedAt" to System.currentTimeMillis())).await()
+    }
+
+    suspend fun getProfilePhoto(): ByteArray? =
+        profilePhotoRef().get().await().getBlob("data")?.toBytes()
+
+    suspend fun deleteProfilePhoto() {
+        profilePhotoRef().delete().await()
+    }
 
     // ─── One-shot writes ─────────────────────────────────────────────────────
 
