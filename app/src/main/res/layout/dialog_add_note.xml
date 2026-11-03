@@ -8,93 +8,109 @@
     android:orientation="vertical"
     android:minHeight="@dimen/dp_600">
 
-    <!-- ── Top action bar ──────────────────────────────────────────────── -->
+    <!-- ── Top bar: the theme's surface color with round tonal buttons ── -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_60"
+        android:layout_height="@dimen/dp_68"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="@dimen/dp_4"
-        android:paddingEnd="@dimen/dp_8"
-        android:elevation="@dimen/dp_2">
+        android:paddingStart="@dimen/dp_12"
+        android:paddingEnd="@dimen/dp_12"
+        android:background="@drawable/bg_editor_toolbar"
+        android:elevation="@dimen/dp_6">
 
-        <!-- Close -->
+        <!-- Back -->
         <ImageButton
             android:id="@+id/btnClose"
-            android:layout_width="@dimen/dp_48"
-            android:layout_height="@dimen/dp_48"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="?attr/colorOnSurface"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="@dimen/dp_44"
+            android:layout_height="@dimen/dp_44"
+            android:padding="@dimen/dp_10"
+            android:src="@drawable/ic_arrow_back_rounded"
+            app:tint="?attr/colorPrimary"
+            android:background="@drawable/bg_editor_icon"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/close"/>
 
-        <!-- Label -->
-        <TextView
+        <!-- Title and a hint of what the menu can do -->
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="@dimen/dp_4"
-            android:text="@string/hint_note"
-            android:textSize="@dimen/text_title"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"/>
+            android:layout_marginStart="@dimen/dp_14"
+            android:orientation="vertical">
 
-        <!-- Speak: what is said (in English) is typed into the note -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hint_note"
+                android:textSize="@dimen/text_title"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/editor_subtitle"
+                android:textSize="@dimen/text_caption"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+        </LinearLayout>
+
+        <!-- Menu: voice typing, a photo from the gallery, or a photo from the camera -->
         <ImageButton
-            android:id="@+id/btnMic"
-            android:layout_width="@dimen/dp_48"
-            android:layout_height="@dimen/dp_48"
-            android:src="@drawable/ic_mic"
+            android:id="@+id/btnMenu"
+            android:layout_width="@dimen/dp_44"
+            android:layout_height="@dimen/dp_44"
+            android:padding="@dimen/dp_10"
+            android:src="@drawable/ic_more_vert"
             app:tint="?attr/colorPrimary"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/speak_note"/>
+            android:background="@drawable/bg_editor_icon"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/more_options"/>
 
     </LinearLayout>
 
-    <!-- Line between the toolbar and the title: dark enough to show on every note color -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_1"
-        android:background="?attr/colorOnSurface"
-        android:alpha="0.22"/>
-
-    <!-- ── Title field ─────────────────────────────────────────────────── -->
-    <EditText
-        android:id="@+id/etTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/hint_title"
-        android:textSize="@dimen/text_headline"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface"
-        android:textColorHint="?attr/colorOnSurfaceVariant"
-        android:background="@android:color/transparent"
-        android:paddingStart="@dimen/dp_20"
-        android:paddingEnd="@dimen/dp_20"
-        android:paddingTop="@dimen/dp_16"
-        android:paddingBottom="@dimen/dp_8"
-        android:inputType="textCapSentences"
-        android:imeOptions="actionNext"/>
-
-    <!-- ── Description field (fills remaining space) ──────────────────── -->
-    <EditText
-        android:id="@+id/etDesc"
+    <!-- ── Title and note: one page that scrolls together, with photos placed between the text ── -->
+    <ScrollView
+        android:id="@+id/noteScroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:hint="@string/hint_note"
-        android:textSize="@dimen/text_subtitle"
-        android:lineSpacingMultiplier="1.4"
-        android:textColor="?attr/colorOnSurface"
-        android:textColorHint="?attr/colorOnSurfaceVariant"
-        android:background="@android:color/transparent"
-        android:paddingStart="@dimen/dp_20"
-        android:paddingEnd="@dimen/dp_20"
-        android:paddingTop="@dimen/dp_4"
-        android:paddingBottom="@dimen/dp_12"
-        android:gravity="top|start"
-        android:inputType="textCapSentences|textMultiLine"
-        android:minLines="5"/>
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/etTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_title"
+                android:textSize="@dimen/text_headline"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:textColorHint="?attr/colorOnSurfaceVariant"
+                android:background="@android:color/transparent"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:paddingTop="@dimen/dp_16"
+                android:paddingBottom="@dimen/dp_8"
+                android:inputType="textCapSentences"
+                android:imeOptions="actionNext"/>
+
+            <!-- The note's text blocks and photos are added here by NoteBody -->
+            <LinearLayout
+                android:id="@+id/bodyContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+        </LinearLayout>
+    </ScrollView>
 
     <!-- ── Bottom toolbar: colors ──────────────────────────────────────── -->
     <LinearLayout

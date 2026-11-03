@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A photo inside the note: drag the corner handle to move it, the bottom handle to change its height -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_200"
+    android:layout_marginStart="@dimen/dp_20"
+    android:layout_marginEnd="@dimen/dp_20"
+    android:layout_marginTop="@dimen/dp_6"
+    android:layout_marginBottom="@dimen/dp_6"
+    android:elevation="@dimen/dp_2">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/blockImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/note_photo"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.NoteBook.Photo"/>
+
+    <!-- Move -->
+    <ImageButton
+        android:id="@+id/blockMove"
+        android:layout_width="@dimen/dp_38"
+        android:layout_height="@dimen/dp_38"
+        android:layout_gravity="top|start"
+        android:layout_margin="@dimen/dp_8"
+        android:padding="@dimen/dp_8"
+        android:src="@drawable/ic_move_photo"
+        android:background="@drawable/bg_thumb_close"
+        android:contentDescription="@string/move_photo"/>
+
+    <!-- Remove -->
+    <ImageButton
+        android:id="@+id/blockClose"
+        android:layout_width="@dimen/dp_38"
+        android:layout_height="@dimen/dp_38"
+        android:layout_gravity="top|end"
+        android:layout_margin="@dimen/dp_8"
+        android:padding="@dimen/dp_10"
+        android:src="@drawable/ic_close_white"
+        android:background="@drawable/bg_thumb_close"
+        android:contentDescription="@string/remove_photo_button"/>
+
+    <!-- Height -->
+    <ImageButton
+        android:id="@+id/blockResize"
+        android:layout_width="@dimen/dp_56"
+        android:layout_height="@dimen/dp_34"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/dp_8"
+        android:paddingTop="@dimen/dp_4"
+        android:paddingBottom="@dimen/dp_4"
+        android:src="@drawable/ic_resize_photo"
+        android:background="@drawable/bg_thumb_close"
+        android:contentDescription="@string/resize_photo"/>
+</FrameLayout>

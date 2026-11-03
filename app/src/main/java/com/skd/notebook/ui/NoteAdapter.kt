@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -20,6 +21,7 @@ import com.skd.notebook.R
 import com.skd.notebook.data.local.FolderEntity
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.NoteColors
+import com.skd.notebook.util.NoteImages
 import com.skd.notebook.util.highlightMatches
 import com.skd.notebook.util.snippetAroundMatch
 import java.text.SimpleDateFormat
@@ -64,6 +66,7 @@ class NoteAdapter(
             override fun areContentsTheSame(a: NoteEntity, b: NoteEntity) = a == b
         }
         private val DATE_FORMAT = SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
+        private const val CARD_PHOTO_PX = 480
     }
 
     inner class NoteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -75,6 +78,33 @@ class NoteAdapter(
         val pinFold: View          = view.findViewById(R.id.pinFold)
         val folderChip: TextView   = view.findViewById(R.id.txtFolder)
         val btnMore: ImageButton   = view.findViewById(R.id.btnMore)
+        val photo: ImageView       = view.findViewById(R.id.imgNotePhoto)
+    }
+
+    /** The note's first photo at the top of its card; hidden until it is loaded, and for notes without photos. */
+    private fun bindPhoto(holder: NoteViewHolder, note: NoteEntity) {
+        val id = NoteImages.ids(note.imageIds).firstOrNull()
+        val photo = holder.photo
+        if (id == null) {
+            photo.tag = null
+            photo.visibility = View.GONE
+            return
+        }
+        if (photo.tag == id && photo.visibility == View.VISIBLE) return // already showing it
+        photo.tag = id
+        val ready = NoteImages.cached(id, CARD_PHOTO_PX)
+        if (ready != null) {
+            photo.setImageBitmap(ready)
+            photo.visibility = View.VISIBLE
+        } else {
+            photo.visibility = View.GONE
+            NoteImages.loadAsync(photo.context, id, CARD_PHOTO_PX) { bitmap ->
+                if (photo.tag == id && bitmap != null) {
+                    photo.setImageBitmap(bitmap)
+                    photo.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -119,6 +149,7 @@ class NoteAdapter(
 
         holder.timestamp.text = DATE_FORMAT.format(Date(note.timestamp))
         bindFolderChip(holder, note)
+        bindPhoto(holder, note)
 
 
         if (note.color.isNotEmpty()) {

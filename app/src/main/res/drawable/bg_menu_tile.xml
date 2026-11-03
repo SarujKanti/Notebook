@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/editor_icon_bg"/>
+    <corners android:radius="@dimen/dp_12"/>
+</shape>

@@ -32,5 +32,8 @@ data class NoteEntity(
     var isArchived: Boolean = false,
     var folderId: String = "",
     @ColumnInfo(defaultValue = "0")
-    var isPinned: Boolean = false
+    var isPinned: Boolean = false,
+    /** Ids of the photos attached to the note, joined with commas (see NoteImages); the photos live beside the note. */
+    @ColumnInfo(defaultValue = "''")
+    var imageIds: String = ""
 )

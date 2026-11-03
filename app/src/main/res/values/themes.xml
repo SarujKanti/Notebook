@@ -69,4 +69,17 @@
         <item name="cornerSizeBottomLeft">@dimen/card_corner_radius</item>
         <item name="cornerSizeBottomRight">@dimen/card_corner_radius</item>
     </style>
+    <style name="ShapeAppearanceOverlay.NoteBook.Thumb" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/dp_12</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.NoteBook.Photo" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/dp_16</item>
+    </style>
+
+    <style name="Animation.NoteBook.PopupMenu" parent="">
+        <item name="android:windowEnterAnimation">@anim/popup_enter</item>
+        <item name="android:windowExitAnimation">@anim/popup_exit</item>
+    </style>
 </resources>

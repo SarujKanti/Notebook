@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.migration.Migration
 
-@Database(entities = [NoteEntity::class, FolderEntity::class], version = 6)
+@Database(entities = [NoteEntity::class, FolderEntity::class], version = 7)
 abstract class NoteDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
     abstract fun folderDao(): FolderDao
@@ -30,10 +30,17 @@ abstract class NoteDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {}
         }
 
+        /** Notes can have photos attached: a comma-separated list of their ids. */
+        private val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE notes ADD COLUMN imageIds TEXT NOT NULL DEFAULT ''")
+            }
+        }
+
         fun getDatabase(context: Context): NoteDatabase {
             return INSTANCE ?: synchronized(this) {
                 Room.databaseBuilder(context, NoteDatabase::class.java, "note_db")
-                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
+                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
                     .fallbackToDestructiveMigration()
                     .build().also { INSTANCE = it }
             }

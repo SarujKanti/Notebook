@@ -138,4 +138,5 @@
     <color name="fab_home_start">#A77BFF</color>
     <color name="fab_home_end">#5A2BDB</color>
     <color name="fab_home_glow">#6236E0</color>
+    <color name="editor_icon_bg">#1F7B5CF0</color>
 </resources>

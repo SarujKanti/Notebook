@@ -14,6 +14,7 @@ import com.skd.notebook.R
 import com.skd.notebook.util.fillWidthOnTablet
 import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.NoteColors
+import com.skd.notebook.util.NoteImages
 
 /**
  * Bottom-sheet editor for an existing note. Saves when closed, and again from [saveIfOpen]
@@ -34,14 +35,13 @@ class NoteEditorSheet(
 
         val dialogRoot = view.findViewById<LinearLayout>(R.id.dialogRoot)
         val etTitle    = view.findViewById<EditText>(R.id.etTitle)
-        val etDesc     = view.findViewById<EditText>(R.id.etDesc)
         val btnClose   = view.findViewById<ImageButton>(R.id.btnClose)
         val colorRow   = view.findViewById<LinearLayout>(R.id.colorPickerRow)
-        activity.attachDictation(view.findViewById(R.id.btnMic), etTitle, etDesc)
+        val body       = NoteBody(activity, view, etTitle)
 
         var selectedColor = note.color
         etTitle.setText(note.title)
-        etDesc.setText(note.description)
+        body.load(note.description, NoteImages.parse(note.imageIds))
         dialogRoot.setBackgroundColor(NoteColors.background(activity, note.color))
 
         buildColorPicker(colorRow, selectedColor) { chosen ->
@@ -49,14 +49,19 @@ class NoteEditorSheet(
             dialogRoot.setBackgroundColor(NoteColors.background(activity, chosen))
         }
 
-        var lastSaved = Triple(note.title.trim(), note.description.trim(), selectedColor)
+        // The note as it stands: title, text, color, and the photos with their places and heights.
+        fun noteState(): List<Any> {
+            val page = body.snapshot()
+            return listOf(etTitle.text.toString().trim(), page.description, selectedColor, page.images)
+        }
+        var lastSaved = noteState()
         val save: () -> Unit = {
             val title = etTitle.text.toString().trim()
-            val desc  = etDesc.text.toString().trim()
-            val current = Triple(title, desc, selectedColor)
-            if ((title.isNotEmpty() || desc.isNotEmpty()) && current != lastSaved) {
+            val page  = body.snapshot()
+            val current = noteState()
+            if ((title.isNotEmpty() || page.description.isNotEmpty() || page.images.isNotEmpty()) && current != lastSaved) {
                 lastSaved = current
-                viewModel.saveNote(note.copy(title = title, description = desc, color = selectedColor))
+                viewModel.saveNote(note.copy(title = title, description = page.description, color = selectedColor, imageIds = NoteImages.format(page.images)))
             }
         }
 
