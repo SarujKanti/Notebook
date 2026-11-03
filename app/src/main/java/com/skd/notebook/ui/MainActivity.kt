@@ -894,6 +894,7 @@ class MainActivity : BaseActivity() {
         val etDesc     = view.findViewById<EditText>(R.id.etDesc)
         val btnClose   = view.findViewById<ImageButton>(R.id.btnClose)
         val colorRow   = view.findViewById<LinearLayout>(R.id.colorPickerRow)
+        attachDictation(view.findViewById(R.id.btnMic), etTitle, etDesc)
 
         var selectedColor = existingNote?.color ?: ""
 
@@ -943,6 +944,7 @@ class MainActivity : BaseActivity() {
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.skipCollapsed = true
             behavior.fillWidthOnTablet(this)
+            behavior.isDraggable = false // swiping down in a long note must scroll it, not close the sheet
         }
         activeNoteDialog = dialog
         pendingNoteSave = save

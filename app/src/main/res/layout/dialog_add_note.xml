@@ -39,14 +39,24 @@
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"/>
 
+        <!-- Speak: what is said (in English) is typed into the note -->
+        <ImageButton
+            android:id="@+id/btnMic"
+            android:layout_width="@dimen/dp_48"
+            android:layout_height="@dimen/dp_48"
+            android:src="@drawable/ic_mic"
+            app:tint="?attr/colorPrimary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/speak_note"/>
+
     </LinearLayout>
 
-    <!-- Thin divider below toolbar -->
+    <!-- Line between the toolbar and the title: dark enough to show on every note color -->
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_1"
-        android:background="?attr/colorOutlineVariant"
-        android:alpha="0.4"/>
+        android:background="?attr/colorOnSurface"
+        android:alpha="0.22"/>
 
     <!-- ── Title field ─────────────────────────────────────────────────── -->
     <EditText
