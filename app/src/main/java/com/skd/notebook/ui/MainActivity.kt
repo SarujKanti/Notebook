@@ -13,6 +13,8 @@ import android.net.Uri
 import androidx.activity.result.PickVisualMediaRequest
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import androidx.core.widget.doAfterTextChanged
 import android.widget.ImageView
 import android.content.res.ColorStateList
 import com.google.android.material.color.MaterialColors
@@ -360,6 +362,12 @@ class MainActivity : BaseActivity() {
         var pendingPhoto: Bitmap? = null
         var removePhoto = false
 
+        // Save is only available when there is something to save: a new name or a picture change.
+        fun refreshSave() {
+            val typed = etName.text?.toString()?.trim().orEmpty()
+            btnSave.isEnabled = (typed.isNotEmpty() && typed != currentName) || pendingPhoto != null || removePhoto
+        }
+
         fun renderAvatar() {
             val photo = pendingPhoto ?: if (removePhoto) null else ProfilePhoto.load(this)
             if (photo != null) {
@@ -372,8 +380,16 @@ class MainActivity : BaseActivity() {
                 tvInitial.visibility = View.VISIBLE
             }
             btnRemove.visibility = if (photo != null) View.VISIBLE else View.GONE
+            refreshSave()
         }
         renderAvatar()
+        etName.doAfterTextChanged { renderAvatar() } // the initial in the avatar follows the name as it is typed
+        etName.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (btnSave.isEnabled) btnSave.performClick()
+                true
+            } else false
+        }
 
         val choosePhoto = {
             onPhotoPicked = { uri ->
