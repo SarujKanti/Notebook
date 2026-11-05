@@ -352,6 +352,7 @@ class MainActivity : BaseActivity() {
         val tvInitial = view.findViewById<TextView>(R.id.tvEditAvatarInitial)
         val btnRemove = view.findViewById<View>(R.id.btnRemovePhoto)
 
+        view.findViewById<TextView>(R.id.tvEditEmail).text = FirebaseAuth.getInstance().currentUser?.email.orEmpty()
         etName.setText(currentName)
         etName.setSelection(etName.text?.length ?: 0)
 
