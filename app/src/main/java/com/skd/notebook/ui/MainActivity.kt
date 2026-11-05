@@ -13,6 +13,8 @@ import android.net.Uri
 import androidx.activity.result.PickVisualMediaRequest
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import androidx.core.widget.doAfterTextChanged
 import android.widget.ImageView
 import android.content.res.ColorStateList
 import com.google.android.material.color.MaterialColors
@@ -352,12 +354,19 @@ class MainActivity : BaseActivity() {
         val tvInitial = view.findViewById<TextView>(R.id.tvEditAvatarInitial)
         val btnRemove = view.findViewById<View>(R.id.btnRemovePhoto)
 
+        view.findViewById<TextView>(R.id.tvEditEmail).text = FirebaseAuth.getInstance().currentUser?.email.orEmpty()
         etName.setText(currentName)
         etName.setSelection(etName.text?.length ?: 0)
 
         // Picture changes wait here until Save.
         var pendingPhoto: Bitmap? = null
         var removePhoto = false
+
+        // Save is only available when there is something to save: a new name or a picture change.
+        fun refreshSave() {
+            val typed = etName.text?.toString()?.trim().orEmpty()
+            btnSave.isEnabled = (typed.isNotEmpty() && typed != currentName) || pendingPhoto != null || removePhoto
+        }
 
         fun renderAvatar() {
             val photo = pendingPhoto ?: if (removePhoto) null else ProfilePhoto.load(this)
@@ -370,9 +379,19 @@ class MainActivity : BaseActivity() {
                     .firstOrNull()?.uppercaseChar()?.toString() ?: "U"
                 tvInitial.visibility = View.VISIBLE
             }
-            btnRemove.visibility = if (photo != null) View.VISIBLE else View.GONE
+            // Remove keeps its place (so the two buttons never jump); it is only usable while there is a picture.
+            btnRemove.isEnabled = photo != null
+            btnRemove.alpha = if (photo != null) 1f else 0.4f
+            refreshSave()
         }
         renderAvatar()
+        etName.doAfterTextChanged { renderAvatar() } // the initial in the avatar follows the name as it is typed
+        etName.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (btnSave.isEnabled) btnSave.performClick()
+                true
+            } else false
+        }
 
         val choosePhoto = {
             onPhotoPicked = { uri ->
@@ -450,6 +469,19 @@ class MainActivity : BaseActivity() {
         findViewById<TextView>(R.id.tvNavInitial).text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "U"
     }
 
+    /**
+     * Tapping the profile picture shows it large (name on top, Edit below). A guest has no profile,
+     * so they are invited to log in instead.
+     */
+    private fun openProfilePhoto() {
+        if (isGuestMode()) {
+            openEditProfile()
+            return
+        }
+        drawerLayout.closeDrawer(GravityCompat.START)
+        showProfilePhoto(resolvedDisplayName(), ProfilePhoto.load(this)) { openEditProfile() }
+    }
+
     /** Edit profile for a signed-in user; a guest has no profile, so they are invited to log in. */
     private fun openEditProfile() {
         drawerLayout.closeDrawer(GravityCompat.START)
@@ -503,12 +535,13 @@ class MainActivity : BaseActivity() {
             tvEmail.text = user?.email ?: ""
             ivEditPencil.visibility = View.VISIBLE
 
-            // ── Tap name or avatar to edit ───────────────────────────────────
+            // ── Tap the name or pencil to edit; tap the picture to see it large ─
             val clickToEdit = View.OnClickListener { openEditProfile() }
             tvName.setOnClickListener(clickToEdit)
-            tvInitial.setOnClickListener(clickToEdit)
-            ivNavAvatar.setOnClickListener(clickToEdit)   // the photo replaces the initial once one is set
             ivEditPencil.setOnClickListener(clickToEdit)
+            val clickToView = View.OnClickListener { openProfilePhoto() }
+            tvInitial.setOnClickListener(clickToView)
+            ivNavAvatar.setOnClickListener(clickToView)   // the photo replaces the initial once one is set
         }
 
         // "Note" in the text color, "Stack" in the app purple.
@@ -671,7 +704,7 @@ class MainActivity : BaseActivity() {
 
         tvSort.setOnClickListener { showSortDialog() }
         btnToggleLayout.setOnClickListener { showLayoutDialog() }
-        findViewById<View>(R.id.btnProfile).setOnClickListener { openEditProfile() }
+        findViewById<View>(R.id.btnProfile).setOnClickListener { openProfilePhoto() }
         updateSortLabel()
     }
 

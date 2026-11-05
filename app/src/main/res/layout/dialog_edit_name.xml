@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<!-- Scrolls when the screen is too short for everything (landscape, or with the keyboard open) -->
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:overScrollMode="never"
     android:background="@drawable/bg_glass_sheet">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <!-- Drag handle -->
     <View
@@ -21,45 +27,56 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="@dimen/dp_20"
-        android:paddingEnd="@dimen/dp_8"
+        android:paddingStart="@dimen/dp_24"
+        android:paddingEnd="@dimen/dp_16"
         android:paddingTop="@dimen/dp_14"
-        android:paddingBottom="@dimen/dp_10">
+        android:paddingBottom="@dimen/dp_8">
 
-        <TextView
+        <!-- Title, with a line saying what this is for -->
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/edit_profile"
-            android:textSize="@dimen/text_title"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"/>
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_profile"
+                android:textSize="@dimen/text_headline"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_2"
+                android:text="@string/edit_profile_subtitle"
+                android:textSize="@dimen/text_body"
+                android:textColor="?attr/colorOnSurfaceVariant"/>
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/btnEditNameClose"
-            android:layout_width="@dimen/dp_44"
-            android:layout_height="@dimen/dp_44"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:padding="@dimen/dp_10"
             android:src="@drawable/ic_close"
-            android:tint="?attr/colorOnSurfaceVariant"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="?attr/colorOnSurface"
+            android:background="@drawable/bg_glass_circle"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/close"/>
 
     </LinearLayout>
 
-    <!-- Thin divider -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_1"
-        android:background="?attr/colorOutlineVariant"
-        android:alpha="0.4"/>
-
     <!-- Profile picture: tap it (or "Change photo") to pick one from the device -->
     <FrameLayout
         android:id="@+id/avatarBlock"
-        android:layout_width="@dimen/dp_104"
-        android:layout_height="@dimen/dp_104"
+        android:layout_width="@dimen/dp_112"
+        android:layout_height="@dimen/dp_112"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_16"
+        android:background="@drawable/bg_profile_ring"
         android:clickable="true"
         android:focusable="true"
         android:contentDescription="@string/profile_picture">
@@ -68,9 +85,8 @@
             android:id="@+id/ivEditAvatar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/dp_3"
+            android:padding="@dimen/dp_5"
             android:scaleType="centerCrop"
-            android:background="@drawable/bg_drawer_avatar"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.NoteBook.Circle"/>
 
         <TextView
@@ -82,123 +98,227 @@
             android:textSize="@dimen/text_hero"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"/>
-
-        <FrameLayout
-            android:layout_width="@dimen/dp_34"
-            android:layout_height="@dimen/dp_34"
-            android:layout_gravity="bottom|end"
-            android:background="@drawable/bg_glass_primary">
-
-            <ImageView
-                android:layout_width="@dimen/dp_18"
-                android:layout_height="@dimen/dp_18"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_camera"
-                android:importantForAccessibility="no"/>
-        </FrameLayout>
     </FrameLayout>
 
+    <!-- Photo actions: two matching buttons; Remove stays in place but is dimmed while there is no photo -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_6"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <TextView
-            android:id="@+id/btnChangePhoto"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_40"
-            android:gravity="center"
-            android:paddingStart="@dimen/dp_14"
-            android:paddingEnd="@dimen/dp_14"
-            android:text="@string/change_photo"
-            android:textSize="@dimen/text_body"
-            android:textStyle="bold"
-            android:textColor="#CDBBFF"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"/>
-
-        <TextView
-            android:id="@+id/btnRemovePhoto"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_40"
-            android:gravity="center"
-            android:paddingStart="@dimen/dp_14"
-            android:paddingEnd="@dimen/dp_14"
-            android:text="@string/remove"
-            android:textSize="@dimen/text_body"
-            android:textStyle="bold"
-            android:textColor="#FF9A93"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="gone"/>
-    </LinearLayout>
-
-    <!-- Name field (Material OutlinedBox) -->
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_20"
         android:layout_marginEnd="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_16"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnChangePhoto"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_46"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/dp_6"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingStart="@dimen/dp_12"
+            android:paddingEnd="@dimen/dp_12"
+            android:text="@string/change_photo"
+            android:textSize="@dimen/text_body"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textColor="?attr/colorOnSurface"
+            android:background="@drawable/bg_profile_pill"
+            app:backgroundTint="@null"
+            app:cornerRadius="@dimen/dp_23"
+            app:icon="@drawable/ic_photo_library"
+            app:iconTint="?attr/colorOnSurface"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/dp_8"
+            app:iconSize="@dimen/dp_20"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRemovePhoto"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_46"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/dp_6"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingStart="@dimen/dp_12"
+            android:paddingEnd="@dimen/dp_12"
+            android:text="@string/remove"
+            android:textSize="@dimen/text_body"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textColor="#FF9A93"
+            android:background="@drawable/bg_profile_pill_danger"
+            app:backgroundTint="@null"
+            app:cornerRadius="@dimen/dp_23"
+            app:icon="@drawable/ic_delete"
+            app:iconTint="#FF9A93"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/dp_8"
+            app:iconSize="@dimen/dp_20"/>
+    </LinearLayout>
+
+    <!-- Name -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_26"
+        android:layout_marginTop="@dimen/dp_22"
+        android:text="@string/your_name"
+        android:textSize="@dimen/text_caption"
+        android:textStyle="bold"
+        android:letterSpacing="0.06"
+        android:textColor="?attr/colorOnSurfaceVariant"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_54"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_8"
-        android:layout_marginBottom="@dimen/dp_8"
-        android:hint="@string/your_name"
-        app:boxCornerRadiusTopStart="@dimen/dp_12"
-        app:boxCornerRadiusTopEnd="@dimen/dp_12"
-        app:boxCornerRadiusBottomStart="@dimen/dp_12"
-        app:boxCornerRadiusBottomEnd="@dimen/dp_12">
+        android:paddingStart="@dimen/dp_16"
+        android:paddingEnd="@dimen/dp_16"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_profile_field">
+
+        <ImageView
+            android:layout_width="@dimen/dp_22"
+            android:layout_height="@dimen/dp_22"
+            android:src="@drawable/ic_person_filled"
+            android:importantForAccessibility="no"
+            app:tint="?attr/colorPrimary"/>
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etEditName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/dp_12"
+            android:background="@android:color/transparent"
+            android:hint="@string/your_name"
             android:inputType="textCapWords"
             android:maxLines="1"
             android:imeOptions="actionDone"
             android:textSize="@dimen/text_subtitle"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#CDBBFF"/>
+            android:textColor="?attr/colorOnSurface"
+            android:textColorHint="?attr/colorOnSurfaceVariant"/>
+    </LinearLayout>
 
-    </com.google.android.material.textfield.TextInputLayout>
+    <!-- Email: shown for reference, it comes from the sign-in and cannot be changed here -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_26"
+        android:layout_marginTop="@dimen/dp_18"
+        android:text="@string/profile_email_label"
+        android:textSize="@dimen/text_caption"
+        android:textStyle="bold"
+        android:letterSpacing="0.06"
+        android:textColor="?attr/colorOnSurfaceVariant"/>
 
-    <!-- Action buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_54"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_8"
+        android:paddingStart="@dimen/dp_16"
+        android:paddingEnd="@dimen/dp_16"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_profile_field"
+        android:alpha="0.8">
+
+        <ImageView
+            android:layout_width="@dimen/dp_22"
+            android:layout_height="@dimen/dp_22"
+            android:src="@drawable/ic_mail"
+            android:importantForAccessibility="no"
+            app:tint="?attr/colorOnSurfaceVariant"/>
+
+        <TextView
+            android:id="@+id/tvEditEmail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/dp_12"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="@dimen/text_subtitle"
+            android:textColor="?attr/colorOnSurface"/>
+
+        <ImageView
+            android:layout_width="@dimen/dp_18"
+            android:layout_height="@dimen/dp_18"
+            android:src="@drawable/ic_lock"
+            android:importantForAccessibility="no"
+            app:tint="?attr/colorOnSurfaceVariant"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_26"
+        android:layout_marginEnd="@dimen/dp_26"
+        android:layout_marginTop="@dimen/dp_6"
+        android:text="@string/profile_email_note"
+        android:textSize="@dimen/text_caption"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:alpha="0.85"/>
+
+    <!-- Action buttons: same size, side by side; Save is bright only when there is something to save -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="end"
         android:paddingStart="@dimen/dp_20"
         android:paddingEnd="@dimen/dp_20"
-        android:paddingTop="@dimen/dp_12"
-        android:paddingBottom="@dimen/dp_24">
+        android:paddingTop="@dimen/dp_26"
+        android:paddingBottom="@dimen/dp_28">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditNameCancel"
             style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dp_8"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_52"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/dp_12"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:text="@string/cancel"
-            android:textColor="?attr/colorOnSurfaceVariant"/>
+            android:textSize="@dimen/text_subtitle"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"
+            android:background="@drawable/bg_profile_cancel"
+            app:backgroundTint="@null"
+            app:cornerRadius="@dimen/dp_26"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditNameSave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/save"
-            app:backgroundTint="@null"
-            android:background="@drawable/bg_glass_primary"
-            android:textColor="@color/colorOnPrimary"
-            app:cornerRadius="@dimen/dp_24"
-            android:minHeight="@dimen/dp_52"
-            android:minWidth="@dimen/dp_110"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_52"
+            android:layout_weight="1"
             android:insetTop="0dp"
-            android:insetBottom="0dp"/>
+            android:insetBottom="0dp"
+            android:text="@string/save"
+            android:textSize="@dimen/text_subtitle"
+            android:textStyle="bold"
+            android:textColor="@color/profile_save_text"
+            android:background="@drawable/bg_profile_save"
+            android:stateListAnimator="@null"
+            app:backgroundTint="@null"
+            app:cornerRadius="@dimen/dp_26"
+            app:icon="@drawable/ic_check"
+            app:iconTint="@color/profile_save_text"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/dp_8"
+            app:iconSize="@dimen/dp_20"/>
 
     </LinearLayout>
 
 </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -82,4 +82,8 @@
         <item name="android:windowEnterAnimation">@anim/popup_enter</item>
         <item name="android:windowExitAnimation">@anim/popup_exit</item>
     </style>
+    <style name="Animation.NoteBook.ProfileViewer" parent="">
+        <item name="android:windowEnterAnimation">@anim/viewer_enter</item>
+        <item name="android:windowExitAnimation">@anim/viewer_exit</item>
+    </style>
 </resources>

@@ -77,6 +77,10 @@ Tap here to log in.</string>
     <string name="open_menu">Open menu</string>
     <string name="home_tagline">Keep · Write · Organize</string>
     <string name="edit_profile">Edit profile</string>
+    <string name="edit_profile_subtitle">Update your name and picture</string>
+    <string name="view_full_screen">View full screen</string>
+    <string name="profile_email_label">Email</string>
+    <string name="profile_email_note">Your sign-in email cannot be changed here</string>
     <string name="search_pill_hint">Search your notes…</string>
     <string name="change_layout">Change layout</string>
     <string name="empty_notes_title">No notes yet</string>
