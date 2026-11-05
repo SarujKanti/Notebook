@@ -535,13 +535,12 @@ class MainActivity : BaseActivity() {
             tvEmail.text = user?.email ?: ""
             ivEditPencil.visibility = View.VISIBLE
 
-            // ── Tap the name or pencil to edit; tap the picture to see it large ─
+            // ── In the drawer, tapping the picture, name or pencil goes straight to Edit profile ─
             val clickToEdit = View.OnClickListener { openEditProfile() }
             tvName.setOnClickListener(clickToEdit)
+            tvInitial.setOnClickListener(clickToEdit)
+            ivNavAvatar.setOnClickListener(clickToEdit)   // the photo replaces the initial once one is set
             ivEditPencil.setOnClickListener(clickToEdit)
-            val clickToView = View.OnClickListener { openProfilePhoto() }
-            tvInitial.setOnClickListener(clickToView)
-            ivNavAvatar.setOnClickListener(clickToView)   // the photo replaces the initial once one is set
         }
 
         // "Note" in the text color, "Stack" in the app purple.
