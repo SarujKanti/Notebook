@@ -24,6 +24,7 @@
     <dimen name="text_headline">24sp</dimen>
     <dimen name="text_display">28sp</dimen>
     <dimen name="text_hero">36sp</dimen>
+    <dimen name="text_viewer_initial">96sp</dimen>
 
     <!-- Sizes, spacing and radii (dp) -->
     <dimen name="dp_neg_4">-4dp</dimen>
@@ -98,6 +99,8 @@
     <dimen name="dp_190">190dp</dimen>
     <dimen name="dp_200">200dp</dimen>
     <dimen name="dp_220">220dp</dimen>
+    <dimen name="dp_300">300dp</dimen>
     <dimen name="dp_320">320dp</dimen>
+    <dimen name="dp_400">400dp</dimen>
     <dimen name="dp_600">600dp</dimen>
 </resources>

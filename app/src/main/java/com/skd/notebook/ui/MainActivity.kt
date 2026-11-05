@@ -469,6 +469,19 @@ class MainActivity : BaseActivity() {
         findViewById<TextView>(R.id.tvNavInitial).text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "U"
     }
 
+    /**
+     * Tapping the profile picture shows it large (name on top, Edit below). A guest has no profile,
+     * so they are invited to log in instead.
+     */
+    private fun openProfilePhoto() {
+        if (isGuestMode()) {
+            openEditProfile()
+            return
+        }
+        drawerLayout.closeDrawer(GravityCompat.START)
+        showProfilePhoto(resolvedDisplayName(), ProfilePhoto.load(this)) { openEditProfile() }
+    }
+
     /** Edit profile for a signed-in user; a guest has no profile, so they are invited to log in. */
     private fun openEditProfile() {
         drawerLayout.closeDrawer(GravityCompat.START)
@@ -522,12 +535,13 @@ class MainActivity : BaseActivity() {
             tvEmail.text = user?.email ?: ""
             ivEditPencil.visibility = View.VISIBLE
 
-            // ── Tap name or avatar to edit ───────────────────────────────────
+            // ── Tap the name or pencil to edit; tap the picture to see it large ─
             val clickToEdit = View.OnClickListener { openEditProfile() }
             tvName.setOnClickListener(clickToEdit)
-            tvInitial.setOnClickListener(clickToEdit)
-            ivNavAvatar.setOnClickListener(clickToEdit)   // the photo replaces the initial once one is set
             ivEditPencil.setOnClickListener(clickToEdit)
+            val clickToView = View.OnClickListener { openProfilePhoto() }
+            tvInitial.setOnClickListener(clickToView)
+            ivNavAvatar.setOnClickListener(clickToView)   // the photo replaces the initial once one is set
         }
 
         // "Note" in the text color, "Stack" in the app purple.
@@ -690,7 +704,7 @@ class MainActivity : BaseActivity() {
 
         tvSort.setOnClickListener { showSortDialog() }
         btnToggleLayout.setOnClickListener { showLayoutDialog() }
-        findViewById<View>(R.id.btnProfile).setOnClickListener { openEditProfile() }
+        findViewById<View>(R.id.btnProfile).setOnClickListener { openProfilePhoto() }
         updateSortLabel()
     }
 

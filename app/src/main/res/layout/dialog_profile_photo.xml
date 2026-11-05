@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The profile picture, large, like a chat app's contact photo: a square card with the name on top and actions below -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/viewerRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:id="@+id/viewerCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:background="@drawable/bg_profile_viewer_card"
+        android:clipToOutline="true"
+        android:elevation="@dimen/dp_16"
+        android:clickable="true"
+        android:focusable="true">
+
+        <!-- The picture (a big initial on purple when there is none), with the name over a dark fade -->
+        <FrameLayout
+            android:id="@+id/viewerPhotoBox"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_300">
+
+            <TextView
+                android:id="@+id/viewerInitial"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="@drawable/bg_profile_viewer_empty"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/text_viewer_initial"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/viewerPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/profile_picture"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/viewerName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:paddingStart="@dimen/dp_16"
+                android:paddingEnd="@dimen/dp_16"
+                android:paddingTop="@dimen/dp_14"
+                android:paddingBottom="@dimen/dp_30"
+                android:background="@drawable/bg_profile_viewer_scrim_top"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="@dimen/text_title"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"/>
+        </FrameLayout>
+
+        <!-- Actions -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_52"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/viewerEdit"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_edit"
+                app:tint="?attr/colorPrimary"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/edit_profile"/>
+
+            <ImageButton
+                android:id="@+id/viewerFullScreen"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_fullscreen"
+                app:tint="?attr/colorPrimary"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/view_full_screen"/>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
