@@ -379,7 +379,9 @@ class MainActivity : BaseActivity() {
                     .firstOrNull()?.uppercaseChar()?.toString() ?: "U"
                 tvInitial.visibility = View.VISIBLE
             }
-            btnRemove.visibility = if (photo != null) View.VISIBLE else View.GONE
+            // Remove keeps its place (so the two buttons never jump); it is only usable while there is a picture.
+            btnRemove.isEnabled = photo != null
+            btnRemove.alpha = if (photo != null) 1f else 0.4f
             refreshSave()
         }
         renderAvatar()
