@@ -1,0 +1,20 @@
+<!-- Bright purple when it can be pressed, a quiet glass pill when there is nothing to save -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <solid android:color="#26FFFFFF"/>
+            <stroke android:width="@dimen/dp_1" android:color="#33FFFFFF"/>
+            <corners android:radius="@dimen/dp_26"/>
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="#9A6EFF"
+                android:endColor="#5E2FD8"/>
+            <stroke android:width="@dimen/dp_1" android:color="#80FFFFFF"/>
+            <corners android:radius="@dimen/dp_26"/>
+        </shape>
+    </item>
+</selector>
