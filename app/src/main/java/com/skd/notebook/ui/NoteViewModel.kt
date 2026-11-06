@@ -70,6 +70,22 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         refreshPinnedWidget()
     }
 
+    /**
+     * The user dragged notes into a new order: [shown] is the list as it now stands on screen.
+     * The notes swap the places they already had among themselves (so notes that are not on screen,
+     * such as those in other folders, keep their relative order); if some have no place yet, the
+     * shown notes are simply numbered 1, 2, 3...
+     */
+    fun reorder(shown: List<NoteEntity>) = viewModelScope.launch {
+        val places = shown.map { it.sortIndex }.sorted()
+        val usable = places.toSet().size == places.size && (places.firstOrNull() ?: 1L) > 0L
+        val targets = if (usable) places else shown.indices.map { it + 1L }
+        val changed = shown.mapIndexedNotNull { i, note ->
+            if (note.sortIndex != targets[i]) note.copy(sortIndex = targets[i]) else null
+        }
+        if (changed.isNotEmpty()) repo.reorder(changed)
+    }
+
     fun moveToBin(note: NoteEntity)         = viewModelScope.launch { repo.moveToBin(note); refreshPinnedWidget() }
     fun restoreFromBin(note: NoteEntity)    = viewModelScope.launch { repo.restore(note); refreshPinnedWidget() }
     fun deletePermanently(note: NoteEntity) = viewModelScope.launch {
