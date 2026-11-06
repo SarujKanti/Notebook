@@ -35,5 +35,8 @@ data class NoteEntity(
     var isPinned: Boolean = false,
     /** Ids of the photos attached to the note, joined with commas (see NoteImages); the photos live beside the note. */
     @ColumnInfo(defaultValue = "''")
-    var imageIds: String = ""
+    var imageIds: String = "",
+    /** Place in the user's own order (Custom sort); 0 = never placed, so a new note starts at the top. */
+    @ColumnInfo(defaultValue = "0")
+    var sortIndex: Long = 0L
 )
