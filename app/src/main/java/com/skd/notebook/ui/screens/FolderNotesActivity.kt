@@ -15,6 +15,7 @@ import com.skd.notebook.ui.confirmMoveToBin
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -30,6 +31,9 @@ import com.skd.notebook.util.NoteImages
 import com.skd.notebook.ui.NoteBody
 import com.skd.notebook.ui.ActionItem
 import com.skd.notebook.ui.NoteAdapter
+import com.skd.notebook.ui.NoteDragCallback
+import com.skd.notebook.util.SortOrder
+import com.google.android.material.snackbar.Snackbar
 import com.skd.notebook.ui.NoteViewModel
 import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.util.fitTopInsetAsPadding
@@ -88,7 +92,7 @@ class FolderNotesActivity : BaseActivity() {
         }
         adapter   = NoteAdapter(
             onClick     = { note -> showNoteDialog(note) },
-            onLongClick = openActions,
+            onLongClick = { /* press and hold now drags the note to a new place */ },
             onPinClick  = { note -> viewModel.togglePin(note) },
             onMoreClick = openActions
         )
@@ -96,6 +100,14 @@ class FolderNotesActivity : BaseActivity() {
         val spanCount = if (AppSettings.gridView(this)) noteGridColumns() else 1
         recyclerView.layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.adapter = adapter
+
+        // Press and hold a note, then drag it to put the notes in your own order.
+        ItemTouchHelper(NoteDragCallback(adapter, onDropped = { shown ->
+            val switched = AppSettings.sortOrder(this) != SortOrder.CUSTOM
+            AppSettings.setSortOrder(this, SortOrder.CUSTOM)
+            viewModel.reorder(shown)
+            if (switched) Snackbar.make(recyclerView, getString(R.string.order_is_custom), Snackbar.LENGTH_SHORT).show()
+        })).attachToRecyclerView(recyclerView)
 
         viewModel.getFolderNotes(folderId).observe(this) { notes ->
             adapter.submitList(AppSettings.sortOrder(this).apply(notes))
