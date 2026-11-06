@@ -174,7 +174,7 @@ class MainActivity : BaseActivity() {
         viewModel = ViewModelProvider(this)[NoteViewModel::class.java]
         adapter   = NoteAdapter(
             onClick     = { note -> showNoteDialog(note) },
-            onLongClick = { note -> showNoteActions(note) },
+            onLongClick = { /* press and hold now drags the note to a new place (see NoteDragCallback) */ },
             onPinClick  = { note -> viewModel.togglePin(note) },
             onMoreClick = { note -> showNoteActions(note) }
         )
@@ -783,12 +783,10 @@ class MainActivity : BaseActivity() {
             cornerRadius = resources.getDimension(R.dimen.card_corner_radius)
         }
 
-        val callback = object : ItemTouchHelper.SimpleCallback(
-            0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        // Swipe a note sideways to bin it; press and hold, then drag, to move it to a new place.
+        val callback = object : NoteDragCallback(
+            adapter, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT, onDropped = ::onNotesReordered
         ) {
-            override fun onMove(rv: RecyclerView, vh: RecyclerView.ViewHolder,
-                                target: RecyclerView.ViewHolder) = false
-
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 // The list can be re-submitted mid-swipe (cloud sync), leaving the holder
                 // without a valid position — indexing with NO_POSITION (-1) would crash.
@@ -808,6 +806,11 @@ class MainActivity : BaseActivity() {
 
             override fun onChildDraw(c: Canvas, rv: RecyclerView, vh: RecyclerView.ViewHolder,
                                      dX: Float, dY: Float, actionState: Int, isActive: Boolean) {
+                if (actionState != ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    // A note being dragged to a new place: no red "delete" panel behind it.
+                    super.onChildDraw(c, rv, vh, dX, dY, actionState, isActive)
+                    return
+                }
                 val item       = vh.itemView
                 val iconSize   = deleteIcon?.intrinsicHeight ?: 0
                 val iconMargin = (item.height - iconSize) / 2
@@ -834,6 +837,16 @@ class MainActivity : BaseActivity() {
             }
         }
         ItemTouchHelper(callback).attachToRecyclerView(recyclerView)
+    }
+
+    /** A note was dragged to a new place: remember the order, and switch the sorting to Custom so it stays. */
+    private fun onNotesReordered(shown: List<NoteEntity>) {
+        val switched = AppSettings.sortOrder(this) != SortOrder.CUSTOM
+        AppSettings.setSortOrder(this, SortOrder.CUSTOM)
+        updateSortLabel()
+        viewModel.reorder(shown)
+        staggeredManager?.invalidateSpanAssignments() // the grid re-flows the columns for the new order
+        if (switched) Snackbar.make(recyclerView, getString(R.string.order_is_custom), Snackbar.LENGTH_SHORT).show()
     }
 
     // ─── Note action sheet ───────────────────────────────────────────────────
