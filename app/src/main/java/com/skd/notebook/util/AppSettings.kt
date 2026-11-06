@@ -6,19 +6,28 @@ import com.skd.notebook.R
 import com.skd.notebook.data.local.NoteEntity
 
 /** How the note lists are ordered. */
-enum class SortOrder(val key: String, @StringRes private val labelRes: Int, @StringRes private val chipRes: Int) {
-    NEWEST("newest", R.string.sort_newest_first, R.string.sort_newest_chip),
-    OLDEST("oldest", R.string.sort_oldest_first, R.string.sort_oldest_chip),
-    ALPHABETICAL("alphabetical", R.string.sort_alphabetical_first, R.string.sort_alphabetical_chip);
+enum class SortOrder(
+    val key: String,
+    @StringRes private val labelRes: Int,
+    @StringRes private val chipRes: Int,
+    @StringRes private val hintRes: Int
+) {
+    NEWEST("newest", R.string.sort_newest_first, R.string.sort_newest_chip, R.string.sort_newest_hint),
+    OLDEST("oldest", R.string.sort_oldest_first, R.string.sort_oldest_chip, R.string.sort_oldest_hint),
+    ALPHABETICAL("alphabetical", R.string.sort_alphabetical_first, R.string.sort_alphabetical_chip, R.string.sort_alphabetical_hint),
+    /** The user's own order, made by long-pressing a note and dragging it. */
+    CUSTOM("custom", R.string.sort_custom_first, R.string.sort_custom_chip, R.string.sort_custom_hint);
 
     val label: String get() = Str(labelRes)
     val chip: String get() = Str(chipRes)
+    val hint: String get() = Str(hintRes)
 
     /** The list in this order. Notes without a title sort by their text. */
     fun apply(notes: List<NoteEntity>): List<NoteEntity> = when (this) {
         NEWEST -> notes.sortedByDescending { it.timestamp }
         OLDEST -> notes.sortedBy { it.timestamp }
         ALPHABETICAL -> notes.sortedBy { it.title.ifBlank { it.description }.trim().lowercase() }
+        CUSTOM -> notes.sortedWith(compareBy<NoteEntity> { it.sortIndex }.thenByDescending { it.timestamp })
     }
 }
 
