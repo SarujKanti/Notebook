@@ -15,6 +15,10 @@ interface NoteDao {
     @Update
     suspend fun update(note: NoteEntity)
 
+    /** Several notes in one go (one change for the lists to react to, not one per note). */
+    @Update
+    suspend fun updateAll(notes: List<NoteEntity>)
+
     @Delete
     suspend fun delete(note: NoteEntity)
 

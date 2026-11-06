@@ -34,6 +34,12 @@ class NoteRepository(
         trySync { firebase.saveNote(note) }
     }
 
+    /** Saves the places the user dragged notes to, without touching their edit times. */
+    suspend fun reorder(notes: List<NoteEntity>) {
+        noteDao.updateAll(notes)
+        trySync { notes.forEach { firebase.saveNote(it) } }
+    }
+
     /** Soft-delete: moves note to Bin */
     suspend fun moveToBin(note: NoteEntity) {
         val updated = note.copy(isDeleted = true, deletedAt = System.currentTimeMillis(), isArchived = false)
