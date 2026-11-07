@@ -295,7 +295,11 @@ class MainActivity : BaseActivity() {
         val sort = AppSettings.sortOrder(this)
         if (appliedSort != null && sort != appliedSort) {
             appliedSort = sort
-            adapter.submitList(visibleNotes())
+            // A new sorting always starts from the top of the list, not wherever it was scrolled to.
+            // (scrollToPosition is swallowed by the staggered grid mid-update, so wait for the layout.)
+            adapter.submitList(visibleNotes()) {
+                recyclerView.post { staggeredManager?.scrollToPositionWithOffset(0, 0) }
+            }
         }
         updateSortLabel()
         val grid = AppSettings.gridView(this)
