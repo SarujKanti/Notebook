@@ -4,6 +4,7 @@ import android.view.HapticFeedbackConstants
 import android.view.View
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.skd.notebook.data.local.NoteEntity
 
 /**
@@ -54,11 +55,21 @@ open class NoteDragCallback(
         if (moved) {
             moved = false
             onDropped(adapter.currentList)
+            // The columns were handed out before the notes moved: hand them out again so the grid is even.
+            recyclerView.post { (recyclerView.layoutManager as? StaggeredGridLayoutManager)?.invalidateSpanAssignments() }
         }
     }
 
+    /**
+     * Raises the held note a little (and puts it back). Set at once, not animated: the list's own move and
+     * change animations cancel a running view animation, which used to leave a note slightly enlarged and
+     * so shrink the gap around it.
+     */
     private fun lift(view: View, up: Boolean) {
+        view.animate().cancel()
         val scale = if (up) 1.04f else 1f
-        view.animate().scaleX(scale).scaleY(scale).alpha(if (up) 0.92f else 1f).setDuration(120).start()
+        view.scaleX = scale
+        view.scaleY = scale
+        view.alpha = if (up) 0.92f else 1f
     }
 }
