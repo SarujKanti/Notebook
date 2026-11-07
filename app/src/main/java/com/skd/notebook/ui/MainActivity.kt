@@ -34,6 +34,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -635,6 +636,8 @@ class MainActivity : BaseActivity() {
         appliedGrid = isGridLayout
         val spanCount = if (isGridLayout) noteGridColumns() else 1
         staggeredManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
+        // A note whose place changed is redrawn in place, not cross-faded: the fade copies a card and upsets the grid's spacing.
+        (recyclerView.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
         recyclerView.layoutManager = staggeredManager
         recyclerView.adapter = adapter
     }
@@ -845,7 +848,6 @@ class MainActivity : BaseActivity() {
         AppSettings.setSortOrder(this, SortOrder.CUSTOM)
         updateSortLabel()
         viewModel.reorder(shown)
-        staggeredManager?.invalidateSpanAssignments() // the grid re-flows the columns for the new order
         if (switched) Snackbar.make(recyclerView, getString(R.string.order_is_custom), Snackbar.LENGTH_SHORT).show()
     }
 
