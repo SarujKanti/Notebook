@@ -850,6 +850,7 @@ class MainActivity : BaseActivity() {
     private fun onNotesReordered(shown: List<NoteEntity>) {
         val switched = AppSettings.sortOrder(this) != SortOrder.CUSTOM
         AppSettings.setSortOrder(this, SortOrder.CUSTOM)
+        appliedSort = SortOrder.CUSTOM // the list is already in this order: not a new sorting to scroll to the top for
         updateSortLabel()
         viewModel.reorder(shown)
         if (switched) Snackbar.make(recyclerView, getString(R.string.order_is_custom), Snackbar.LENGTH_SHORT).show()
