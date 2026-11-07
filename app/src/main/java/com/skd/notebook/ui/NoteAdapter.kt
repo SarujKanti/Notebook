@@ -13,7 +13,6 @@ import android.graphics.drawable.GradientDrawable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.shape.CornerFamily
@@ -35,7 +34,38 @@ class NoteAdapter(
     private val showPin: Boolean = true,
     /** When set, each card shows a "more" (...) button that calls this. */
     private val onMoreClick: ((NoteEntity) -> Unit)? = null
-) : ListAdapter<NoteEntity, NoteAdapter.NoteViewHolder>(DIFF_CALLBACK) {
+) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
+
+    // The notes on show. Kept here (not in a ListAdapter) so a note can be moved while it is being dragged.
+    private var items: MutableList<NoteEntity> = mutableListOf()
+
+    val currentList: List<NoteEntity> get() = items
+
+    private fun getItem(position: Int): NoteEntity = items[position]
+
+    override fun getItemCount() = items.size
+
+    /** Shows [list], animating what changed. [onCommitted] runs once the change has been applied. */
+    fun submitList(list: List<NoteEntity>?, onCommitted: (() -> Unit)? = null) {
+        val updated = list.orEmpty().toMutableList()
+        val old = items
+        val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize() = old.size
+            override fun getNewListSize() = updated.size
+            override fun areItemsTheSame(o: Int, n: Int) = old[o].id == updated[n].id
+            override fun areContentsTheSame(o: Int, n: Int) = old[o] == updated[n]
+        })
+        items = updated
+        diff.dispatchUpdatesTo(this)
+        onCommitted?.invoke()
+    }
+
+    /** Moves a note from one place to another while it is dragged. */
+    fun moveItem(from: Int, to: Int) {
+        if (from == to || from !in items.indices || to !in items.indices) return
+        items.add(to, items.removeAt(from))
+        notifyItemMoved(from, to)
+    }
 
     /** While true, cards show a check circle instead of the pin and mark the selected ones. */
     var selectionMode: Boolean = false
@@ -61,10 +91,6 @@ class NoteAdapter(
     }
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<NoteEntity>() {
-            override fun areItemsTheSame(a: NoteEntity, b: NoteEntity) = a.id == b.id
-            override fun areContentsTheSame(a: NoteEntity, b: NoteEntity) = a == b
-        }
         private val DATE_FORMAT = SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
         private const val CARD_PHOTO_PX = 480
     }
@@ -109,6 +135,17 @@ class NoteAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         NoteViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_note, parent, false))
+
+    /** A card that was lifted while dragged must come back plain: the same view is reused for another note. */
+    override fun onViewRecycled(holder: NoteViewHolder) {
+        super.onViewRecycled(holder)
+        holder.itemView.apply {
+            animate().cancel()
+            scaleX = 1f
+            scaleY = 1f
+            alpha = 1f
+        }
+    }
 
     /** "In a folder" marker: a small pill with the folder's icon (in its color) and name. */
     private fun bindFolderChip(holder: NoteViewHolder, note: NoteEntity) {

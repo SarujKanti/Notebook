@@ -266,16 +266,11 @@ class SettingsActivity : BaseActivity() {
 
     private fun chooseSorting() {
         val orders = SortOrder.values().toList()
-        val hints = mapOf(
-            SortOrder.NEWEST to getString(R.string.sort_newest_hint),
-            SortOrder.OLDEST to getString(R.string.sort_oldest_hint),
-            SortOrder.ALPHABETICAL to getString(R.string.sort_alphabetical_hint)
-        )
         showChoiceDialog(
             title = getString(R.string.default_sorting),
             subtitle = getString(R.string.sort_notes_subtitle),
             icon = R.drawable.ic_sort,
-            options = orders.map { ChoiceOption(it.label, hints[it], R.drawable.ic_sort) },
+            options = orders.map { ChoiceOption(it.label, it.hint, R.drawable.ic_sort) },
             selectedIndex = orders.indexOf(AppSettings.sortOrder(this))
         ) { which ->
             AppSettings.setSortOrder(this, orders[which])

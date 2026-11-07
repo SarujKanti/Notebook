@@ -34,6 +34,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -174,7 +175,7 @@ class MainActivity : BaseActivity() {
         viewModel = ViewModelProvider(this)[NoteViewModel::class.java]
         adapter   = NoteAdapter(
             onClick     = { note -> showNoteDialog(note) },
-            onLongClick = { note -> showNoteActions(note) },
+            onLongClick = { /* press and hold now drags the note to a new place (see NoteDragCallback) */ },
             onPinClick  = { note -> viewModel.togglePin(note) },
             onMoreClick = { note -> showNoteActions(note) }
         )
@@ -294,7 +295,11 @@ class MainActivity : BaseActivity() {
         val sort = AppSettings.sortOrder(this)
         if (appliedSort != null && sort != appliedSort) {
             appliedSort = sort
-            adapter.submitList(visibleNotes())
+            // A new sorting always starts from the top of the list, not wherever it was scrolled to.
+            // (scrollToPosition is swallowed by the staggered grid mid-update, so wait for the layout.)
+            adapter.submitList(visibleNotes()) {
+                recyclerView.post { staggeredManager?.scrollToPositionWithOffset(0, 0) }
+            }
         }
         updateSortLabel()
         val grid = AppSettings.gridView(this)
@@ -635,6 +640,8 @@ class MainActivity : BaseActivity() {
         appliedGrid = isGridLayout
         val spanCount = if (isGridLayout) noteGridColumns() else 1
         staggeredManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
+        // A note whose place changed is redrawn in place, not cross-faded: the fade copies a card and upsets the grid's spacing.
+        (recyclerView.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
         recyclerView.layoutManager = staggeredManager
         recyclerView.adapter = adapter
     }
@@ -742,16 +749,11 @@ class MainActivity : BaseActivity() {
 
     private fun showSortDialog() {
         val orders = SortOrder.values().toList()
-        val hints = mapOf(
-            SortOrder.NEWEST to getString(R.string.sort_newest_hint),
-            SortOrder.OLDEST to getString(R.string.sort_oldest_hint),
-            SortOrder.ALPHABETICAL to getString(R.string.sort_alphabetical_hint)
-        )
         showChoiceDialog(
             title = getString(R.string.sort_notes_title),
             subtitle = getString(R.string.sort_notes_subtitle),
             icon = R.drawable.ic_sort,
-            options = orders.map { ChoiceOption(it.label, hints[it], R.drawable.ic_sort) },
+            options = orders.map { ChoiceOption(it.label, it.hint, R.drawable.ic_sort) },
             selectedIndex = orders.indexOf(AppSettings.sortOrder(this))
         ) { which ->
             AppSettings.setSortOrder(this, orders[which])
@@ -788,12 +790,10 @@ class MainActivity : BaseActivity() {
             cornerRadius = resources.getDimension(R.dimen.card_corner_radius)
         }
 
-        val callback = object : ItemTouchHelper.SimpleCallback(
-            0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        // Swipe a note sideways to bin it; press and hold, then drag, to move it to a new place.
+        val callback = object : NoteDragCallback(
+            adapter, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT, onDropped = ::onNotesReordered
         ) {
-            override fun onMove(rv: RecyclerView, vh: RecyclerView.ViewHolder,
-                                target: RecyclerView.ViewHolder) = false
-
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 // The list can be re-submitted mid-swipe (cloud sync), leaving the holder
                 // without a valid position — indexing with NO_POSITION (-1) would crash.
@@ -813,6 +813,11 @@ class MainActivity : BaseActivity() {
 
             override fun onChildDraw(c: Canvas, rv: RecyclerView, vh: RecyclerView.ViewHolder,
                                      dX: Float, dY: Float, actionState: Int, isActive: Boolean) {
+                if (actionState != ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    // A note being dragged to a new place: no red "delete" panel behind it.
+                    super.onChildDraw(c, rv, vh, dX, dY, actionState, isActive)
+                    return
+                }
                 val item       = vh.itemView
                 val iconSize   = deleteIcon?.intrinsicHeight ?: 0
                 val iconMargin = (item.height - iconSize) / 2
@@ -839,6 +844,16 @@ class MainActivity : BaseActivity() {
             }
         }
         ItemTouchHelper(callback).attachToRecyclerView(recyclerView)
+    }
+
+    /** A note was dragged to a new place: remember the order, and switch the sorting to Custom so it stays. */
+    private fun onNotesReordered(shown: List<NoteEntity>) {
+        val switched = AppSettings.sortOrder(this) != SortOrder.CUSTOM
+        AppSettings.setSortOrder(this, SortOrder.CUSTOM)
+        appliedSort = SortOrder.CUSTOM // the list is already in this order: not a new sorting to scroll to the top for
+        updateSortLabel()
+        viewModel.reorder(shown)
+        if (switched) Snackbar.make(recyclerView, getString(R.string.order_is_custom), Snackbar.LENGTH_SHORT).show()
     }
 
     // ─── Note action sheet ───────────────────────────────────────────────────

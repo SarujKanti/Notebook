@@ -68,6 +68,20 @@ class FirebaseService {
         notesRef().document(note.id).set(note).await()
     }
 
+    /**
+     * Saves many notes as one write (in batches of up to 400, Firestore's limit is 500). Saved one by one,
+     * each save sent back a snapshot with the notes not yet saved still as they were, which put their old
+     * values back on the phone.
+     */
+    suspend fun saveNotes(notes: List<NoteEntity>) {
+        val col = notesRef()
+        notes.chunked(400).forEach { chunk ->
+            val batch = firestore.batch()
+            chunk.forEach { batch.set(col.document(it.id), it) }
+            batch.commit().await()
+        }
+    }
+
     suspend fun deleteNote(id: String) {
         notesRef().document(id).delete().await()
     }

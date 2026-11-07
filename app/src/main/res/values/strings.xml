@@ -256,6 +256,10 @@ Tap here to log in.</string>
     <string name="sort_oldest_chip">Oldest</string>
     <string name="sort_alphabetical_first">Alphabetical (A–Z)</string>
     <string name="sort_alphabetical_chip">A–Z</string>
+    <string name="sort_custom_first">Custom order</string>
+    <string name="sort_custom_chip">Custom</string>
+    <string name="sort_custom_hint">Your own order: long-press a note and drag it</string>
+    <string name="order_is_custom">Order saved. Sorting is now Custom order.</string>
 
     <!-- Font style (Settings) -->
     <string name="font_style">Font Style</string>
