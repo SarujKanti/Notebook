@@ -16,6 +16,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -99,6 +100,7 @@ class FolderNotesActivity : BaseActivity() {
 
         val spanCount = if (AppSettings.gridView(this)) noteGridColumns() else 1
         recyclerView.layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
+        (recyclerView.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false // see MainActivity
         recyclerView.adapter = adapter
 
         // Press and hold a note, then drag it to put the notes in your own order.
