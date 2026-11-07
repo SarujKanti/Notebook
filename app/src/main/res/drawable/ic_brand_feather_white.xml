@@ -1,14 +1,32 @@
+<!-- A quill pen: a feather with barbs, a shaft, and a nib at the end of the bare stem. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="@dimen/dp_40"
     android:height="@dimen/dp_40"
     android:viewportWidth="24"
     android:viewportHeight="24">
+
+    <!-- Feather -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M21,2 C14,2 7.5,6.5 6.5,14 L3,21 L5.5,21.5 L8,17.5 C15,17.5 20.5,11 21,2 Z"/>
+        android:pathData="M8.4,15.6 C8.0,10.4 12.8,5.3 21,3 C19.9,10.2 15.3,15.7 8.4,15.6 Z"/>
+
+    <!-- Barbs, sweeping toward the tip -->
     <path
         android:strokeColor="#5B2FD6"
-        android:strokeWidth="1.1"
+        android:strokeAlpha="0.35"
+        android:strokeWidth="0.45"
         android:strokeLineCap="round"
-        android:pathData="M8,17.5 L16,8"/>
+        android:pathData="M18.7,5.3 L19.0,4.3 M18.7,5.3 L19.7,5.0 M17.3,6.8 L17.7,5.0 M17.3,6.8 L19.1,6.3 M15.8,8.2 L16.5,5.8 M15.8,8.2 L18.2,7.6 M14.4,9.7 L15.1,6.9 M14.4,9.7 L17.1,8.9 M13.0,11.1 L13.7,8.3 M13.0,11.1 L15.8,10.4 M11.6,12.6 L12.2,10.0 M11.6,12.6 L14.1,11.9 M10.1,14.0 L10.7,12.0 M10.1,14.0 L12.2,13.5"/>
+
+    <!-- Shaft -->
+    <path
+        android:strokeColor="#5B2FD6"
+        android:strokeWidth="0.85"
+        android:strokeLineCap="round"
+        android:pathData="M20.0,4.0 L7.0,17.2"/>
+
+    <!-- Nib -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M6.3,16.5 L7.9,18.1 L3.0,21.3 Z"/>
 </vector>
