@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Frosted glass, iOS style: a smoky violet body (nearly solid, for phones that cannot blur the screen behind it),
+    a soft white sheen fading down from the top edge, a thin bright rim and a faint inner rim for depth.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Body -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="315"
+                android:startColor="#EB403A78"
+                android:endColor="#EB1D1846"/>
+            <corners android:radius="@dimen/dp_22"/>
+        </shape>
+    </item>
+
+    <!-- Sheen: light falling on the glass from the top -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="#3DFFFFFF"
+                android:centerColor="#10FFFFFF"
+                android:endColor="#00FFFFFF"/>
+            <corners android:radius="@dimen/dp_22"/>
+        </shape>
+    </item>
+
+    <!-- Rim -->
+    <item>
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="@dimen/dp_1_2"
+                android:color="#73FFFFFF"/>
+            <corners android:radius="@dimen/dp_22"/>
+        </shape>
+    </item>
+
+    <!-- Inner rim -->
+    <item
+        android:left="@dimen/dp_1"
+        android:top="@dimen/dp_1"
+        android:right="@dimen/dp_1"
+        android:bottom="@dimen/dp_1">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="@dimen/dp_1"
+                android:color="#1FFFFFFF"/>
+            <corners android:radius="@dimen/dp_22"/>
+        </shape>
+    </item>
+</layer-list>

@@ -29,11 +29,14 @@ import com.skd.notebook.util.AppSettings
  */
 internal fun Dialog.applyGlassBackdrop() {
     val w = window ?: return
-    w.setDimAmount(0.45f)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    val blurs = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+        (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).isCrossWindowBlurEnabled
+    // With blur the screen behind only needs a light dim (like iOS); without it, dim more so the panel stays readable.
+    w.setDimAmount(if (blurs) 0.28f else 0.5f)
+    if (blurs) {
         w.addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND)
         val attrs = w.attributes
-        attrs.blurBehindRadius = (22 * context.resources.displayMetrics.density).toInt()
+        attrs.blurBehindRadius = (30 * context.resources.displayMetrics.density).toInt()
         w.attributes = attrs
     }
 }

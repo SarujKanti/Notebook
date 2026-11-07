@@ -6,7 +6,9 @@ import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
+import com.skd.notebook.util.dimenPx
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
@@ -42,7 +44,7 @@ fun Context.showActionSheet(title: String? = null, items: List<ActionItem>) {
 
     val destructiveColor = android.graphics.Color.parseColor("#FF8A80") // light red, readable on the glass sheet
 
-    items.forEach { item ->
+    items.forEachIndexed { index, item ->
         val row   = LayoutInflater.from(dialog.context).inflate(R.layout.item_action_sheet_row, container, false)
         val icon  = row.findViewById<ImageView>(R.id.actionRowIcon)
         val label = row.findViewById<TextView>(R.id.actionRowLabel)
@@ -58,6 +60,16 @@ fun Context.showActionSheet(title: String? = null, items: List<ActionItem>) {
             item.onClick()
         }
         container.addView(row)
+        // A hairline between the rows, like an iOS action sheet, inset to start under the label.
+        if (index < items.lastIndex) {
+            container.addView(View(dialog.context).apply {
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1).also {
+                    it.marginStart = dimenPx(R.dimen.dp_62)
+                    it.marginEnd = dimenPx(R.dimen.dp_20)
+                }
+                setBackgroundColor(0x26FFFFFF)
+            })
+        }
     }
 
     dialog.setContentView(view)

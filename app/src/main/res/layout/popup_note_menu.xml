@@ -11,7 +11,7 @@
     android:paddingBottom="@dimen/dp_8"
     android:minWidth="@dimen/dp_260"
     android:elevation="@dimen/dp_12"
-    android:background="@drawable/bg_popup_menu">
+    android:background="@drawable/bg_glass_popup">
 
     <!-- Voice typing -->
     <LinearLayout
@@ -31,7 +31,7 @@
         <FrameLayout
             android:layout_width="@dimen/dp_42"
             android:layout_height="@dimen/dp_42"
-            android:background="@drawable/bg_menu_tile">
+            android:background="@drawable/bg_glass_tile">
 
             <ImageView
                 android:layout_width="@dimen/dp_22"
@@ -39,7 +39,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_mic"
                 android:importantForAccessibility="no"
-                app:tint="?attr/colorPrimary"/>
+                app:tint="#FFFFFF"/>
         </FrameLayout>
 
         <LinearLayout
@@ -54,14 +54,14 @@
                 android:text="@string/menu_voice_typing"
                 android:textSize="@dimen/text_subtitle"
                 android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"/>
+                android:textColor="#FFFFFF"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/menu_voice_hint"
                 android:textSize="@dimen/text_caption"
-                android:textColor="?attr/colorOnSurfaceVariant"/>
+                android:textColor="#DCD3F7"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -70,8 +70,8 @@
         android:layout_height="@dimen/dp_1"
         android:layout_marginStart="@dimen/dp_70"
         android:layout_marginEnd="@dimen/dp_16"
-        android:background="?attr/colorOnSurface"
-        android:alpha="0.08"/>
+        android:background="#FFFFFF"
+        android:alpha="0.16"/>
 
     <!-- Photo from the gallery -->
     <LinearLayout
@@ -91,7 +91,7 @@
         <FrameLayout
             android:layout_width="@dimen/dp_42"
             android:layout_height="@dimen/dp_42"
-            android:background="@drawable/bg_menu_tile">
+            android:background="@drawable/bg_glass_tile">
 
             <ImageView
                 android:layout_width="@dimen/dp_22"
@@ -99,7 +99,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_photo_library"
                 android:importantForAccessibility="no"
-                app:tint="?attr/colorPrimary"/>
+                app:tint="#FFFFFF"/>
         </FrameLayout>
 
         <LinearLayout
@@ -114,14 +114,14 @@
                 android:text="@string/menu_choose_photo"
                 android:textSize="@dimen/text_subtitle"
                 android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"/>
+                android:textColor="#FFFFFF"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/menu_gallery_hint"
                 android:textSize="@dimen/text_caption"
-                android:textColor="?attr/colorOnSurfaceVariant"/>
+                android:textColor="#DCD3F7"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -130,8 +130,8 @@
         android:layout_height="@dimen/dp_1"
         android:layout_marginStart="@dimen/dp_70"
         android:layout_marginEnd="@dimen/dp_16"
-        android:background="?attr/colorOnSurface"
-        android:alpha="0.08"/>
+        android:background="#FFFFFF"
+        android:alpha="0.16"/>
 
     <!-- Photo from the camera -->
     <LinearLayout
@@ -151,7 +151,7 @@
         <FrameLayout
             android:layout_width="@dimen/dp_42"
             android:layout_height="@dimen/dp_42"
-            android:background="@drawable/bg_menu_tile">
+            android:background="@drawable/bg_glass_tile">
 
             <ImageView
                 android:layout_width="@dimen/dp_22"
@@ -159,7 +159,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_camera"
                 android:importantForAccessibility="no"
-                app:tint="?attr/colorPrimary"/>
+                app:tint="#FFFFFF"/>
         </FrameLayout>
 
         <LinearLayout
@@ -174,14 +174,14 @@
                 android:text="@string/menu_take_photo"
                 android:textSize="@dimen/text_subtitle"
                 android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"/>
+                android:textColor="#FFFFFF"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/menu_camera_hint"
                 android:textSize="@dimen/text_caption"
-                android:textColor="?attr/colorOnSurfaceVariant"/>
+                android:textColor="#DCD3F7"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

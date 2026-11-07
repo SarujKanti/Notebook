@@ -63,9 +63,10 @@ fun BaseActivity.showProfilePhoto(name: String, photo: Bitmap?, onEdit: () -> Un
     dialog.setContentView(view)
     dialog.window?.apply {
         setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        setBackgroundDrawable(ColorDrawable(Color.parseColor("#CC000000")))
+        setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         setWindowAnimations(R.style.Animation_NoteBook_ProfileViewer)
     }
+    dialog.applyGlassBackdrop() // the screen behind is blurred and dimmed like every other dialog
     dialog.show()
     FontStyles.applyToTree(dialog.window?.decorView)
 }
