@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Frosted-glass panel for dialogs: a translucent purple body, a soft light sheen from the top-left,
-    and a thin bright rim. On phones that support it the window also blurs what is behind it.
+    Frosted glass, iOS style: a smoky violet body (nearly solid, for phones that cannot blur the screen behind it),
+    a soft white sheen fading down from the top edge, a thin bright rim and a faint inner rim for depth.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Body: deep violet, mostly (but not fully) opaque so text stays readable on any screen -->
+    <!-- Body -->
     <item>
         <shape android:shape="rectangle">
             <gradient
                 android:angle="315"
-                android:startColor="#E04A3D96"
-                android:endColor="#E0281F5E"/>
+                android:startColor="#E6403A78"
+                android:endColor="#E61D1846"/>
             <corners android:radius="@dimen/dp_32"/>
         </shape>
     </item>
 
-    <!-- Sheen -->
+    <!-- Sheen: light falling on the glass from the top -->
     <item>
         <shape android:shape="rectangle">
             <gradient
-                android:angle="315"
-                android:startColor="#3AFFFFFF"
-                android:centerColor="#0DFFFFFF"
-                android:endColor="#1AB9A0FF"/>
+                android:angle="270"
+                android:startColor="#3DFFFFFF"
+                android:centerColor="#10FFFFFF"
+                android:endColor="#00FFFFFF"/>
             <corners android:radius="@dimen/dp_32"/>
         </shape>
     </item>
@@ -32,8 +32,22 @@
     <item>
         <shape android:shape="rectangle">
             <stroke
-                android:width="@dimen/dp_1_5"
-                android:color="#66FFFFFF"/>
+                android:width="@dimen/dp_1_2"
+                android:color="#73FFFFFF"/>
+            <corners android:radius="@dimen/dp_32"/>
+        </shape>
+    </item>
+
+    <!-- Inner rim -->
+    <item
+        android:left="@dimen/dp_1"
+        android:top="@dimen/dp_1"
+        android:right="@dimen/dp_1"
+        android:bottom="@dimen/dp_1">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="@dimen/dp_1"
+                android:color="#1FFFFFFF"/>
             <corners android:radius="@dimen/dp_32"/>
         </shape>
     </item>
