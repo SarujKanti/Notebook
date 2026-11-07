@@ -136,6 +136,17 @@ class NoteAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         NoteViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_note, parent, false))
 
+    /** A card that was lifted while dragged must come back plain: the same view is reused for another note. */
+    override fun onViewRecycled(holder: NoteViewHolder) {
+        super.onViewRecycled(holder)
+        holder.itemView.apply {
+            animate().cancel()
+            scaleX = 1f
+            scaleY = 1f
+            alpha = 1f
+        }
+    }
+
     /** "In a folder" marker: a small pill with the folder's icon (in its color) and name. */
     private fun bindFolderChip(holder: NoteViewHolder, note: NoteEntity) {
         val folder = if (note.folderId.isNotEmpty()) folders[note.folderId] else null
