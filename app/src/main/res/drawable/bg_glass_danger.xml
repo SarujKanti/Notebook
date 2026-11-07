@@ -1,9 +1,23 @@
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <gradient
-        android:angle="270"
-        android:startColor="#FF6B6B"
-        android:endColor="#C62828"/>
-    <stroke android:width="@dimen/dp_1" android:color="#80FFFFFF"/>
-    <corners android:radius="@dimen/dp_24"/>
-</shape>
+<!-- A destructive action: red glass, brighter at the top -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="#F2FF6B6B"
+                android:endColor="#F2C62828"/>
+            <corners android:radius="@dimen/dp_24"/>
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="#40FFFFFF"
+                android:centerColor="#0DFFFFFF"
+                android:endColor="#00FFFFFF"/>
+            <stroke android:width="@dimen/dp_1" android:color="#8CFFFFFF"/>
+            <corners android:radius="@dimen/dp_24"/>
+        </shape>
+    </item>
+</layer-list>
