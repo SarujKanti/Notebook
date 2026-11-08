@@ -69,6 +69,16 @@ open class BaseActivity : AppCompatActivity() {
         AppLock.onActivityStarted(this)
     }
 
+    /**
+     * Starting another app on purpose (the camera, the photo picker, speech typing, the phone's own lock
+     * screen) must not count as the app being left, or coming back would ask for the lock again.
+     */
+    override fun startActivityForResult(intent: Intent, requestCode: Int, options: Bundle?) {
+        super.startActivityForResult(intent, requestCode, options)
+        val target = intent.component?.packageName
+        if (target != packageName) AppLock.leavingOnPurpose()
+    }
+
     override fun onStop() {
         super.onStop()
         AppLock.onActivityStopped()
@@ -291,17 +301,30 @@ private const val ENGLISH = "en-US"
 
 /** Process-wide App Lock state: locked on a cold start and after the app was away too long. */
 object AppLock {
-    private const val GRACE_MS = 30_000L
+    /** Screens restarting at once (a rotation, a font change) briefly leave no screen showing; that is not leaving the app. */
+    private const val GRACE_MS = 1_500L
 
     @Volatile var locked = true // a fresh process always starts locked (if App Lock is on)
     private var started = 0
     private var leftAt = 0L
+    private var leavingOnPurpose = false
 
+    /** The app is about to start another one (camera, picker, the phone's lock screen): coming back is not a return. */
+    fun leavingOnPurpose() {
+        leavingOnPurpose = true
+    }
+
+    /**
+     * Leaving the app and coming back locks it again at once (after the short [GRACE_MS]), unless the
+     * app itself sent the user away for a moment.
+     */
     fun onActivityStarted(context: Context) {
-        if (started == 0 && leftAt != 0L &&
-            SystemClock.elapsedRealtime() - leftAt > GRACE_MS && AppSettings.appLock(context)
-        ) {
-            locked = true
+        if (started == 0 && leftAt != 0L) {
+            if (leavingOnPurpose) {
+                leavingOnPurpose = false
+            } else if (SystemClock.elapsedRealtime() - leftAt > GRACE_MS && AppSettings.appLock(context)) {
+                locked = true
+            }
         }
         started++
     }
