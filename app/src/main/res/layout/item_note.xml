@@ -32,6 +32,15 @@
             android:orientation="vertical"
             android:padding="@dimen/dp_16">
 
+            <!-- Shimmers in the photo's place while it loads -->
+            <com.skd.notebook.ui.SkeletonBlock
+                android:id="@+id/skNotePhoto"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_120"
+                android:layout_marginBottom="@dimen/dp_10"
+                android:visibility="gone"
+                app:skeletonRadius="@dimen/dp_12"/>
+
             <!-- First photo attached to the note (shown once it is ready) -->
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imgNotePhoto"

@@ -11,6 +11,13 @@
     android:layout_marginBottom="@dimen/dp_6"
     android:elevation="@dimen/dp_2">
 
+    <!-- Shimmers until the photo is ready -->
+    <com.skd.notebook.ui.SkeletonBlock
+        android:id="@+id/blockSkeleton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:skeletonRadius="@dimen/dp_16"/>
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/blockImage"
         android:layout_width="match_parent"

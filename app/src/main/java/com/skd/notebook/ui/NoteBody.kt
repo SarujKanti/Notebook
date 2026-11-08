@@ -137,8 +137,18 @@ class NoteBody(
         block.layoutParams.height = (height * density).roundToInt()
 
         val photo = block.findViewById<ImageView>(R.id.blockImage)
-        NoteImages.cached(image.id, PHOTO_PX)?.let { photo.setImageBitmap(it) }
-            ?: NoteImages.loadAsync(activity, image.id, PHOTO_PX) { bitmap -> bitmap?.let { photo.setImageBitmap(it) } }
+        // The block shimmers until the photo is ready (or turns out not to be available).
+        val shimmer = block.findViewById<View>(R.id.blockSkeleton)
+        val cached = NoteImages.cached(image.id, PHOTO_PX)
+        if (cached != null) {
+            photo.setImageBitmap(cached)
+            shimmer.visibility = View.GONE
+        } else {
+            NoteImages.loadAsync(activity, image.id, PHOTO_PX) { bitmap ->
+                bitmap?.let { photo.setImageBitmap(it) }
+                shimmer.visibility = View.GONE
+            }
+        }
         photo.setOnClickListener { openFullScreen(image.id) }
 
         block.findViewById<View>(R.id.blockClose).setOnClickListener { removePhoto(image.id) }

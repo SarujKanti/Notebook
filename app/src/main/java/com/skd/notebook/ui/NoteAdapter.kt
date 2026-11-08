@@ -105,6 +105,7 @@ class NoteAdapter(
         val folderChip: TextView   = view.findViewById(R.id.txtFolder)
         val btnMore: ImageButton   = view.findViewById(R.id.btnMore)
         val photo: ImageView       = view.findViewById(R.id.imgNotePhoto)
+        val photoShimmer: View     = view.findViewById(R.id.skNotePhoto)
     }
 
     /** The note's first photo at the top of its card; hidden until it is loaded, and for notes without photos. */
@@ -114,6 +115,7 @@ class NoteAdapter(
         if (id == null) {
             photo.tag = null
             photo.visibility = View.GONE
+            holder.photoShimmer.visibility = View.GONE
             return
         }
         if (photo.tag == id && photo.visibility == View.VISIBLE) return // already showing it
@@ -122,10 +124,15 @@ class NoteAdapter(
         if (ready != null) {
             photo.setImageBitmap(ready)
             photo.visibility = View.VISIBLE
+            holder.photoShimmer.visibility = View.GONE
         } else {
+            // A shimmering block holds the photo's place until it is ready, so the card does not jump when it arrives.
             photo.visibility = View.GONE
+            holder.photoShimmer.visibility = View.VISIBLE
             NoteImages.loadAsync(photo.context, id, CARD_PHOTO_PX) { bitmap ->
-                if (photo.tag == id && bitmap != null) {
+                if (photo.tag != id) return@loadAsync
+                holder.photoShimmer.visibility = View.GONE
+                if (bitmap != null) {
                     photo.setImageBitmap(bitmap)
                     photo.visibility = View.VISIBLE
                 }
