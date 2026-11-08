@@ -97,7 +97,7 @@ class MainActivity : BaseActivity() {
     private lateinit var btnMenu: ImageButton
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var tvSort: TextView
-    private lateinit var progressSync: android.widget.ProgressBar
+    private lateinit var skeletonNotes: View
     private lateinit var tvEmptyTitle: TextView
     private lateinit var tvEmptySub: TextView
 
@@ -180,7 +180,7 @@ class MainActivity : BaseActivity() {
             onMoreClick = { note -> showNoteActions(note) }
         )
 
-        progressSync = findViewById(R.id.progressSync)
+        skeletonNotes = findViewById(R.id.skeletonNotes)
         tvEmptyTitle = findViewById(R.id.tvEmptyTitle)
         tvEmptySub   = findViewById(R.id.tvEmptySub)
         tvSort       = findViewById(R.id.tvSort)
@@ -669,7 +669,8 @@ class MainActivity : BaseActivity() {
     private fun refreshEmptyState() {
         val syncing = viewModel.isSyncing.value ?: true
         val empty   = visibleNotes().isEmpty()
-        progressSync.visibility = if (syncing) View.VISIBLE else View.GONE
+        // Placeholder cards only while there is nothing to show yet; notes already on the phone are just shown.
+        skeletonNotes.visibility = if (syncing && empty) View.VISIBLE else View.GONE
         layoutEmpty.visibility  = if (empty && !syncing) View.VISIBLE else View.GONE
         if (filter == HomeFilter.PINNED && latestNotes.isNotEmpty()) {
             tvEmptyTitle.text = getString(R.string.empty_pinned_title)
