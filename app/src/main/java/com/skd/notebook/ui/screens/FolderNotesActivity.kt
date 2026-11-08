@@ -111,7 +111,9 @@ class FolderNotesActivity : BaseActivity() {
             if (switched) Snackbar.make(recyclerView, getString(R.string.order_is_custom), Snackbar.LENGTH_SHORT).show()
         })).attachToRecyclerView(recyclerView)
 
+        val skeleton = findViewById<View>(R.id.skeletonNotes)
         viewModel.getFolderNotes(folderId).observe(this) { notes ->
+            skeleton.visibility = View.GONE // the first list has arrived (possibly empty)
             adapter.submitList(AppSettings.sortOrder(this).apply(notes))
             layoutEmpty.visibility = if (notes.isEmpty()) View.VISIBLE else View.GONE
         }

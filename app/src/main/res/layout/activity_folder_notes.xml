@@ -72,6 +72,13 @@
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
+    <!-- Placeholder cards until the first list of notes arrives -->
+    <com.skd.notebook.ui.NoteSkeletonView
+        android:id="@+id/skeletonNotes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabAdd"
         android:layout_width="wrap_content"

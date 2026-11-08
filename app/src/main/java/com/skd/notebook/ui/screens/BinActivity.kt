@@ -61,7 +61,9 @@ class BinActivity : BaseActivity() {
         recyclerView.layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.adapter = adapter
 
+        val skeleton = findViewById<View>(R.id.skeletonNotes)
         viewModel.binNotes.observe(this) { notes ->
+            skeleton.visibility = View.GONE // the first list has arrived (possibly empty)
             binNotes = notes
             adapter.submitList(notes)
             layoutEmpty.visibility = if (notes.isEmpty()) View.VISIBLE else View.GONE

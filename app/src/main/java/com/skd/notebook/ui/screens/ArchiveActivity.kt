@@ -66,7 +66,9 @@ class ArchiveActivity : BaseActivity() {
         recyclerView.layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.adapter = adapter
 
+        val skeleton = findViewById<View>(R.id.skeletonNotes)
         viewModel.archivedNotes.observe(this) { notes ->
+            skeleton.visibility = View.GONE // the first list has arrived (possibly empty)
             adapter.submitList(notes)
             layoutEmpty.visibility = if (notes.isEmpty()) View.VISIBLE else View.GONE
         }
