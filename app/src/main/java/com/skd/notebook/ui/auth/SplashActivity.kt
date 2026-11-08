@@ -15,6 +15,9 @@ import com.skd.notebook.ui.MainActivity
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : BaseActivity() {
 
+    // Nothing private is shown here, so no App Lock prompt (the home screen asks, once).
+    override val usesAppLock: Boolean get() = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, true)
