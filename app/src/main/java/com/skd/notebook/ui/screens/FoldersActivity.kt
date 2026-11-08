@@ -94,7 +94,9 @@ class FoldersActivity : BaseActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
+        val skeleton = findViewById<View>(R.id.skeletonFolders)
         viewModel.folders.observe(this) { folders ->
+            skeleton.visibility = View.GONE // the first list has arrived (possibly empty)
             adapter.submitList(folders)
             layoutEmpty.visibility = if (folders.isEmpty()) View.VISIBLE else View.GONE
         }

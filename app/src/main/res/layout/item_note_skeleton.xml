@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A note card while notes are loading: the same card, with blocks where the title, text and date go -->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/dp_6"
+    app:cardElevation="@dimen/dp_3"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="?attr/colorSurface">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_16">
+
+        <!-- Title -->
+        <com.skd.notebook.ui.SkeletonBlock
+            android:layout_width="@dimen/dp_120"
+            android:layout_height="@dimen/dp_16"
+            app:skeletonRadius="@dimen/dp_8"/>
+
+        <!-- Text lines (the screen hides the later ones, so the cards differ in height) -->
+        <com.skd.notebook.ui.SkeletonBlock
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_12"
+            android:layout_marginTop="@dimen/dp_14"
+            app:skeletonRadius="@dimen/dp_6"/>
+
+        <com.skd.notebook.ui.SkeletonBlock
+            android:id="@+id/skLine2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_12"
+            android:layout_marginTop="@dimen/dp_8"
+            app:skeletonRadius="@dimen/dp_6"/>
+
+        <com.skd.notebook.ui.SkeletonBlock
+            android:id="@+id/skLine3"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_12"
+            android:layout_marginTop="@dimen/dp_8"
+            app:skeletonRadius="@dimen/dp_6"/>
+
+        <com.skd.notebook.ui.SkeletonBlock
+            android:id="@+id/skLine4"
+            android:layout_width="@dimen/dp_90"
+            android:layout_height="@dimen/dp_12"
+            android:layout_marginTop="@dimen/dp_8"
+            app:skeletonRadius="@dimen/dp_6"/>
+
+        <!-- Date -->
+        <com.skd.notebook.ui.SkeletonBlock
+            android:layout_width="@dimen/dp_80"
+            android:layout_height="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_20"
+            app:skeletonRadius="@dimen/dp_5"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

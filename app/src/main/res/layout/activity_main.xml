@@ -229,13 +229,11 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Sync loading indicator (shown on fresh install until first cloud snapshot) -->
-        <ProgressBar
-            android:id="@+id/progressSync"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminateTint="@color/colorPrimary"
+        <!-- Placeholder cards (shown on a fresh install until the first cloud snapshot, when there is nothing to show yet) -->
+        <com.skd.notebook.ui.NoteSkeletonView
+            android:id="@+id/skeletonNotes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:visibility="gone"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
