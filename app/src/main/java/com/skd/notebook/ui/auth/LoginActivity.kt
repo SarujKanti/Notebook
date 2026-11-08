@@ -21,6 +21,9 @@ import com.skd.notebook.widget.WidgetUpdater
 
 class LoginActivity : BaseActivity() {
 
+    // Nothing private is shown here, so no App Lock prompt (the home screen asks, once).
+    override val usesAppLock: Boolean get() = false
+
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
 

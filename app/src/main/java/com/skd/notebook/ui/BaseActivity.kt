@@ -58,6 +58,12 @@ open class BaseActivity : AppCompatActivity() {
         super.attachBaseContext(FontPrefs.wrap(newBase))
     }
 
+    /**
+     * Whether this screen is covered by App Lock. The splash and login screens show no notes, so they are
+     * not: otherwise a fresh start asked for the phone's lock there and again on the home screen a moment later.
+     */
+    protected open val usesAppLock: Boolean get() = true
+
     override fun onStart() {
         super.onStart()
         AppLock.onActivityStarted(this)
@@ -74,7 +80,7 @@ open class BaseActivity : AppCompatActivity() {
             recreate()
             return
         }
-        if (AppSettings.appLock(this) && AppLock.locked) promptUnlock() else removeCover()
+        if (usesAppLock && AppSettings.appLock(this) && AppLock.locked) promptUnlock() else removeCover()
     }
 
     // ─── Font style (Settings → Font Style) ──────────────────────────────────
