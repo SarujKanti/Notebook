@@ -73,6 +73,13 @@
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
+    <!-- Placeholder rows until the first list of folders arrives -->
+    <com.skd.notebook.ui.FolderSkeletonView
+        android:id="@+id/skeletonFolders"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
     <!-- Octagon "+" button, same look and tuck-away animation as the home screen's -->
     <com.skd.notebook.ui.OctagonLayout
         android:id="@+id/fabNewFolder"
