@@ -28,8 +28,8 @@ class SkeletonBlock @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : View(context, attrs) {
 
-    private val base = ContextCompat.getColor(context, R.color.skeleton_base)
-    private val highlight = ContextCompat.getColor(context, R.color.skeleton_highlight)
+    private var base = ContextCompat.getColor(context, R.color.skeleton_base)
+    private var highlight = ContextCompat.getColor(context, R.color.skeleton_highlight)
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val shape = RectF()
     private val matrix = Matrix()
@@ -38,18 +38,21 @@ class SkeletonBlock @JvmOverloads constructor(
     private var circle = false
 
     // The band: base, highlight, base. It is BAND_WIDTH wide and moved across the window by the shared clock.
-    private val band = LinearGradient(
-        0f, 0f, BAND_WIDTH, 0f, intArrayOf(base, highlight, base), floatArrayOf(0f, 0.5f, 1f), Shader.TileMode.CLAMP
-    )
+    private val band: LinearGradient
 
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.SkeletonBlock)
         try {
             radius = a.getDimension(R.styleable.SkeletonBlock_skeletonRadius, 0f)
             circle = a.getBoolean(R.styleable.SkeletonBlock_skeletonCircle, false)
+            base = a.getColor(R.styleable.SkeletonBlock_skeletonColor, base)
+            highlight = a.getColor(R.styleable.SkeletonBlock_skeletonHighlightColor, highlight)
         } finally {
             a.recycle()
         }
+        band = LinearGradient(
+            0f, 0f, BAND_WIDTH, 0f, intArrayOf(base, highlight, base), floatArrayOf(0f, 0.5f, 1f), Shader.TileMode.CLAMP
+        )
         paint.color = base
         paint.shader = band
         importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_splash">
@@ -59,19 +60,30 @@
 
     </LinearLayout>
 
-    <!-- Loading indicator -->
+    <!-- Loading: two shimmering bars in soft white on the dark screen -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/dp_64"
-        android:gravity="center">
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
-        <ProgressBar
-            android:layout_width="@dimen/dp_32"
-            android:layout_height="@dimen/dp_32"
-            android:indeterminateTint="#FFFFFF"/>
+        <com.skd.notebook.ui.SkeletonBlock
+            android:layout_width="@dimen/dp_140"
+            android:layout_height="@dimen/dp_8"
+            app:skeletonRadius="@dimen/dp_4"
+            app:skeletonColor="#26FFFFFF"
+            app:skeletonHighlightColor="#80FFFFFF"/>
+
+        <com.skd.notebook.ui.SkeletonBlock
+            android:layout_width="@dimen/dp_88"
+            android:layout_height="@dimen/dp_8"
+            android:layout_marginTop="@dimen/dp_10"
+            app:skeletonRadius="@dimen/dp_4"
+            app:skeletonColor="#26FFFFFF"
+            app:skeletonHighlightColor="#80FFFFFF"/>
 
     </LinearLayout>
     <LinearLayout
