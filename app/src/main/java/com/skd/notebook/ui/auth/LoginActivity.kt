@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ProgressBar
 import android.widget.TextView
 import com.skd.notebook.ui.BaseActivity
 import androidx.core.view.WindowCompat
@@ -26,7 +25,7 @@ class LoginActivity : BaseActivity() {
 
     private lateinit var btnGoogle: MaterialButton
     private lateinit var btnSkip: TextView
-    private lateinit var progressBar: ProgressBar
+    private lateinit var signInSkeleton: View
     private lateinit var tvError: TextView
 
     companion object {
@@ -47,7 +46,7 @@ class LoginActivity : BaseActivity() {
 
         btnGoogle   = findViewById(R.id.btnGoogleSignIn)
         btnSkip     = findViewById(R.id.btnSkip)
-        progressBar = findViewById(R.id.progressBar)
+        signInSkeleton = findViewById(R.id.skeletonSignIn)
         tvError     = findViewById(R.id.tvError)
 
         btnSkip.setOnClickListener {
@@ -105,8 +104,9 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun setLoading(show: Boolean) {
-        progressBar.visibility = if (show) View.VISIBLE else View.GONE
-        btnGoogle.isEnabled    = !show
+        // The button turns into a shimmering bar of the same size while signing in.
+        signInSkeleton.visibility = if (show) View.VISIBLE else View.GONE
+        btnGoogle.visibility      = if (show) View.GONE else View.VISIBLE
     }
 
     private fun goToMain() {

@@ -126,15 +126,14 @@
                 android:layout_marginTop="@dimen/dp_12"
                 android:visibility="gone"/>
 
-            <!-- Progress -->
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/dp_16"
-                android:indeterminateTint="@color/colorPrimary"
-                android:visibility="gone"/>
+            <!-- While signing in, the button below is replaced by this shimmering bar of the same size -->
+            <com.skd.notebook.ui.SkeletonBlock
+                android:id="@+id/skeletonSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_56"
+                android:layout_marginTop="@dimen/dp_20"
+                android:visibility="gone"
+                app:skeletonRadius="@dimen/dp_28"/>
 
             <!-- Google Sign-In button -->
             <com.google.android.material.button.MaterialButton
