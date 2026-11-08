@@ -9,4 +9,10 @@
         <attr name="octGlow" format="color"/>
         <attr name="octCornerRadius" format="dimension"/>
     </declare-styleable>
+    <!-- SkeletonBlock: a rounded placeholder with a shimmer -->
+    <declare-styleable name="SkeletonBlock">
+        <attr name="skeletonRadius" format="dimension"/>
+        <!-- Draw a circle instead of a rounded rectangle -->
+        <attr name="skeletonCircle" format="boolean"/>
+    </declare-styleable>
 </resources>

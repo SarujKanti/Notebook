@@ -30,4 +30,6 @@
     <color name="fab_home_end">#6C3BF0</color>
     <color name="fab_home_glow">#9B6BFF</color>
     <color name="editor_icon_bg">#33B39DFF</color>
+    <color name="skeleton_base">#2C2640</color>
+    <color name="skeleton_highlight">#3D3560</color>
 </resources>
