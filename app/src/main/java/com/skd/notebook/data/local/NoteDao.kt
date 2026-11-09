@@ -59,6 +59,20 @@ interface NoteDao {
     """)
     fun searchNotes(query: String): Flow<List<NoteEntity>>
 
+    /** Notes the cloud has not confirmed yet (see NoteEntity.needsSync). */
+    @Query("SELECT * FROM notes WHERE needsSync = 1")
+    suspend fun getUnsynced(): List<NoteEntity>
+
+    @Query("SELECT id FROM notes WHERE needsSync = 1")
+    suspend fun getUnsyncedIds(): List<String>
+
+    @Query("SELECT COUNT(*) FROM notes WHERE needsSync = 1")
+    fun unsyncedCount(): Flow<Int>
+
+    /** Everything on this phone needs sending: used when a guest's notes are about to join an account. */
+    @Query("UPDATE notes SET needsSync = 1")
+    suspend fun markAllUnsynced()
+
     /** One-shot list of bin notes (used before emptyBin to sync deletions) */
     @Query("SELECT * FROM notes WHERE isDeleted = 1")
     suspend fun getBinNotesList(): List<NoteEntity>
