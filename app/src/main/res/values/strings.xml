@@ -47,8 +47,7 @@
     <string name="widget_pinned_notes_title">Pinned Notes</string>
     <string name="widget_pinned_notes_description">Shows your pinned notes and lets you open or add one</string>
     <string name="widget_no_pinned_notes">No pinned notes yet.\nTap the pin icon on a note to add it here.</string>
-    <string name="widget_login_required">Log in to NoteStack to see your pinned notes.
-Tap here to log in.</string>
+    <string name="widget_login_required">Log in to NoteStack to see your pinned notes.\nTap here to log in.</string>
 
     <!-- Screens and dialogs -->
     <string name="about_label">ABOUT</string>
@@ -141,6 +140,27 @@ Tap here to log in.</string>
     <string name="unknown_user">Unknown</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
+    <string name="sync_status_synced">Synced to cloud</string>
+    <string name="sync_status_syncing">Syncing…</string>
+    <string name="sync_status_waiting">Waiting for connection</string>
+    <string name="sync_status_problem">Not syncing</string>
+    <string name="sync_status_local">Local only, not backed up</string>
+    <string name="logout_saving_title">Saving to the cloud</string>
+    <string name="logout_saving_message">Making sure all your notes are in the cloud before logging out…</string>
+    <string name="logout_unsynced_title">Not everything is in the cloud yet</string>
+    <string name="logout_unsynced_message">%1$d note(s) or folder(s) could not be saved to the cloud (%2$s). If you log out now they will be removed from this phone.</string>
+    <string name="logout_anyway">Log out anyway</string>
+    <string name="logout_offline_title">No connection</string>
+    <string name="logout_offline_message">You are trying to log out, but %1$d note(s) you added have not been saved to the server yet because there is no network. They are only on this phone, and logging out now would lose them.\n\nWait for the network to come back and they will be saved first.</string>
+    <string name="logout_wait">Wait for network</string>
+    <string name="logout_waiting_title">Waiting for network</string>
+    <string name="logout_waiting_message">Your notes will be saved to the server as soon as the network is back, and then you will be logged out.</string>
+    <string name="stay">Stay</string>
+    <string name="sync_reason_permission">the cloud refused them: permission denied</string>
+    <string name="sync_reason_offline">there is no connection to the cloud</string>
+    <string name="sync_reason_other">the cloud did not confirm them in time</string>
+    <string name="sync_denied_title">Cloud sync is blocked</string>
+    <string name="sync_denied_message">Your notes are saved on this phone, but the cloud refused them (permission denied), so they will not be there after you log out or on another device.\n\nIn the Firebase console open Firestore Database → Rules and let each signed-in user read and write their own data:\n\nmatch /users/{userId}/{document=**} {\n  allow read, write: if request.auth != null &amp;&amp; request.auth.uid == userId;\n}</string>
     <string name="pinned">Pinned</string>
     <string name="empty_pinned_title">No pinned notes</string>
     <string name="empty_pinned_hint">Tap the paperclip on a note to pin it here</string>
