@@ -153,10 +153,14 @@ class MainActivity : BaseActivity() {
     /** Restart fresh as a fully-authenticated MainActivity — drawer header, sync, and menu all re-init correctly. */
     private fun onGuestSignedIn() {
         getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_GUEST_MODE, false).apply()
-        startActivity(Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        })
-        finish()
+        lifecycleScope.launch {
+            // The notes made as a guest are only on this phone: flag them all, so the home screen sends them to the account.
+            viewModel.markEverythingUnsynced()
+            startActivity(Intent(this@MainActivity, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
+            finish()
+        }
     }
 
     private val noteColors = NoteColors.PALETTE
