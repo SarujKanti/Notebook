@@ -53,6 +53,9 @@ import com.skd.notebook.R
 import com.skd.notebook.util.fillWidthOnTablet
 import com.skd.notebook.util.noteGridColumns
 import com.skd.notebook.data.local.NoteEntity
+import com.skd.notebook.data.remote.SyncProblem
+import com.skd.notebook.data.remote.SyncStatus
+import com.skd.notebook.data.sync.CloudSync
 import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.ProfilePhoto
 import com.skd.notebook.util.NoteColors
@@ -75,6 +78,7 @@ import java.util.UUID
 class MainActivity : BaseActivity() {
 
     companion object {
+        private const val LOGOUT_SYNC_TIMEOUT_MS = 8_000L
         /** Set on the launch intent by the "New Note" widget. */
         const val ACTION_NEW_NOTE = "com.skd.notebook.ACTION_NEW_NOTE"
         /** Note id extra set by the "Pinned Notes" widget when a list item is tapped. */
@@ -557,6 +561,7 @@ class MainActivity : BaseActivity() {
         }
 
         buildDrawerMenu()
+        observeSyncState(guest)
         refreshProfilePhoto()
         if (!guest) {
             // After logging in again the picture is on the account, not on this device yet.
@@ -911,6 +916,46 @@ class MainActivity : BaseActivity() {
             positiveText = getString(R.string.login),
             onPositive = { startGoogleSignIn() }
         )
+    }
+
+    private var shownSyncBlockedDialog = false
+
+    /** The line under the email in the drawer, and - once - an explanation if the cloud refuses the notes. */
+    private fun observeSyncState(guest: Boolean) {
+        val line = findViewById<TextView>(R.id.tvNavSync)
+        if (guest) {
+            line.text = getString(R.string.sync_status_local)
+            return
+        }
+        fun show(textRes: Int, dot: Int) {
+            line.text = SpannableString("●  " + getString(textRes)).apply {
+                setSpan(ForegroundColorSpan(dot), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+        }
+        val refresh = {
+            when {
+                SyncStatus.state.value?.problem != null -> show(R.string.sync_status_problem, 0xFFFF8A80.toInt())
+                (viewModel.unsynced.value ?: 0) > 0 && CloudSync.online.value == false ->
+                    show(R.string.sync_status_waiting, 0xFFFFD180.toInt()) // saved on the phone; goes up once the connection is back
+                (viewModel.unsynced.value ?: 0) > 0 -> show(R.string.sync_status_syncing, 0xFFFFD180.toInt())
+                else -> show(R.string.sync_status_synced, 0xFF69F0AE.toInt())
+            }
+        }
+        SyncStatus.state.observe(this) { state ->
+            refresh()
+            if (state.problem == SyncProblem.PERMISSION && !shownSyncBlockedDialog) {
+                shownSyncBlockedDialog = true
+                showAppDialog(
+                    title = getString(R.string.sync_denied_title),
+                    icon = R.drawable.ic_lock,
+                    message = getString(R.string.sync_denied_message),
+                    positiveText = getString(R.string.got_it),
+                    negativeText = null
+                )
+            }
+        }
+        viewModel.unsynced.observe(this) { refresh() }
+        CloudSync.online.observe(this) { refresh() }
     }
 
     private fun signOut() {
