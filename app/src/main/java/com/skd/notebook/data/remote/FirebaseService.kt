@@ -17,6 +17,9 @@ class FirebaseService {
 
     private fun uid() = auth.currentUser?.uid
 
+    /** False for a guest (no account, so no cloud). */
+    fun isSignedIn() = auth.currentUser != null
+
     private fun notesRef(): CollectionReference =
         firestore.collection("users")
             .document(uid() ?: throw IllegalStateException("No authenticated user"))
@@ -90,6 +93,16 @@ class FirebaseService {
         foldersRef().document(folder.id).set(folder).await()
     }
 
+    /** Many folders as one write (see saveNotes). */
+    suspend fun saveFolders(folders: List<FolderEntity>) {
+        val col = foldersRef()
+        folders.chunked(400).forEach { chunk ->
+            val batch = firestore.batch()
+            chunk.forEach { batch.set(col.document(it.id), it) }
+            batch.commit().await()
+        }
+    }
+
     suspend fun deleteFolder(id: String) {
         foldersRef().document(id).delete().await()
     }
@@ -126,6 +139,7 @@ class FirebaseService {
             if (error != null) {
                 Log.e(TAG, "listenToNotes error: ${error.message} [code=${error.code}]" +
                         "\n>>> If code is PERMISSION_DENIED, update Firestore Security Rules in Firebase Console.", error)
+                SyncStatus.readFailed(error)
                 onUpdate(emptyList())   // ← always clear the spinner, never hang
                 return@addSnapshotListener
             }
@@ -138,6 +152,7 @@ class FirebaseService {
                 it.toObject(NoteEntity::class.java)
             }
             Log.d(TAG, "listenToNotes: received ${notes.size} note(s) from Firestore")
+            SyncStatus.readOk()
             onUpdate(notes)
         }
     }
@@ -155,6 +170,7 @@ class FirebaseService {
         return foldersRef().addSnapshotListener { snapshot, error ->
             if (error != null) {
                 Log.e(TAG, "listenToFolders error: ${error.message} [code=${error.code}]", error)
+                SyncStatus.readFailed(error)
                 onUpdate(emptyList())
                 return@addSnapshotListener
             }
@@ -166,6 +182,7 @@ class FirebaseService {
                 it.toObject(FolderEntity::class.java)
             }
             Log.d(TAG, "listenToFolders: received ${folders.size} folder(s) from Firestore")
+            SyncStatus.readOk()
             onUpdate(folders)
         }
     }
