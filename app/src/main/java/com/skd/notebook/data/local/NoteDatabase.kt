@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.migration.Migration
 
-@Database(entities = [NoteEntity::class, FolderEntity::class], version = 8)
+@Database(entities = [NoteEntity::class, FolderEntity::class], version = 9)
 abstract class NoteDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
     abstract fun folderDao(): FolderDao
@@ -44,10 +44,22 @@ abstract class NoteDatabase : RoomDatabase() {
             }
         }
 
+        /** Notes and folders remember whether the cloud has confirmed them yet (needsSync). */
+        private val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE notes ADD COLUMN needsSync INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE folders ADD COLUMN needsSync INTEGER NOT NULL DEFAULT 0")
+                // Until now nothing knew whether the cloud had a note, and a refused or missed save was forgotten:
+                // flag everything already on the phone, so the first sync after updating sends it all.
+                db.execSQL("UPDATE notes SET needsSync = 1")
+                db.execSQL("UPDATE folders SET needsSync = 1")
+            }
+        }
+
         fun getDatabase(context: Context): NoteDatabase {
             return INSTANCE ?: synchronized(this) {
                 Room.databaseBuilder(context, NoteDatabase::class.java, "note_db")
-                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
+                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
                     .fallbackToDestructiveMigration()
                     .build().also { INSTANCE = it }
             }

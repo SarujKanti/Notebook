@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.IgnoreExtraProperties
 
 /**
@@ -38,5 +39,12 @@ data class NoteEntity(
     var imageIds: String = "",
     /** Place in the user's own order (Custom sort); 0 = never placed, so a new note starts at the top. */
     @ColumnInfo(defaultValue = "0")
-    var sortIndex: Long = 0L
+    var sortIndex: Long = 0L,
+    /**
+     * True until the cloud has confirmed this note's latest state. Such a note is sent again later (next start,
+     * next login) and is never overwritten by the cloud's older copy. Kept on this phone only, not in Firestore.
+     */
+    @get:Exclude
+    @ColumnInfo(defaultValue = "0")
+    var needsSync: Boolean = false
 )
