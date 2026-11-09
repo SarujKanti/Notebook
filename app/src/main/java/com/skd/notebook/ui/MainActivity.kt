@@ -31,6 +31,7 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -931,6 +932,10 @@ class MainActivity : BaseActivity() {
             signOut()
             return
         }
+        if (CloudSync.online.value == false) {
+            askToWaitForNetwork()
+            return
+        }
         val waiting = showAppDialog(
             title = getString(R.string.logout_saving_title),
             icon = R.drawable.ic_logout,
@@ -961,6 +966,54 @@ class MainActivity : BaseActivity() {
                 onPositive = { signOut() }
             )
         }
+    }
+
+    /**
+     * No connection and notes still to send: say so at once (no waiting for an answer that cannot come) and offer
+     * to wait for the network instead of losing them.
+     */
+    private fun askToWaitForNetwork() {
+        showAppDialog(
+            title = getString(R.string.logout_offline_title),
+            icon = R.drawable.ic_logout,
+            message = getString(R.string.logout_offline_message, viewModel.unsynced.value ?: 0),
+            positiveText = getString(R.string.logout_wait),
+            onPositive = { waitForNetworkThenSignOut() }
+        )
+    }
+
+    /**
+     * Keeps the notes safe until the connection is back: as soon as the cloud has them all, logs out by itself.
+     * "Log out anyway" gives up waiting; Cancel (or tapping outside) stays logged in.
+     */
+    private fun waitForNetworkThenSignOut() {
+        var done = false
+        lateinit var observer: Observer<Int>
+        val stopWatching = {
+            done = true
+            viewModel.unsynced.removeObserver(observer)
+        }
+        val waiting = showAppDialog(
+            title = getString(R.string.logout_waiting_title),
+            icon = R.drawable.ic_logout,
+            message = getString(R.string.logout_waiting_message),
+            destructive = true,
+            positiveText = getString(R.string.logout_anyway),
+            onPositive = {
+                stopWatching()
+                signOut()
+            },
+            onCancel = { stopWatching() }
+        )
+        observer = Observer { left ->
+            if (left == 0 && !done) {
+                stopWatching()
+                waiting.dismiss()
+                signOut()
+            }
+        }
+        viewModel.unsynced.observe(this, observer)
+        CloudSync.flushSoon(this) // the connection may already be back
     }
 
     private var shownSyncBlockedDialog = false
