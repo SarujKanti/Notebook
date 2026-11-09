@@ -587,7 +587,7 @@ class MainActivity : BaseActivity() {
         }
         findViewById<View>(R.id.btnNavAuth).setOnClickListener {
             drawerLayout.closeDrawer(GravityCompat.START)
-            if (guest) startGoogleSignIn() else signOut()
+            if (guest) startGoogleSignIn() else trySignOut()
         }
     }
 
@@ -920,6 +920,47 @@ class MainActivity : BaseActivity() {
             positiveText = getString(R.string.login),
             onPositive = { startGoogleSignIn() }
         )
+    }
+
+    /**
+     * Logging out removes this phone's notes, so first make sure the cloud has them all. If it cannot take them
+     * (no connection, refused), say so and let the user choose, instead of quietly losing them.
+     */
+    private fun trySignOut() {
+        if ((viewModel.unsynced.value ?: 0) == 0) {
+            signOut()
+            return
+        }
+        val waiting = showAppDialog(
+            title = getString(R.string.logout_saving_title),
+            icon = R.drawable.ic_logout,
+            message = getString(R.string.logout_saving_message),
+            positiveText = null,
+            negativeText = null,
+            cancelable = false
+        )
+        lifecycleScope.launch {
+            val left = viewModel.syncNow(LOGOUT_SYNC_TIMEOUT_MS)
+            waiting.dismiss()
+            if (left == 0) {
+                signOut()
+                return@launch
+            }
+            val reason = when (SyncStatus.state.value?.problem) {
+                SyncProblem.PERMISSION -> R.string.sync_reason_permission
+                SyncProblem.OFFLINE -> R.string.sync_reason_offline
+                else -> R.string.sync_reason_other
+            }
+            showAppDialog(
+                title = getString(R.string.logout_unsynced_title),
+                icon = R.drawable.ic_logout,
+                message = getString(R.string.logout_unsynced_message, left, getString(reason)),
+                destructive = true,
+                positiveText = getString(R.string.logout_anyway),
+                negativeText = getString(R.string.stay),
+                onPositive = { signOut() }
+            )
+        }
     }
 
     private var shownSyncBlockedDialog = false
