@@ -79,21 +79,30 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    <!-- Octagon "+" button, the same as on the home and folders screens -->
+    <com.skd.notebook.ui.OctagonLayout
         android:id="@+id/fabAdd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/dp_62"
+        android:layout_height="@dimen/dp_62"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/dp_80"
         android:layout_marginEnd="@dimen/dp_16"
-        android:text="@string/new_note_label"
-        android:textColor="@color/colorOnAccent"
-        android:textSize="@dimen/text_subtitle"
-        android:textStyle="bold"
-        app:icon="@drawable/ic_add"
-        app:iconTint="@color/colorOnAccent"
-        app:backgroundTint="@color/colorAccent"
-        app:elevation="@dimen/dp_6"
-        app:cornerRadius="@dimen/dp_28"/>
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/new_note_button_description"
+        android:elevation="@dimen/dp_10"
+        app:octColor="@color/fab_home_start"
+        app:octColorMid="@color/fab_home_mid"
+        app:octColorEnd="@color/fab_home_end"
+        app:octGlow="@color/fab_home_glow">
+
+        <ImageView
+            android:id="@+id/fabAddIcon"
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="@dimen/dp_30"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_fab_plus"
+            android:importantForAccessibility="no"/>
+    </com.skd.notebook.ui.OctagonLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
