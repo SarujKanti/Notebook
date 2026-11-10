@@ -28,6 +28,12 @@ class OctagonLayout @JvmOverloads constructor(
 
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val sheen = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val shade = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val rim = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        color = RIM_COLOR
+        strokeWidth = resources.displayMetrics.density * RIM_WIDTH_DP
+    }
     private val shape = Path()
     private val cornerRadius: Float
     private val startColor: Int
@@ -68,6 +74,8 @@ class OctagonLayout @JvmOverloads constructor(
         fill.shader = if (endColor != startColor) LinearGradient(0f, 0f, w.toFloat(), h.toFloat(), startColor, endColor, Shader.TileMode.CLAMP) else null
         // Light falling from above: a white veil on the top part of the button that fades out toward the middle.
         sheen.shader = LinearGradient(0f, 0f, 0f, h * SHEEN_REACH, SHEEN_TOP, 0x00FFFFFF, Shader.TileMode.CLAMP)
+        // And a little darker toward the bottom edge, so the button has depth.
+        shade.shader = LinearGradient(0f, h * 0.5f, 0f, h.toFloat(), 0x00000000, SHADE_BOTTOM, Shader.TileMode.CLAMP)
         invalidateOutline()
     }
 
@@ -99,13 +107,18 @@ class OctagonLayout @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         canvas.drawPath(shape, fill)
+        canvas.drawPath(shape, shade)
         canvas.drawPath(shape, sheen)
+        canvas.drawPath(shape, rim) // the outer half is clipped away by the outline, leaving a fine bright edge
     }
 }
 
 /** How far down the button the highlight reaches, and how bright it is at the very top. */
 private const val SHEEN_REACH = 0.62f
 private const val SHEEN_TOP = 0x66FFFFFF
+private const val SHADE_BOTTOM = 0x40000000
+private const val RIM_COLOR = 0x66FFFFFF
+private const val RIM_WIDTH_DP = 2.2f
 
 /** How far in from each corner of the bounding box an octagon's corners sit: 1 / (2 + sqrt 2). */
 private const val INSET = 0.2929f
