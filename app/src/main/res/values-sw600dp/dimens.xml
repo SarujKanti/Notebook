@@ -13,6 +13,10 @@
     <!-- Toolbar taller on tablets -->
     <dimen name="toolbar_height">64dp</dimen>
 
+    <!-- The floating New Note / New Folder button is larger on a tablet -->
+    <dimen name="fab_size">72dp</dimen>
+    <dimen name="fab_icon_size">34dp</dimen>
+
     <!-- FAB higher above nav bar -->
     <dimen name="fab_margin_bottom">32dp</dimen>
 </resources>

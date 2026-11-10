@@ -83,8 +83,8 @@
     <!-- Octagon "+" button, same look and tuck-away animation as the home screen's -->
     <com.skd.notebook.ui.OctagonLayout
         android:id="@+id/fabNewFolder"
-        android:layout_width="@dimen/dp_62"
-        android:layout_height="@dimen/dp_62"
+        android:layout_width="@dimen/fab_size"
+        android:layout_height="@dimen/fab_size"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/dp_24"
         android:layout_marginEnd="@dimen/dp_16"
@@ -99,8 +99,8 @@
 
         <ImageView
             android:id="@+id/fabNewFolderIcon"
-            android:layout_width="@dimen/dp_30"
-            android:layout_height="@dimen/dp_30"
+            android:layout_width="@dimen/fab_icon_size"
+            android:layout_height="@dimen/fab_icon_size"
             android:layout_gravity="center"
             android:src="@drawable/ic_fab_plus"
             android:importantForAccessibility="no"/>
