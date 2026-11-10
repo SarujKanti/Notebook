@@ -1,5 +1,7 @@
 package com.skd.notebook.ui
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.LinearGradient
@@ -12,6 +14,8 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewOutlineProvider
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import com.skd.notebook.R
@@ -37,6 +41,7 @@ class OctagonLayout @JvmOverloads constructor(
     private val shape = Path()
     private val cornerRadius: Float
     private val startColor: Int
+    private var pressAnimator: ObjectAnimator? = null
     private val midColor: Int
     private val hasMid: Boolean
     private val endColor: Int
@@ -70,6 +75,31 @@ class OctagonLayout @JvmOverloads constructor(
         val ripple = TypedValue()
         if (context.theme.resolveAttribute(android.R.attr.selectableItemBackground, ripple, true)) {
             foreground = ContextCompat.getDrawable(context, ripple.resourceId)
+        }
+    }
+
+    override fun setPressed(pressed: Boolean) {
+        val changed = isPressed != pressed
+        super.setPressed(pressed)
+        if (changed) animatePress(pressed)
+    }
+
+    /**
+     * A little squeeze while the button is held, and a springy return. This is an ObjectAnimator on purpose:
+     * the tuck-away uses view.animate(), which cancels anything else on the same view and could leave the button
+     * stuck at a smaller size.
+     */
+    private fun animatePress(down: Boolean) {
+        pressAnimator?.cancel()
+        val target = if (down) PRESSED_SCALE else 1f
+        pressAnimator = ObjectAnimator.ofPropertyValuesHolder(
+            this,
+            PropertyValuesHolder.ofFloat(SCALE_X, target),
+            PropertyValuesHolder.ofFloat(SCALE_Y, target)
+        ).apply {
+            duration = if (down) 90L else 240L
+            interpolator = if (down) DecelerateInterpolator() else OvershootInterpolator(2.6f)
+            start()
         }
     }
 
@@ -126,6 +156,7 @@ class OctagonLayout @JvmOverloads constructor(
 }
 
 /** How far down the button the highlight reaches, and how bright it is at the very top. */
+private const val PRESSED_SCALE = 0.92f
 private const val SHEEN_REACH = 0.62f
 private const val SHEEN_TOP = 0x66FFFFFF
 private const val SHADE_BOTTOM = 0x40000000
