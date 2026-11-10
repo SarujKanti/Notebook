@@ -314,7 +314,7 @@
                 android:layout_width="@dimen/dp_30"
                 android:layout_height="@dimen/dp_30"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_add"
+                android:src="@drawable/ic_fab_plus"
                 android:importantForAccessibility="no"/>
         </com.skd.notebook.ui.OctagonLayout>
 
