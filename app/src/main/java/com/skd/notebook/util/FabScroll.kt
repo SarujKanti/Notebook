@@ -1,6 +1,9 @@
 package com.skd.notebook.util
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.view.View
+import android.view.animation.OvershootInterpolator
 import android.view.animation.DecelerateInterpolator
 import com.google.android.material.button.MaterialButton
 import androidx.recyclerview.widget.RecyclerView
@@ -86,6 +89,27 @@ fun ExtendedFloatingActionButton.peekOnScroll(recyclerView: RecyclerView, onClic
     })
 
     setOnClickListener { if (peeking) reveal() else onClick() }
+}
+
+/**
+ * Brings the button in with a small springy pop when its screen opens, instead of it simply being there.
+ * It uses ObjectAnimators, not view.animate(), so the tuck-away below cannot cancel it half-way.
+ */
+fun View.popIn(delayMs: Long = 250L) {
+    scaleX = 0f
+    scaleY = 0f
+    alpha = 0f
+    ObjectAnimator.ofPropertyValuesHolder(
+        this,
+        PropertyValuesHolder.ofFloat(View.SCALE_X, 1f),
+        PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f),
+        PropertyValuesHolder.ofFloat(View.ALPHA, 1f)
+    ).apply {
+        startDelay = delayMs
+        duration = 420L
+        interpolator = OvershootInterpolator(2.2f)
+        start()
+    }
 }
 
 /**
