@@ -306,6 +306,7 @@
             android:contentDescription="@string/new_note_button_description"
             android:elevation="@dimen/dp_10"
             app:octColor="@color/fab_home_start"
+            app:octColorMid="@color/fab_home_mid"
             app:octColorEnd="@color/fab_home_end"
             app:octGlow="@color/fab_home_glow">
 

@@ -37,12 +37,17 @@ class OctagonLayout @JvmOverloads constructor(
     private val shape = Path()
     private val cornerRadius: Float
     private val startColor: Int
+    private val midColor: Int
+    private val hasMid: Boolean
     private val endColor: Int
 
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.OctagonLayout)
         startColor = a.getColor(R.styleable.OctagonLayout_octColor, ContextCompat.getColor(context, R.color.fab_home))
         endColor = a.getColor(R.styleable.OctagonLayout_octColorEnd, startColor)
+        // Optional middle color: the fill then runs light → rich → deep instead of a plain two-color blend.
+        midColor = a.getColor(R.styleable.OctagonLayout_octColorMid, 0)
+        hasMid = a.hasValue(R.styleable.OctagonLayout_octColorMid)
         fill.color = startColor
         if (Build.VERSION.SDK_INT >= 28 && a.hasValue(R.styleable.OctagonLayout_octGlow)) {
             val glow = a.getColor(R.styleable.OctagonLayout_octGlow, startColor)
@@ -71,7 +76,14 @@ class OctagonLayout @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         buildShape(w.toFloat(), h.toFloat())
-        fill.shader = if (endColor != startColor) LinearGradient(0f, 0f, w.toFloat(), h.toFloat(), startColor, endColor, Shader.TileMode.CLAMP) else null
+        fill.shader = when {
+            hasMid -> LinearGradient(
+                0f, 0f, w.toFloat(), h.toFloat(),
+                intArrayOf(startColor, midColor, endColor), floatArrayOf(0f, 0.5f, 1f), Shader.TileMode.CLAMP
+            )
+            endColor != startColor -> LinearGradient(0f, 0f, w.toFloat(), h.toFloat(), startColor, endColor, Shader.TileMode.CLAMP)
+            else -> null
+        }
         // Light falling from above: a white veil on the top part of the button that fades out toward the middle.
         sheen.shader = LinearGradient(0f, 0f, 0f, h * SHEEN_REACH, SHEEN_TOP, 0x00FFFFFF, Shader.TileMode.CLAMP)
         // And a little darker toward the bottom edge, so the button has depth.

@@ -5,6 +5,8 @@
         <attr name="octColor" format="color"/>
         <!-- Optional: when set, the fill is a diagonal gradient from octColor to this -->
         <attr name="octColorEnd" format="color"/>
+        <!-- Optional: a color in the middle of the diagonal blend, so it reads light, rich, deep -->
+        <attr name="octColorMid" format="color"/>
         <!-- Optional: tint of the shadow (API 28+) -->
         <attr name="octGlow" format="color"/>
         <attr name="octCornerRadius" format="dimension"/>

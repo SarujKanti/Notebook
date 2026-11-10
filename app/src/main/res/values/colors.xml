@@ -135,8 +135,9 @@
     <color name="home_head_end">#3A1B8C</color>
     <color name="fab_home">#6236E0</color>
     <!-- Octagon button gradient: lighter top-left to deeper bottom-right, and the glow under it -->
-    <color name="fab_home_start">#A77BFF</color>
-    <color name="fab_home_end">#5A2BDB</color>
+    <color name="fab_home_start">#C9A8FF</color>
+    <color name="fab_home_mid">#7C4DFF</color>
+    <color name="fab_home_end">#4A1FC4</color>
     <color name="fab_home_glow">#6236E0</color>
     <color name="editor_icon_bg">#1F7B5CF0</color>
     <!-- Skeleton (placeholder) blocks shown while content loads: a quiet base and a light band that sweeps across -->

@@ -26,8 +26,9 @@
 
     <color name="home_head_end">#1B0F50</color>
     <color name="fab_home">#7C4DFF</color>
-    <color name="fab_home_start">#C4A2FF</color>
-    <color name="fab_home_end">#6C3BF0</color>
+    <color name="fab_home_start">#D2B8FF</color>
+    <color name="fab_home_mid">#8B5CFF</color>
+    <color name="fab_home_end">#5B2FE0</color>
     <color name="fab_home_glow">#9B6BFF</color>
     <color name="editor_icon_bg">#33B39DFF</color>
     <color name="skeleton_base">#2C2640</color>
