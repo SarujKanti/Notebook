@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.skd.notebook.R
 import com.skd.notebook.util.fillWidthOnTablet
 import com.skd.notebook.util.noteGridColumns
@@ -38,7 +37,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.skd.notebook.ui.NoteViewModel
 import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.util.fitTopInsetAsPadding
-import com.skd.notebook.util.peekOnScroll
+import com.skd.notebook.util.peekCircleOnScroll
+import com.skd.notebook.util.popIn
 import java.util.UUID
 
 class FolderNotesActivity : BaseActivity() {
@@ -52,7 +52,7 @@ class FolderNotesActivity : BaseActivity() {
     private lateinit var adapter: NoteAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var layoutEmpty: LinearLayout
-    private lateinit var fabAdd: ExtendedFloatingActionButton
+    private lateinit var fabAdd: View
 
     private lateinit var folderId: String
 
@@ -118,7 +118,8 @@ class FolderNotesActivity : BaseActivity() {
             layoutEmpty.visibility = if (notes.isEmpty()) View.VISIBLE else View.GONE
         }
 
-        fabAdd.peekOnScroll(recyclerView) { showNoteDialog(null) }
+        fabAdd.peekCircleOnScroll(recyclerView, findViewById(R.id.fabAddIcon)) { showNoteDialog(null) }
+        fabAdd.popIn()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

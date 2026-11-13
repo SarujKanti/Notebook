@@ -1,0 +1,20 @@
+<!-- The floating button's "+": two round-ended strokes, a little bolder than the plain icon, with a soft shadow beneath -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Shadow: the same plus, a touch lower, in a dark translucent color -->
+    <path
+        android:pathData="M12,5.8 L12,19.8 M5,12.8 L19,12.8"
+        android:strokeColor="#40000000"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"/>
+
+    <path
+        android:pathData="M12,5 L12,19 M5,12 L19,12"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"/>
+</vector>

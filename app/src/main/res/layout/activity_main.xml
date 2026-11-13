@@ -296,8 +296,8 @@
         <!-- Octagon "+" button: an octagon holding a centered icon (see peekCircleOnScroll) -->
         <com.skd.notebook.ui.OctagonLayout
             android:id="@+id/fabAdd"
-            android:layout_width="@dimen/dp_62"
-            android:layout_height="@dimen/dp_62"
+            android:layout_width="@dimen/fab_size"
+            android:layout_height="@dimen/fab_size"
             android:layout_gravity="bottom|end"
             android:layout_marginBottom="@dimen/dp_80"
             android:layout_marginEnd="@dimen/dp_16"
@@ -306,15 +306,16 @@
             android:contentDescription="@string/new_note_button_description"
             android:elevation="@dimen/dp_10"
             app:octColor="@color/fab_home_start"
+            app:octColorMid="@color/fab_home_mid"
             app:octColorEnd="@color/fab_home_end"
             app:octGlow="@color/fab_home_glow">
 
             <ImageView
                 android:id="@+id/fabAddIcon"
-                android:layout_width="@dimen/dp_30"
-                android:layout_height="@dimen/dp_30"
+                android:layout_width="@dimen/fab_icon_size"
+                android:layout_height="@dimen/fab_icon_size"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_add"
+                android:src="@drawable/ic_fab_plus"
                 android:importantForAccessibility="no"/>
         </com.skd.notebook.ui.OctagonLayout>
 

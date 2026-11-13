@@ -35,6 +35,7 @@ import com.skd.notebook.ui.showActionSheet
 import com.skd.notebook.ui.showAppDialog
 import com.skd.notebook.util.fitTopInsetAsPadding
 import com.skd.notebook.util.peekCircleOnScroll
+import com.skd.notebook.util.popIn
 
 class FoldersActivity : BaseActivity() {
 
@@ -102,6 +103,7 @@ class FoldersActivity : BaseActivity() {
         }
 
         fabNewFolder.peekCircleOnScroll(recyclerView, findViewById(R.id.fabNewFolderIcon)) { showFolderDialog(null) }
+        fabNewFolder.popIn()
     }
 
     // ── Long-press action sheet ───────────────────────────────────────────────

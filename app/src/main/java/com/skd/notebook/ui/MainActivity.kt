@@ -69,6 +69,7 @@ import com.skd.notebook.util.appVersionLabel
 import com.skd.notebook.util.keepClearOfSystemBars
 import com.skd.notebook.widget.WidgetUpdater
 import com.skd.notebook.util.peekCircleOnScroll
+import com.skd.notebook.util.popIn
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -233,6 +234,7 @@ class MainActivity : BaseActivity() {
         viewModel.startRealtimeSync()
 
         fabAdd.peekCircleOnScroll(recyclerView, findViewById(R.id.fabAddIcon)) { showNoteDialog(null) }
+        fabAdd.popIn()
         btnMenu.setOnClickListener         { drawerLayout.openDrawer(GravityCompat.START) }
 
         // Search pill → open SearchActivity

@@ -104,4 +104,8 @@
     <dimen name="dp_320">320dp</dimen>
     <dimen name="dp_400">400dp</dimen>
     <dimen name="dp_600">600dp</dimen>
+
+    <!-- The floating New Note / New Folder button (larger on a tablet, see values-sw600dp) -->
+    <dimen name="fab_size">62dp</dimen>
+    <dimen name="fab_icon_size">30dp</dimen>
 </resources>
