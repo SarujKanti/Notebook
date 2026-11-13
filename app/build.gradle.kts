@@ -64,6 +64,9 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
 
+    // Background upload of notes that could not be saved to the cloud (no connection) once it is back
+    implementation(libs.androidx.work.runtime.ktx)
+
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore.ktx)

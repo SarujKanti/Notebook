@@ -12,12 +12,14 @@ import com.skd.notebook.data.local.NoteEntity
 import com.skd.notebook.util.escapeLike
 import com.skd.notebook.util.NoteImages
 import com.skd.notebook.data.remote.FirebaseService
+import com.skd.notebook.data.sync.CloudSync
 import com.skd.notebook.data.repository.NoteRepository
 import com.skd.notebook.widget.WidgetUpdater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -25,7 +27,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db      = NoteDatabase.getDatabase(application)
     private val firebase = FirebaseService()
-    private val repo    = NoteRepository(db.noteDao(), db.folderDao(), firebase)
+    private val repo    = NoteRepository(db.noteDao(), db.folderDao(), firebase) { CloudSync.scheduleUpload(application) }
 
     val activeNotes   = repo.activeNotes.asLiveData()
     val binNotes      = repo.binNotes.asLiveData()
@@ -150,7 +152,9 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
         notesListener = firebase.listenToNotes { notes ->
             viewModelScope.launch {
-                db.noteDao().insertAll(notes)
+                // A note the phone has changed but the cloud has not confirmed yet is newer than the cloud's copy.
+                val pending = repo.unsyncedNoteIds()
+                db.noteDao().insertAll(if (pending.isEmpty()) notes else notes.filter { it.id !in pending })
                 isSyncing.postValue(false)   // first snapshot received — stop spinner
                 refreshPinnedWidget()
             }
@@ -158,10 +162,29 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
         foldersListener = firebase.listenToFolders { folders ->
             viewModelScope.launch {
-                db.folderDao().insertAll(folders)
+                val pending = repo.unsyncedFolderIds()
+                db.folderDao().insertAll(if (pending.isEmpty()) folders else folders.filter { it.id !in pending })
             }
         }
+
+        // Anything the cloud never confirmed (offline use, a failed save, guest notes) is sent now.
+        appScope.launch { repo.flushUnsynced() }
     }
+
+    /** How many notes and folders the cloud has not confirmed yet (live). */
+    val unsynced = repo.unsyncedCount.asLiveData()
+
+    /**
+     * Tries to get everything to the cloud, for at most [timeoutMs] (a phone with no connection never gets an
+     * answer), and returns how many notes and folders are still not confirmed. Used before logging out.
+     */
+    suspend fun syncNow(timeoutMs: Long): Int {
+        withTimeoutOrNull(timeoutMs) { repo.flushUnsynced() }
+        return repo.unsyncedCountNow()
+    }
+
+    /** A guest is signing in: all notes on the phone are to be sent to the account. */
+    suspend fun markEverythingUnsynced() = repo.markEverythingUnsynced()
 
     /** Signing out closes the screen, which would cancel viewModelScope half-way, so this uses a scope of its own. */
     fun clearLocalData() {

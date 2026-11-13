@@ -1,8 +1,10 @@
 package com.skd.notebook.data.local
 
 import androidx.annotation.Keep
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.IgnoreExtraProperties
 
 /**
@@ -22,5 +24,9 @@ data class FolderEntity(
     @PrimaryKey val id: String = "",
     val name: String = "",
     val timestamp: Long = 0L,
-    val color: String = ""          // hex e.g. "#4CAF50" — empty means default primary
+    val color: String = "",          // hex e.g. "#4CAF50" — empty means default primary
+    /** True until the cloud has confirmed this folder (see NoteEntity.needsSync). Local only. */
+    @get:Exclude
+    @ColumnInfo(defaultValue = "0")
+    val needsSync: Boolean = false
 )

@@ -31,6 +31,7 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -53,6 +54,9 @@ import com.skd.notebook.R
 import com.skd.notebook.util.fillWidthOnTablet
 import com.skd.notebook.util.noteGridColumns
 import com.skd.notebook.data.local.NoteEntity
+import com.skd.notebook.data.remote.SyncProblem
+import com.skd.notebook.data.remote.SyncStatus
+import com.skd.notebook.data.sync.CloudSync
 import com.skd.notebook.util.AppSettings
 import com.skd.notebook.util.ProfilePhoto
 import com.skd.notebook.util.NoteColors
@@ -75,6 +79,7 @@ import java.util.UUID
 class MainActivity : BaseActivity() {
 
     companion object {
+        private const val LOGOUT_SYNC_TIMEOUT_MS = 8_000L
         /** Set on the launch intent by the "New Note" widget. */
         const val ACTION_NEW_NOTE = "com.skd.notebook.ACTION_NEW_NOTE"
         /** Note id extra set by the "Pinned Notes" widget when a list item is tapped. */
@@ -149,10 +154,14 @@ class MainActivity : BaseActivity() {
     /** Restart fresh as a fully-authenticated MainActivity — drawer header, sync, and menu all re-init correctly. */
     private fun onGuestSignedIn() {
         getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_GUEST_MODE, false).apply()
-        startActivity(Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        })
-        finish()
+        lifecycleScope.launch {
+            // The notes made as a guest are only on this phone: flag them all, so the home screen sends them to the account.
+            viewModel.markEverythingUnsynced()
+            startActivity(Intent(this@MainActivity, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
+            finish()
+        }
     }
 
     private val noteColors = NoteColors.PALETTE
@@ -557,6 +566,7 @@ class MainActivity : BaseActivity() {
         }
 
         buildDrawerMenu()
+        observeSyncState(guest)
         refreshProfilePhoto()
         if (!guest) {
             // After logging in again the picture is on the account, not on this device yet.
@@ -578,7 +588,7 @@ class MainActivity : BaseActivity() {
         }
         findViewById<View>(R.id.btnNavAuth).setOnClickListener {
             drawerLayout.closeDrawer(GravityCompat.START)
-            if (guest) startGoogleSignIn() else signOut()
+            if (guest) startGoogleSignIn() else trySignOut()
         }
     }
 
@@ -911,6 +921,139 @@ class MainActivity : BaseActivity() {
             positiveText = getString(R.string.login),
             onPositive = { startGoogleSignIn() }
         )
+    }
+
+    /**
+     * Logging out removes this phone's notes, so first make sure the cloud has them all. If it cannot take them
+     * (no connection, refused), say so and let the user choose, instead of quietly losing them.
+     */
+    private fun trySignOut() {
+        if ((viewModel.unsynced.value ?: 0) == 0) {
+            signOut()
+            return
+        }
+        if (CloudSync.online.value == false) {
+            askToWaitForNetwork()
+            return
+        }
+        val waiting = showAppDialog(
+            title = getString(R.string.logout_saving_title),
+            icon = R.drawable.ic_logout,
+            message = getString(R.string.logout_saving_message),
+            positiveText = null,
+            negativeText = null,
+            cancelable = false
+        )
+        lifecycleScope.launch {
+            val left = viewModel.syncNow(LOGOUT_SYNC_TIMEOUT_MS)
+            waiting.dismiss()
+            if (left == 0) {
+                signOut()
+                return@launch
+            }
+            val reason = when (SyncStatus.state.value?.problem) {
+                SyncProblem.PERMISSION -> R.string.sync_reason_permission
+                SyncProblem.OFFLINE -> R.string.sync_reason_offline
+                else -> R.string.sync_reason_other
+            }
+            showAppDialog(
+                title = getString(R.string.logout_unsynced_title),
+                icon = R.drawable.ic_logout,
+                message = getString(R.string.logout_unsynced_message, left, getString(reason)),
+                destructive = true,
+                positiveText = getString(R.string.logout_anyway),
+                negativeText = getString(R.string.stay),
+                onPositive = { signOut() }
+            )
+        }
+    }
+
+    /**
+     * No connection and notes still to send: say so at once (no waiting for an answer that cannot come) and offer
+     * to wait for the network instead of losing them.
+     */
+    private fun askToWaitForNetwork() {
+        showAppDialog(
+            title = getString(R.string.logout_offline_title),
+            icon = R.drawable.ic_logout,
+            message = getString(R.string.logout_offline_message, viewModel.unsynced.value ?: 0),
+            positiveText = getString(R.string.logout_wait),
+            onPositive = { waitForNetworkThenSignOut() }
+        )
+    }
+
+    /**
+     * Keeps the notes safe until the connection is back: as soon as the cloud has them all, logs out by itself.
+     * "Log out anyway" gives up waiting; Cancel (or tapping outside) stays logged in.
+     */
+    private fun waitForNetworkThenSignOut() {
+        var done = false
+        lateinit var observer: Observer<Int>
+        val stopWatching = {
+            done = true
+            viewModel.unsynced.removeObserver(observer)
+        }
+        val waiting = showAppDialog(
+            title = getString(R.string.logout_waiting_title),
+            icon = R.drawable.ic_logout,
+            message = getString(R.string.logout_waiting_message),
+            destructive = true,
+            positiveText = getString(R.string.logout_anyway),
+            onPositive = {
+                stopWatching()
+                signOut()
+            },
+            onCancel = { stopWatching() }
+        )
+        observer = Observer { left ->
+            if (left == 0 && !done) {
+                stopWatching()
+                waiting.dismiss()
+                signOut()
+            }
+        }
+        viewModel.unsynced.observe(this, observer)
+        CloudSync.flushSoon(this) // the connection may already be back
+    }
+
+    private var shownSyncBlockedDialog = false
+
+    /** The line under the email in the drawer, and - once - an explanation if the cloud refuses the notes. */
+    private fun observeSyncState(guest: Boolean) {
+        val line = findViewById<TextView>(R.id.tvNavSync)
+        if (guest) {
+            line.text = getString(R.string.sync_status_local)
+            return
+        }
+        fun show(textRes: Int, dot: Int) {
+            line.text = SpannableString("●  " + getString(textRes)).apply {
+                setSpan(ForegroundColorSpan(dot), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+        }
+        val refresh = {
+            when {
+                SyncStatus.state.value?.problem != null -> show(R.string.sync_status_problem, 0xFFFF8A80.toInt())
+                (viewModel.unsynced.value ?: 0) > 0 && CloudSync.online.value == false ->
+                    show(R.string.sync_status_waiting, 0xFFFFD180.toInt()) // saved on the phone; goes up once the connection is back
+                (viewModel.unsynced.value ?: 0) > 0 -> show(R.string.sync_status_syncing, 0xFFFFD180.toInt())
+                else -> show(R.string.sync_status_synced, 0xFF69F0AE.toInt())
+            }
+        }
+        SyncStatus.state.observe(this) { state ->
+            refresh()
+            if (state.problem == SyncProblem.PERMISSION && !shownSyncBlockedDialog) {
+                shownSyncBlockedDialog = true
+                showAppDialog(
+                    title = getString(R.string.sync_denied_title),
+                    icon = R.drawable.ic_lock,
+                    message = getString(R.string.sync_denied_message),
+                    positiveText = getString(R.string.got_it),
+                    negativeText = null
+                )
+            }
+        }
+        viewModel.unsynced.observe(this) { refresh() }
+        CloudSync.online.observe(this) { refresh() }
     }
 
     private fun signOut() {

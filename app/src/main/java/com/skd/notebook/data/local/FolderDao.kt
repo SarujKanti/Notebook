@@ -19,6 +19,18 @@ interface FolderDao {
     @Query("SELECT * FROM folders ORDER BY timestamp DESC")
     fun getAllFolders(): Flow<List<FolderEntity>>
 
+    @Query("SELECT * FROM folders WHERE needsSync = 1")
+    suspend fun getUnsynced(): List<FolderEntity>
+
+    @Query("SELECT id FROM folders WHERE needsSync = 1")
+    suspend fun getUnsyncedIds(): List<String>
+
+    @Query("SELECT COUNT(*) FROM folders WHERE needsSync = 1")
+    fun unsyncedCount(): Flow<Int>
+
+    @Query("UPDATE folders SET needsSync = 1")
+    suspend fun markAllUnsynced()
+
     @Query("DELETE FROM folders")
     suspend fun deleteAll()
 }
